@@ -31,30 +31,30 @@ trait DateFluency {
   object DateViewModel extends ErrorMessageAwareness {
 
     def apply(
-               field: Field,
-               legend: Legend
-             )(implicit messages: Messages): DateInput =
+      field: Field,
+      legend: Legend
+    )(implicit messages: Messages): DateInput =
       apply(
         field    = field,
         fieldset = Fieldset(legend = Some(legend))
       )
 
     def apply(
-               field: Field,
-               fieldset: Fieldset
-             )(implicit messages: Messages): DateInput = {
+      field: Field,
+      fieldset: Fieldset
+    )(implicit messages: Messages): DateInput = {
 
       val errorClass = "govuk-input--error"
 
-      val dayError         = field.error.exists(_.args.contains(messages("date.error.day")))
-      val monthError       = field.error.exists(_.args.contains(messages("date.error.month")))
-      val yearError        = field.error.exists(_.args.contains(messages("date.error.year")))
+      val dayError = field.error.exists(_.args.contains(messages("date.error.day")))
+      val monthError = field.error.exists(_.args.contains(messages("date.error.month")))
+      val yearError = field.error.exists(_.args.contains(messages("date.error.year")))
       val anySpecificError = dayError || monthError || yearError
-      val allFieldsError   = field.error.isDefined && !anySpecificError
+      val allFieldsError = field.error.isDefined && !anySpecificError
 
-      val dayErrorClass   = if (dayError || allFieldsError) errorClass else ""
+      val dayErrorClass = if (dayError || allFieldsError) errorClass else ""
       val monthErrorClass = if (monthError || allFieldsError) errorClass else ""
-      val yearErrorClass  = if (yearError || allFieldsError) errorClass else ""
+      val yearErrorClass = if (yearError || allFieldsError) errorClass else ""
 
       val items = Seq(
         InputItem(
@@ -107,11 +107,9 @@ trait DateFluency {
       date.copy(attributes = date.attributes + attribute)
 
     def asDateOfBirth(): DateInput =
-      date.copy(
-        items = date.items map {
-          item =>
-            val name = item.id.split('.').last
-            item.copy(autocomplete = Some(s"bday-$name"))
-        })
+      date.copy(items = date.items map { item =>
+        val name = item.id.split('.').last
+        item.copy(autocomplete = Some(s"bday-$name"))
+      })
   }
 }

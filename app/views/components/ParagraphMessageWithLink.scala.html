@@ -25,7 +25,8 @@
     linkRel: String = "",
     target: String = "_self",
     linkFullStop: Boolean = false,
-    maxLimit: Boolean = false
+    maxLimit: Boolean = false,
+    linkId: Option[String] = None
 )
 
 <p class="@classes">
@@ -42,6 +43,7 @@
     } else {
     <a
             href="@linkUrl"
+            @linkId.map(id => Html(s"""id="$id""""))
             @if(linkClass.nonEmpty) { class="@linkClass" }
             @if(linkRel.nonEmpty) { rel="@linkRel" }
             @if(target.nonEmpty) { target="@target" }

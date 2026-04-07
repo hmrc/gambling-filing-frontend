@@ -26,7 +26,10 @@
 
 @(hmrcOnlineServiceDesk: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("systemError.title"))) {
+@layout(pageTitle = titleNoForm(messages("systemError.title")),
+    showBackLink = false,
+    showSignOut = false
+    ) {
 
 
      @h1("systemError.heading", classes = "govuk-heading-l")
@@ -37,7 +40,8 @@
      linkUrl = hmrcOnlineServiceDesk,
      linkFullStop = false,
      linkRel = "noreferrer noopener",
-     target = "_blank"
+     target = "_blank",
+     linkId = Some("service-desk-link")
      )
 
 }

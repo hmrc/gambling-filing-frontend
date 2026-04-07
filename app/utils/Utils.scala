@@ -19,7 +19,7 @@ package utils
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 object Utils {
-  val emptyString  = ""
+  val emptyString = ""
   val firstRadioId = "value_0"
 
   def withIds(items: Seq[RadioItem], prefix: String = "value"): Seq[RadioItem] =

@@ -38,7 +38,6 @@ class SystemErrorControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[SystemErrorView]
         val appConfig = application.injector.instanceOf[FrontendAppConfig]
 
-        
         status(result) mustEqual OK
         contentAsString(result) mustEqual
           view(appConfig.hmrcOnlineServiceDesk)(request, messages(application)).toString
