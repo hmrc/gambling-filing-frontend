@@ -1,4 +1,4 @@
-service.name = gambling-filing-frontend
+service.name = Machine Games Duty
 
 site.back = Back
 site.remove = Remove
@@ -27,8 +27,8 @@ error.title.prefix = Error:
 error.prefix = Error
 error.summary.title = There is a problem
 
-index.title = gambling-filing-frontend
-index.heading = gambling-filing-frontend
+index.title = Welcome to the filing Machine Game Duty
+index.heading = Welcome to the filing Machine Game Duty
 index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
 checkYourAnswers.title = Check your answers
@@ -47,3 +47,8 @@ signedOut.guidance = We did not save your answers.
 
 unauthorised.title = You can’t access this service with this account
 unauthorised.heading = You can’t access this service with this account
+
+systemError.title = Sorry, there is a problem with the service
+systemError.heading = Sorry, there is a problem with the service
+systemError.p1 = Try again later or contact the
+systemError.p1.link = HMRC Online Services Helpdesk (opens in a new tab)
