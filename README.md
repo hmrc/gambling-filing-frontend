@@ -1,5 +1,5 @@
 
-# gabling-filing-frontend
+# gambling-filing-frontend
 
 This is the new gabling-filing-frontend repository
 
@@ -55,7 +55,7 @@ GET        /there-is-a-problem-with-the-service                       controller
 Message key (messages.en):
 
 ```properties
-monthlyreturns.inactivityRequest.title = Do you want to submit an inactivity request?
+systemError.heading = Sorry, there is a problem with the service
 ```
 
 ### License
