@@ -19,7 +19,7 @@ package controllers
 import base.SpecBase
 import config.FrontendAppConfig
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import views.html.AccessDeniedView
 
 class AccessDeniedControllerSpec extends SpecBase {
@@ -38,7 +38,7 @@ class AccessDeniedControllerSpec extends SpecBase {
         val view = application.injector.instanceOf[AccessDeniedView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view("/")(request, messages(application)).toString
+        contentAsString(result) mustEqual view("controllers.routes.IndexController.onPageLoad().url")(request, messages(application)).toString
       }
     }
   }

@@ -22,9 +22,8 @@ import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import views.html.AccessDeniedView
 
-
 class AccessDeniedViewSpec extends SpecBase {
-  
+
   "AccessDeniedView" - {
 
     "must render the page with correct heading and service desk link" in new Setup {
@@ -37,9 +36,9 @@ class AccessDeniedViewSpec extends SpecBase {
       doc.select("h1").text must include(messages("accessDenied.heading"))
 
       doc.select("p").text must include(messages("accessDenied.p1"))
-      val link = doc.select(".access-denied-home-page-link a").attr("href")
+      val link = doc.select(".page-not-found-home-page-link a").attr("href")
 
-      link mustEqual "/"
+      link mustEqual "controllers.routes.IndexController.onPageLoad().url"
 
     }
   }

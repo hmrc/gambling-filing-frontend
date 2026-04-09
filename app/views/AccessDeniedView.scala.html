@@ -33,6 +33,10 @@
 
     @h1("accessDenied.heading", classes = "govuk-heading-l")
     @paragraph(message= "accessDenied.p1")
-    @link("accessDenied.p1.link", "/", extraClasses = "access-denied-home-page-link")
+    @link(
+        "pageNotFound.home.link",
+        "controllers.routes.IndexController.onPageLoad().url",
+        extraClasses = "page-not-found-home-page-link"
+        )
 
 }
