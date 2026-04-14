@@ -17,28 +17,29 @@
 package controllers
 
 import base.SpecBase
+import config.FrontendAppConfig
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
-import views.html.PageNotFoundView
-import config.FrontendAppConfig
+import views.html.AccessDeniedView
 
-class PageNotFoundControllerSpec extends SpecBase {
+class AccessDeniedControllerSpec extends SpecBase {
 
-  "PageNotFound Controller" - {
+  "AccessDenied Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.PageNotFoundController.onPageLoad().url)
+        val request = FakeRequest(GET, routes.AccessDeniedController.onPageLoad().url)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[PageNotFoundView]
-        val appConfig = application.injector.instanceOf[FrontendAppConfig]
+        val view = application.injector.instanceOf[AccessDeniedView]
+
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(appConfig.hmrcOnlineServiceDesk)(request, messages(application)).toString
+        contentAsString(result) must include("Sorry, there is a problem with the service")
+        contentAsString(result) must include("Continue to your account")
       }
     }
   }

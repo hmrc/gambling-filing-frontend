@@ -17,23 +17,22 @@
 package controllers
 
 import config.FrontendAppConfig
-import controllers.actions.*
 
+import controllers.actions.*
 import javax.inject.Inject
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.PageNotFoundView
+import views.html.AccessDeniedView
 
-class PageNotFoundController @Inject() (
+class AccessDeniedController @Inject() (
   override val messagesApi: MessagesApi,
   val controllerComponents: MessagesControllerComponents,
-  view: PageNotFoundView,
-  appConfig: FrontendAppConfig
+  view: AccessDeniedView
 ) extends FrontendBaseController
     with I18nSupport {
 
   def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(view(appConfig.hmrcOnlineServiceDesk))
+    Ok(view())
   }
 }
