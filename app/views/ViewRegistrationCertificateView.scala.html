@@ -1,0 +1,103 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.components.*
+@import models.MgdCertificate
+@import java.time.format.DateTimeFormatter
+
+ @this(
+   layout: templates.Layout,
+   govukButton: GovukButton,
+   govukPanel: GovukPanel,
+   h2:H2,
+   p:Paragraph,
+   link:Link,
+   govukSummaryList: GovukSummaryList
+ )
+
+@(certificate: MgdCertificate)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("viewRegistrationCertificate.title"))) {
+
+ @govukPanel(Panel(
+   title = messages("viewRegistrationCertificate.panel.title"),
+   content = HtmlContent(messages("viewRegistrationCertificate.panel.body", certificate.mgdRegNumber))
+ ))
+
+
+ @p("viewRegistrationCertificate.p1")
+ @h2(messages("viewRegistrationCertificate.h2"))
+
+@govukSummaryList(SummaryList(
+rows = Seq(
+SummaryListRow(
+key = Key(content = messages("viewRegistrationCertificate.registrationDate")),
+value = Value(content = HtmlContent(certificate.registrationDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))))
+),
+SummaryListRow(
+key = Key(content = messages("viewRegistrationCertificate.certificateIssued")),
+value = Value(content = HtmlContent(certificate.dateCertIssued.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))))
+),
+SummaryListRow(
+key = Key(content = messages("viewRegistrationCertificate.soleProprietorName")),
+value = Value(content = HtmlContent(certificate.individualName.getOrElse("-")))
+),
+SummaryListRow(
+key = Key(content = messages("viewRegistrationCertificate.businessAddress")),
+value = Value(content = HtmlContent(
+Seq(
+certificate.busAddrLine1,
+certificate.busAddrLine2,
+certificate.busPostcode
+).flatten.mkString("<br>")
+))
+),
+SummaryListRow(
+key = Key(content = messages("viewRegistrationCertificate.typeOfBusiness")),
+value = Value(content = HtmlContent(certificate.typeOfBusiness.getOrElse("-")))
+),
+SummaryListRow(
+key = Key(content = messages("viewRegistrationCertificate.tradeClass")),
+value = Value(content = HtmlContent(certificate.businessTradeClass.map(_.toString).getOrElse("-")))
+)
+)
+))
+
+@h2(messages("viewRegistrationCertificate.h2.upcoming"))
+
+<ul class="govuk-list">
+    @for(rped <- certificate.returnPeriodEndDates) {
+    <li>@rped.returnPeriodEndDate.format(java.time.format.DateTimeFormatter.ofPattern("dd MMMM yyyy"))</li>
+    }
+</ul>
+
+<div class="govuk-inset-text">
+    @messages("viewRegistrationCertificate.print")
+</div>
+
+    @link(
+    "viewRegistrationCertificate.dashboard.link",
+        "#",
+        extraClasses = "dashboard-page-link"
+        )
+
+        @link(
+        "viewRegistrationCertificate.change-registration.link",
+        "#",
+        extraClasses = "change-registration-page-link"
+        )
+
+}
