@@ -121,7 +121,7 @@ class AuthorisedActionSpec extends SpecBase {
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
-        controllers.routes.UnauthorisedController.onPageLoad().url
+        controllers.routes.AccessDeniedController.onPageLoad().url
       )
     }
 
@@ -150,7 +150,7 @@ class AuthorisedActionSpec extends SpecBase {
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
-        controllers.routes.UnauthorisedController.onPageLoad().url
+        controllers.routes.AccessDeniedController.onPageLoad().url
       )
     }
 
@@ -179,7 +179,7 @@ class AuthorisedActionSpec extends SpecBase {
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
-        controllers.routes.UnauthorisedController.onPageLoad().url
+        controllers.routes.AccessDeniedController.onPageLoad().url
       )
     }
 
@@ -210,7 +210,7 @@ class AuthorisedActionSpec extends SpecBase {
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
-        controllers.routes.UnauthorisedController.onPageLoad().url
+        controllers.routes.AccessDeniedController.onPageLoad().url
       )
     }
 
@@ -241,7 +241,7 @@ class AuthorisedActionSpec extends SpecBase {
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
-        controllers.routes.UnauthorisedController.onPageLoad().url
+        controllers.routes.AccessDeniedController.onPageLoad().url
       )
     }
 
@@ -272,7 +272,7 @@ class AuthorisedActionSpec extends SpecBase {
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
-        controllers.routes.UnauthorisedController.onPageLoad().url
+        controllers.routes.AccessDeniedController.onPageLoad().url
       )
     }
 
@@ -303,7 +303,7 @@ class AuthorisedActionSpec extends SpecBase {
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe SEE_OTHER
       redirectLocation(result) mustBe Some(
-        controllers.routes.UnauthorisedController.onPageLoad().url
+        controllers.routes.AccessDeniedController.onPageLoad().url
       )
     }
 
