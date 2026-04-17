@@ -28,7 +28,7 @@ import scala.concurrent.ExecutionContext
 
 class ViewRegistrationCertificateController @Inject() (
   override val messagesApi: MessagesApi,
-  identify: IdentifierAction,
+  authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
   view: ViewRegistrationCertificateView,
@@ -37,9 +37,8 @@ class ViewRegistrationCertificateController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(): Action[AnyContent] = (identify andThen getData).async { implicit request =>
-    val mgdRegNumber = "GAM0000000001"
-    mgdCertificateService.retrieveCertificate(mgdRegNumber).map { certificate =>
+  def onPageLoad(): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+    mgdCertificateService.retrieveCertificate(request.mgdRefNum).map { certificate =>
       Ok(view(certificate))
     }
   }
