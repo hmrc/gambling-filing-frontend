@@ -16,20 +16,20 @@
 
 package controllers.actions
 
-import play.api.mvc.*
 import com.google.inject.ImplementedBy
 import config.FrontendAppConfig
-import uk.gov.hmrc.auth.core.*
-import uk.gov.hmrc.auth.core.retrieve.~
-import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
-import play.api.Logging
-import uk.gov.hmrc.http.HeaderCarrier
-import play.api.mvc.Results.*
-import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import models.requests.AuthorisedRequest
+import play.api.Logging
+import play.api.mvc.*
+import play.api.mvc.Results.*
+import uk.gov.hmrc.auth.core.*
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
+import uk.gov.hmrc.auth.core.retrieve.~
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
-import scala.concurrent.{ExecutionContext, Future}
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[DefaultAuthorisedAction])
 trait AuthorisedAction extends ActionBuilder[AuthorisedRequest, AnyContent] with ActionFunction[Request, AuthorisedRequest]
@@ -72,7 +72,8 @@ class DefaultAuthorisedAction @Inject() (
 
       }
       .recover {
-        case _: InsufficientEnrolments | _: UnsupportedAffinityGroup =>
+        case _: InsufficientEnrolments | _: UnsupportedAffinityGroup | _: InsufficientConfidenceLevel | _: UnsupportedCredentialRole |
+            _: UnsupportedAuthProvider =>
           Redirect(controllers.routes.UnauthorisedController.onPageLoad())
         case ex: AuthorisationException =>
           logger.info(s"Unauthenticated access to ${request.path}: ${ex.getMessage}")
