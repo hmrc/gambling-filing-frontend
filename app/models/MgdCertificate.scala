@@ -15,7 +15,6 @@
  */
 
 package models
-
 import play.api.libs.json.{Json, OFormat, Writes}
 
 import java.time.LocalDate
@@ -56,7 +55,7 @@ object ReturnPeriodEndDate {
 
 final case class MgdCertificate(
   mgdRegNumber: String,
-  registrationDate: LocalDate,
+  registrationDate: Option[LocalDate],
   individualName: Option[String],
   businessName: Option[String],
   tradingName: Option[String],
@@ -74,15 +73,15 @@ final case class MgdCertificate(
   repMemLine4: Option[String],
   repMemPostcode: Option[String],
   repMemAdi: Option[String],
-  typeOfBusiness: Option[String], // as returned by md.TYPE_OF_BUSINESS
-  businessTradeClass: Option[Int], // nvl(md.TRADE_CLASS, mgm.TRADE_CLASS)
-  noOfPartners: Int,
-  groupReg: String, // "Y" or "N"
-  noOfGroupMems: Int,
-  dateCertIssued: LocalDate,
-  partMembers: Seq[PartnerMember], // cursor P_PART_MEMBERS
-  groupMembers: Seq[GroupMember], // cursor P_GROUP_MEMBERS
-  returnPeriodEndDates: Seq[ReturnPeriodEndDate] // cursor RETURN_PERIOD_END_DATES (max 5)
+  typeOfBusiness: Option[String],
+  businessTradeClass: Option[Int],
+  noOfPartners: Option[Int],
+  groupReg: String, // "Y" | "N"
+  noOfGroupMems: Option[Int],
+  dateCertIssued: Option[LocalDate],
+  partMembers: Seq[PartnerMember],
+  groupMembers: Seq[GroupMember],
+  returnPeriodEndDates: Seq[ReturnPeriodEndDate]
 )
 
 object MgdCertificate {
@@ -91,62 +90,4 @@ object MgdCertificate {
     Writes.temporalWrites[LocalDate, DateTimeFormatter](fmt)
 
   implicit val format: OFormat[MgdCertificate] = Json.format[MgdCertificate]
-
-  // handy sample builders (used by controller scenarios)
-  def sample1(reg: String): MgdCertificate =
-    MgdCertificate(
-      mgdRegNumber       = reg,
-      registrationDate   = LocalDate.parse("2023-01-15", fmt),
-      individualName     = Some("Mr John A Smith"),
-      businessName       = Some("Acme Gaming Ltd"),
-      tradingName        = Some("Acme Bets"),
-      repMemName         = Some("Acme Rep Member Ltd"),
-      busAddrLine1       = Some("1 High Street"),
-      busAddrLine2       = Some("Newcastle"),
-      busAddrLine3       = None,
-      busAddrLine4       = None,
-      busPostcode        = Some("NE1 1AA"),
-      busCountry         = Some("United Kingdom"),
-      busAdi             = Some("Some ADI Value"),
-      repMemLine1        = Some("2 Low Street"),
-      repMemLine2        = Some("Newcastle"),
-      repMemLine3        = None,
-      repMemLine4        = None,
-      repMemPostcode     = Some("NE1 2BB"),
-      repMemAdi          = Some("Rep ADI Value"),
-      typeOfBusiness     = Some("Corporate Body"),
-      businessTradeClass = Some(2),
-      noOfPartners       = 2,
-      groupReg           = "Y",
-      noOfGroupMems      = 1,
-      dateCertIssued     = LocalDate.parse("2024-02-01", fmt),
-      partMembers = Seq(
-        PartnerMember(
-          namesOfPartMems    = "Partner Member One Ltd",
-          solePropTitle      = None,
-          solePropFirstName  = None,
-          solePropMiddleName = None,
-          solePropLastName   = None,
-          typeOfBusiness     = 2 // Corporate Body
-        ),
-        PartnerMember(
-          namesOfPartMems    = "Sole Prop Example",
-          solePropTitle      = Some("Ms"),
-          solePropFirstName  = Some("Jane"),
-          solePropMiddleName = None,
-          solePropLastName   = Some("Doe"),
-          typeOfBusiness     = 1 // Sole proprietor
-        )
-      ),
-      groupMembers = Seq(
-        GroupMember(namesOfGroupMems = "Group Member One Ltd")
-      ),
-      returnPeriodEndDates = Seq(
-        ReturnPeriodEndDate(LocalDate.parse("2026-03-31", fmt)),
-        ReturnPeriodEndDate(LocalDate.parse("2026-06-30", fmt)),
-        ReturnPeriodEndDate(LocalDate.parse("2026-09-30", fmt)),
-        ReturnPeriodEndDate(LocalDate.parse("2026-12-31", fmt)),
-        ReturnPeriodEndDate(LocalDate.parse("2027-03-31", fmt))
-      )
-    )
 }

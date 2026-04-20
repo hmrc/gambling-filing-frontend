@@ -15,28 +15,113 @@
  */
 
 package controllers
-
 import base.SpecBase
+import models.{GroupMember, MgdCertificate, PartnerMember, ReturnPeriodEndDate}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.when
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.inject.bind
+import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import services.MgdCertificateService
+import uk.gov.hmrc.http.HeaderCarrier
 import views.html.ViewRegistrationCertificateView
 
-class ViewRegistrationCertificateControllerSpec extends SpecBase {
+import java.time.LocalDate
+import scala.concurrent.Future
 
-  "ViewRegistrationCertificate Controller" - {
+class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSugar {
 
-    "must return OK and the correct view for a GET" in {
+  private val certificate = MgdCertificate(
+    mgdRegNumber         = "MGD123",
+    registrationDate     = Some(LocalDate.parse("2026-01-01")),
+    individualName       = None,
+    businessName         = Some("Test Business Ltd"),
+    tradingName          = None,
+    repMemName           = None,
+    busAddrLine1         = None,
+    busAddrLine2         = None,
+    busAddrLine3         = None,
+    busAddrLine4         = None,
+    busPostcode          = None,
+    busCountry           = None,
+    busAdi               = None,
+    repMemLine1          = None,
+    repMemLine2          = None,
+    repMemLine3          = None,
+    repMemLine4          = None,
+    repMemPostcode       = None,
+    repMemAdi            = None,
+    typeOfBusiness       = Some("Limited Company"),
+    businessTradeClass   = Some(1),
+    noOfPartners         = None,
+    groupReg             = "N",
+    noOfGroupMems        = None,
+    dateCertIssued       = Some(LocalDate.parse("2026-01-02")),
+    partMembers          = Seq.empty[PartnerMember],
+    groupMembers         = Seq.empty[GroupMember],
+    returnPeriodEndDates = Seq.empty[ReturnPeriodEndDate]
+  )
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+  "ViewRegistrationCertificateController" - {
+
+    "must return OK and render certificate view when service succeeds" in {
+
+      val mockService = mock[MgdCertificateService]
+
+      when(
+        mockService.retrieveCertificate(any[String])(
+          any[HeaderCarrier],
+          any[play.api.mvc.Request[?]]
+        )
+      ).thenReturn(Future.successful(certificate))
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[MgdCertificateService].toInstance(mockService)
+        )
+        .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
+
+        val request =
+          FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
+            .withSession("mgdRefNum" -> "MGD123")
+
+        val result = route(application, request).value
+        val view = application.injector.instanceOf[ViewRegistrationCertificateView]
+
+        status(result) mustBe OK
+        contentAsString(result) mustBe view(certificate)(request, messages(application)).toString
+      }
+    }
+
+    "must return INTERNAL_SERVER_ERROR when service fails" in {
+
+      val mockService = mock[MgdCertificateService]
+
+      when(
+        mockService.retrieveCertificate(any[String])(
+          any[HeaderCarrier],
+          any[play.api.mvc.Request[?]]
+        )
+      ).thenReturn(Future.failed(new RuntimeException("boom")))
+
+      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        .overrides(
+          bind[MgdCertificateService].toInstance(mockService)
+        )
+        .build()
+
+      running(application) {
+
+        val request =
+          FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
+            .withSession("mgdRefNum" -> "MGD123")
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[ViewRegistrationCertificateView]
-
-        status(result) mustEqual OK
-        // contentAsString(result) mustEqual view()(request, messages(application)).toString
+        status(result) mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

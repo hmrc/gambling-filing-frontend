@@ -43,50 +43,58 @@
 
 @govukSummaryList(SummaryList(
 rows = Seq(
-SummaryListRow(
-key = Key(content = messages("viewRegistrationCertificate.registrationDate")),
-value = Value(content = HtmlContent(certificate.registrationDate.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))))
-),
-SummaryListRow(
-key = Key(content = messages("viewRegistrationCertificate.certificateIssued")),
-value = Value(content = HtmlContent(certificate.dateCertIssued.format(DateTimeFormatter.ofPattern("dd MMMM yyyy"))))
-),
-SummaryListRow(
-key = Key(content = messages("viewRegistrationCertificate.soleProprietorName")),
-value = Value(content = HtmlContent(certificate.individualName.getOrElse("-")))
-),
-SummaryListRow(
-key = Key(content = messages("viewRegistrationCertificate.businessAddress")),
-value = Value(content = HtmlContent(
-Seq(
-certificate.busAddrLine1,
-certificate.busAddrLine2,
-certificate.busPostcode
-).flatten.mkString("<br>")
-))
-),
-SummaryListRow(
-key = Key(content = messages("viewRegistrationCertificate.typeOfBusiness")),
-value = Value(content = HtmlContent(certificate.typeOfBusiness.getOrElse("-")))
-),
-SummaryListRow(
-key = Key(content = messages("viewRegistrationCertificate.tradeClass")),
-value = Value(content = HtmlContent(certificate.businessTradeClass.map(_.toString).getOrElse("-")))
-)
-)
-))
+    SummaryListRow(
+        key = Key(content = messages("viewRegistrationCertificate.registrationDate")),
+        value = Value(content = HtmlContent(
+        certificate.registrationDate
+        .map(_.format(DateTimeFormatter.ofPattern("dd MMMM yyyy")))
+        .getOrElse("-")
+    ))
+    ),
+        SummaryListRow(
+        key = Key(content = messages("viewRegistrationCertificate.certificateIssued")),
+        value = Value(content = HtmlContent(
+        certificate.dateCertIssued
+        .map(_.format(DateTimeFormatter.ofPattern("dd MMMM yyyy")))
+        .getOrElse("-")
+        ))
+    ),
+        SummaryListRow(
+        key = Key(content = messages("viewRegistrationCertificate.soleProprietorName")),
+        value = Value(content = HtmlContent(certificate.individualName.getOrElse("-")))
+        ),
+        SummaryListRow(
+        key = Key(content = messages("viewRegistrationCertificate.businessAddress")),
+        value = Value(content = HtmlContent(
+        Seq(
+        certificate.busAddrLine1,
+        certificate.busAddrLine2,
+        certificate.busPostcode
+        ).flatten.mkString("<br>")
+        ))
+        ),
+        SummaryListRow(
+        key = Key(content = messages("viewRegistrationCertificate.typeOfBusiness")),
+        value = Value(content = HtmlContent(certificate.typeOfBusiness.getOrElse("-")))
+        ),
+        SummaryListRow(
+        key = Key(content = messages("viewRegistrationCertificate.tradeClass")),
+        value = Value(content = HtmlContent(certificate.businessTradeClass.map(_.toString).getOrElse("-")))
+        )
+        )
+        ))
 
-@h2(messages("viewRegistrationCertificate.h2.upcoming"))
+        @h2(messages("viewRegistrationCertificate.h2.upcoming"))
 
-<ul class="govuk-list">
-    @for(rped <- certificate.returnPeriodEndDates) {
-    <li>@rped.returnPeriodEndDate.format(java.time.format.DateTimeFormatter.ofPattern("dd MMMM yyyy"))</li>
-    }
-</ul>
+        <ul class="govuk-list">
+            @for(rped <- certificate.returnPeriodEndDates) {
+            <li>@rped.returnPeriodEndDate.format(java.time.format.DateTimeFormatter.ofPattern("dd MMMM yyyy"))</li>
+            }
+        </ul>
 
-<div class="govuk-inset-text">
-    @messages("viewRegistrationCertificate.print")
-</div>
+        <div class="govuk-inset-text">
+            @messages("viewRegistrationCertificate.print")
+        </div>
 
     @link(
     "viewRegistrationCertificate.dashboard.link",

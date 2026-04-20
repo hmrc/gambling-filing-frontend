@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions.*
+import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.MgdCertificateService
@@ -35,11 +36,16 @@ class ViewRegistrationCertificateController @Inject() (
   mgdCertificateService: MgdCertificateService
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
-    mgdCertificateService.retrieveCertificate(request.mgdRefNum).map { certificate =>
-      Ok(view(certificate))
-    }
+    mgdCertificateService
+      .retrieveCertificate(request.mgdRefNum)
+      .map(certificate => Ok(view(certificate)))
+      .recover { case ex =>
+        logger.error(s"[ViewRegistrationCertificateController] retrieveCertificate failed: ${ex.getMessage}", ex)
+        InternalServerError
+      }
   }
 }
