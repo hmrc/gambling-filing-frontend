@@ -18,6 +18,7 @@ package connectors
 
 import models.MgdCertificate
 import play.api.Logging
+import play.api.http.Status.OK
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReadsInstances, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -36,19 +37,26 @@ class MgdCertificateConnector @Inject() (config: ServicesConfig, http: HttpClien
   def getCertificate(mgdRegNumber: String)(implicit hc: HeaderCarrier): Future[MgdCertificate] = {
     http
       .get(url"$baseUrl/$mgdRegNumber/certificate")
-      .execute[Either[UpstreamErrorResponse, HttpResponse]]
-      .flatMap {
-        case Right(response) if response.status == 200 =>
-          Future.fromTry(Try(response.json.as[MgdCertificate]))
-        case Left(upstream) =>
-          Future.failed(upstream)
-        case Right(response) =>
-          Future.failed(
-            UpstreamErrorResponse(
-              s"Unexpected status while fetching MGD certificate: ${response.status}",
-              response.status
+      .execute[HttpResponse]
+      .map { response =>
+
+        response.status match {
+
+          case OK =>
+            response.json
+              .validate[MgdCertificate]
+              .fold(
+                errors => throw new RuntimeException(s"Invalid JSON: $errors"),
+                cert => cert
+              )
+
+          case status =>
+            throw UpstreamErrorResponse(
+              s"Unexpected status while fetching MGD certificate: $status",
+              status
             )
-          )
+        }
       }
   }
+
 }

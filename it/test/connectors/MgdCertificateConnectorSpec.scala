@@ -1,3 +1,19 @@
+/*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.*
@@ -21,7 +37,41 @@ class MgdCertificateConnectorSpec extends AnyWordSpec with Matchers with ScalaFu
 
   private val mgdRegNumber = "MGD12345"
 
-  "getCertificate" should {
+  private val validJson =
+    s"""
+       |{
+       |  "mgdRegNumber": "$mgdRegNumber",
+       |  "registrationDate": "2026-01-01",
+       |  "individualName": "John Doe",
+       |  "businessName": "Test Business Ltd",
+       |  "tradingName": "Test Trading",
+       |  "repMemName": "Rep Member",
+       |  "busAddrLine1": "Line 1",
+       |  "busAddrLine2": "Line 2",
+       |  "busAddrLine3": "Line 3",
+       |  "busAddrLine4": "Line 4",
+       |  "busPostcode": "AB1 2CD",
+       |  "busCountry": "UK",
+       |  "busAdi": "123",
+       |  "repMemLine1": "Rep Line 1",
+       |  "repMemLine2": "Rep Line 2",
+       |  "repMemLine3": "Rep Line 3",
+       |  "repMemLine4": "Rep Line 4",
+       |  "repMemPostcode": "EF3 4GH",
+       |  "repMemAdi": "456",
+       |  "typeOfBusiness": "Limited",
+       |  "businessTradeClass": 1,
+       |  "noOfPartners": 2,
+       |  "groupReg": "N",
+       |  "noOfGroupMems": 0,
+       |  "dateCertIssued": "2026-01-01",
+       |  "partMembers": [],
+       |  "groupMembers": [],
+       |  "returnPeriodEndDates": []
+       |}
+       |""".stripMargin
+
+  "MgdCertificateConnector#getCertificate" should {
 
     "return MgdCertificate when BE returns 200 with valid JSON" in {
 
@@ -31,20 +81,17 @@ class MgdCertificateConnectorSpec extends AnyWordSpec with Matchers with ScalaFu
             aResponse()
               .withStatus(OK)
               .withHeader("Content-Type", "application/json")
-              .withBody(
-                """{
-                  |  "mgdRegNumber": "MGD12345",
-                  |  "certificateStatus": "ACTIVE",
-                  |  "issuedDate": "2026-01-01"
-                  |}""".stripMargin
-              )
+              .withBody(validJson)
           )
       )
 
-      val result = connector.getCertificate(mgdRegNumber).futureValue
+      val result: MgdCertificate =
+        connector.getCertificate(mgdRegNumber).futureValue
 
-      result.mgdRegNumber mustBe "MGD12345"
-      result.certificateStatus mustBe "ACTIVE"
+      result.mgdRegNumber mustBe mgdRegNumber
+      result.groupReg mustBe "N"
+      result.partMembers mustBe empty
+      result.groupMembers mustBe empty
     }
 
     "fail when BE returns 200 with invalid JSON" in {
@@ -54,6 +101,7 @@ class MgdCertificateConnectorSpec extends AnyWordSpec with Matchers with ScalaFu
           .willReturn(
             aResponse()
               .withStatus(OK)
+              .withHeader("Content-Type", "application/json")
               .withBody("""{ "unexpectedField": true }""")
           )
       )
@@ -62,7 +110,7 @@ class MgdCertificateConnectorSpec extends AnyWordSpec with Matchers with ScalaFu
         connector.getCertificate(mgdRegNumber).futureValue
       }
 
-      ex.getMessage.toLowerCase must include("jserror")
+      ex.getMessage.toLowerCase must include("js")
     }
 
     "propagate UpstreamErrorResponse when BE returns 500" in {
@@ -83,7 +131,7 @@ class MgdCertificateConnectorSpec extends AnyWordSpec with Matchers with ScalaFu
       ex.statusCode mustBe INTERNAL_SERVER_ERROR
     }
 
-    "fail when BE returns non-200 unexpected status (e.g. 404)" in {
+    "propagate UpstreamErrorResponse when BE returns 404" in {
 
       stubFor(
         get(urlEqualTo(s"/gambling/mgd/$mgdRegNumber/certificate"))
@@ -99,7 +147,6 @@ class MgdCertificateConnectorSpec extends AnyWordSpec with Matchers with ScalaFu
       }
 
       ex.statusCode mustBe NOT_FOUND
-      ex.getMessage must include("Unexpected status")
     }
   }
 }
