@@ -25,7 +25,6 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
 
 @Singleton
 class MgdCertificateConnector @Inject() (config: ServicesConfig, http: HttpClientV2)(implicit ec: ExecutionContext)

@@ -32,10 +32,14 @@
 
 @layout(pageTitle = titleNoForm(messages("viewRegistrationCertificate.title"))) {
 
- @govukPanel(Panel(
-   title = messages("viewRegistrationCertificate.panel.title"),
-   content = HtmlContent(messages("viewRegistrationCertificate.panel.body", certificate.mgdRegNumber))
- ))
+    @govukPanel(Panel(
+        title = messages("viewRegistrationCertificate.panel.title"),
+        content = HtmlContent(
+        messages("viewRegistrationCertificate.panel.body",
+        s"<strong>${certificate.mgdRegNumber}</strong>"
+        )
+        )
+    ))
 
 
  @p("viewRegistrationCertificate.p1")
@@ -47,7 +51,7 @@ rows = Seq(
         key = Key(content = messages("viewRegistrationCertificate.registrationDate")),
         value = Value(content = HtmlContent(
         certificate.registrationDate
-        .map(_.format(DateTimeFormatter.ofPattern("dd MMMM yyyy")))
+        .map(_.format(DateTimeFormatter.ofPattern("dd MMM yyyy")))
         .getOrElse("-")
     ))
     ),
@@ -55,7 +59,7 @@ rows = Seq(
         key = Key(content = messages("viewRegistrationCertificate.certificateIssued")),
         value = Value(content = HtmlContent(
         certificate.dateCertIssued
-        .map(_.format(DateTimeFormatter.ofPattern("dd MMMM yyyy")))
+        .map(_.format(DateTimeFormatter.ofPattern("dd MMM yyyy")))
         .getOrElse("-")
         ))
     ),
@@ -88,7 +92,7 @@ rows = Seq(
 
         <ul class="govuk-list">
             @for(rped <- certificate.returnPeriodEndDates) {
-            <li>@rped.returnPeriodEndDate.format(java.time.format.DateTimeFormatter.ofPattern("dd MMMM yyyy"))</li>
+            <li>@rped.returnPeriodEndDate.format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy"))</li>
             }
         </ul>
 
