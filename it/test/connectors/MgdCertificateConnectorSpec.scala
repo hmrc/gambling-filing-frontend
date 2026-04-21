@@ -24,7 +24,7 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status.*
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import org.scalatest.RecoverMethods._
+import org.scalatest.RecoverMethods.*
 
 import scala.concurrent.ExecutionContext
 
@@ -125,8 +125,10 @@ class MgdCertificateConnectorSpec extends AnyWordSpec with Matchers with ScalaFu
           )
       )
 
-      val ex = recoverToExceptionIf[UpstreamErrorResponse] {
+      recoverToExceptionIf[UpstreamErrorResponse] {
         connector.getCertificate(mgdRegNumber)
+      }.map { ex =>
+        ex.statusCode mustBe INTERNAL_SERVER_ERROR
       }
     }
 
@@ -141,11 +143,11 @@ class MgdCertificateConnectorSpec extends AnyWordSpec with Matchers with ScalaFu
           )
       )
 
-      val ex = intercept[UpstreamErrorResponse] {
-        connector.getCertificate(mgdRegNumber).futureValue
+      recoverToExceptionIf[UpstreamErrorResponse] {
+        connector.getCertificate(mgdRegNumber)
+      }.map { ex =>
+        ex.statusCode mustBe NOT_FOUND
       }
-
-      ex.statusCode mustBe NOT_FOUND
     }
   }
 }

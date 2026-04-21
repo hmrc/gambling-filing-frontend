@@ -30,14 +30,11 @@ class MgdCertificateService @Inject() (
   repo: MgdCertificateCacheRepository
 )(implicit ec: ExecutionContext) {
 
-  /** Fetch certificate: first from cache, then fallback to backend if missing */
   def retrieveCertificate(mgdRegNumber: String)(implicit hc: HeaderCarrier, request: Request[?]): Future[MgdCertificate] = {
     repo.getCertificate(mgdRegNumber).flatMap {
       case Some(cert) =>
-        // Cached certificate found, return it
         Future.successful(cert)
       case None =>
-        // Cache miss: fetch from backend and store in cache
         connector.getCertificate(mgdRegNumber).flatMap { cert =>
           repo.cacheCertificate(cert).map(_ => cert)
         }
