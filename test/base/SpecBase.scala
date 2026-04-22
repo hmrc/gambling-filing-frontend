@@ -54,46 +54,49 @@ trait SpecBase extends AnyFreeSpec with Matchers with TryValues with OptionValue
 
   protected val testFrontendAppConfig = new FrontendAppConfig(
     Configuration(ConfigFactory.parseString("""
-        |host = "http://localhost:9000"
-        | mongodb {
-        |  timeToLiveInSeconds = 900
-        | }
-        | urls {
-        |  login = "http://foo.com/login"
-        |  loginContinue = "http://foo.com/bar"
-        |  signOut = "http://foo.com/sign-out"
-        |  homePageUrl = "http://foo.com/home"
-        |  accessibilityStatementUrl = "http://foo.com/accessibility-statement"
-        |  betaFeedbackUrl = "http://foo.com/beta-feedback"
-        |  researchUrl = "http://foo.com/research"
-        | }
-        |  timeout-dialog {
-        |   timeout   = 10
-        |   countdown = 5
-        | }
-        | contact-frontend {
-        |  host      = "http://localhost:9250"
-        |  serviceId = "gambling-filing-frontend"
-        |}
-        |microservice {
-        |    services {
-        |      auth {
-        |        protocol = http
-        |        host     = localhost
-        |        port     = 8500
-        |      }
-        |
-        |      feedback-frontend {
-        |        protocol = http
-        |        host     = localhost
-        |        port     = 9514
-        |      }
-        |    }
-        |}
-        |features {
-        |  welsh-translation: false
-        |}
-        |""".stripMargin))
+                                              |mongodb {
+                                              |  uri = "mongodb://localhost:27017/gambling-filing-frontend-test"
+                                              |  timeToLiveInSeconds = 900
+                                              |}
+                                              |
+                                              |microservice {
+                                              |  services {
+                                              |    gambling-management-frontend {
+                                              |      protocol = http
+                                              |      host = localhost
+                                              |      port = 10400
+                                              |    }
+                                              |
+                                              |    feedback-frontend {
+                                              |      protocol = http
+                                              |      host = localhost
+                                              |      port = 9514
+                                              |    }
+                                              |  }
+                                              |}
+                                              |
+                                              |host = "http://localhost:9000"
+                                              |
+                                              |urls {
+                                              |  login = "http://foo.com/login"
+                                              |  loginContinue = "http://foo.com/bar"
+                                              |  signOut = "http://foo.com/sign-out"
+                                              |  hmrcOnlineServiceDesk = "http://foo.com/help"
+                                              |}
+                                              |
+                                              |contact-frontend {
+                                              |  host = "http://localhost:9250"
+                                              |}
+                                              |
+                                              |timeout-dialog {
+                                              |  timeout = 10
+                                              |  countdown = 5
+                                              |}
+                                              |
+                                              |features {
+                                              |  welsh-translation = false
+                                              |}
+                                              |""".stripMargin))
   )
 
 }

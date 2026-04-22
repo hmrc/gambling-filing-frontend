@@ -16,13 +16,11 @@
 
 package views
 
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.must.Matchers
-import play.api.data.{Form, FormError}
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.data.Forms.*
-import play.api.i18n.Messages
-import play.api.i18n.MessagesImpl
-import play.api.test.FakeRequest
+import play.api.data.{Form, FormError}
+import play.api.i18n.{Messages, MessagesImpl}
 import play.api.test.Helpers.stubMessagesApi
 
 class ViewUtilsSpec extends AnyWordSpec with Matchers {

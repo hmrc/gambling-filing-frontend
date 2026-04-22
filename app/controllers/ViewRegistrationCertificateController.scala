@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import controllers.actions.*
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -31,6 +32,7 @@ class ViewRegistrationCertificateController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
+  appConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
   view: ViewRegistrationCertificateView,
   mgdCertificateService: MgdCertificateService
@@ -42,7 +44,7 @@ class ViewRegistrationCertificateController @Inject() (
   def onPageLoad(): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     mgdCertificateService
       .retrieveCertificate(request.mgdRefNum)
-      .map(certificate => Ok(view(certificate)))
+      .map(certificate => Ok(view(certificate, appConfig.gamblingManagementHomeUrl)))
       .recover { case ex =>
         logger.error(s"[ViewRegistrationCertificateController] retrieveCertificate failed: ${ex.getMessage}", ex)
         InternalServerError

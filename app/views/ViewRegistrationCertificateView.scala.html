@@ -28,7 +28,7 @@
    govukSummaryList: GovukSummaryList
  )
 
-@(certificate: MgdCertificate)(implicit request: Request[_], messages: Messages)
+@(certificate: MgdCertificate, managementHomeUrl: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("viewRegistrationCertificate.title"))) {
 
@@ -100,16 +100,16 @@ rows = Seq(
             @messages("viewRegistrationCertificate.print")
         </div>
 
-    @link(
-    "viewRegistrationCertificate.dashboard.link",
-        "#",
-        extraClasses = "dashboard-page-link"
+        @link(
+            messages("viewRegistrationCertificate.dashboard.link"),
+            managementHomeUrl,
+            extraClasses = "dashboard-page-link"
         )
 
         @link(
-        "viewRegistrationCertificate.change-registration.link",
-        "#",
-        extraClasses = "change-registration-page-link"
+            messages("viewRegistrationCertificate.change-registration.link"),
+            "#",
+            extraClasses = "change-registration-page-link"
         )
 
 }

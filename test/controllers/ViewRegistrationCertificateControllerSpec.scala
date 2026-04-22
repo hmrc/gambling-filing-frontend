@@ -15,8 +15,9 @@
  */
 
 package controllers
+
 import base.SpecBase
-import models.{GroupMember, MgdCertificate, PartnerMember, ReturnPeriodEndDate}
+import models.*
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -32,36 +33,39 @@ import scala.concurrent.Future
 
 class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSugar {
 
-  private val certificate = MgdCertificate(
-    mgdRegNumber         = "MGD123",
-    registrationDate     = Some(LocalDate.parse("2026-01-01")),
-    individualName       = None,
-    businessName         = Some("Test Business Ltd"),
-    tradingName          = None,
-    repMemName           = None,
-    busAddrLine1         = None,
-    busAddrLine2         = None,
-    busAddrLine3         = None,
-    busAddrLine4         = None,
-    busPostcode          = None,
-    busCountry           = None,
-    busAdi               = None,
-    repMemLine1          = None,
-    repMemLine2          = None,
-    repMemLine3          = None,
-    repMemLine4          = None,
-    repMemPostcode       = None,
-    repMemAdi            = None,
-    typeOfBusiness       = Some("Limited Company"),
-    businessTradeClass   = Some(1),
-    noOfPartners         = None,
-    groupReg             = "N",
-    noOfGroupMems        = None,
-    dateCertIssued       = Some(LocalDate.parse("2026-01-02")),
-    partMembers          = Seq.empty[PartnerMember],
-    groupMembers         = Seq.empty[GroupMember],
-    returnPeriodEndDates = Seq.empty[ReturnPeriodEndDate]
-  )
+  private val certificate: MgdCertificate =
+    MgdCertificate(
+      mgdRegNumber         = "MGD123",
+      registrationDate     = Some(LocalDate.parse("2026-01-01")),
+      individualName       = None,
+      businessName         = Some("Test Business Ltd"),
+      tradingName          = None,
+      repMemName           = None,
+      busAddrLine1         = None,
+      busAddrLine2         = None,
+      busAddrLine3         = None,
+      busAddrLine4         = None,
+      busPostcode          = None,
+      busCountry           = None,
+      busAdi               = None,
+      repMemLine1          = None,
+      repMemLine2          = None,
+      repMemLine3          = None,
+      repMemLine4          = None,
+      repMemPostcode       = None,
+      repMemAdi            = None,
+      typeOfBusiness       = Some("Limited Company"),
+      businessTradeClass   = Some(1),
+      noOfPartners         = None,
+      groupReg             = "N",
+      noOfGroupMems        = None,
+      dateCertIssued       = Some(LocalDate.parse("2026-01-02")),
+      partMembers          = Seq.empty,
+      groupMembers         = Seq.empty,
+      returnPeriodEndDates = Seq.empty
+    )
+
+  private val managementUrl = "http://localhost:10400/gambling/"
 
   "ViewRegistrationCertificateController" - {
 
@@ -76,11 +80,12 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
         )
       ).thenReturn(Future.successful(certificate))
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[MgdCertificateService].toInstance(mockService)
-        )
-        .build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[MgdCertificateService].toInstance(mockService)
+          )
+          .build()
 
       running(application) {
 
@@ -92,7 +97,9 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
         val view = application.injector.instanceOf[ViewRegistrationCertificateView]
 
         status(result) mustBe OK
-        contentAsString(result) mustBe view(certificate)(request, messages(application)).toString
+
+        contentAsString(result) mustBe
+          view(certificate, managementUrl)(request, messages(application)).toString
       }
     }
 
@@ -107,11 +114,12 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
         )
       ).thenReturn(Future.failed(new RuntimeException("boom")))
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers))
-        .overrides(
-          bind[MgdCertificateService].toInstance(mockService)
-        )
-        .build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[MgdCertificateService].toInstance(mockService)
+          )
+          .build()
 
       running(application) {
 

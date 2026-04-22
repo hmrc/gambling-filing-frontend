@@ -16,9 +16,9 @@
 
 package utils
 
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.must.Matchers
-import uk.gov.hmrc.govukfrontend.views.Aliases.{Content, Text}
+import org.scalatest.wordspec.AnyWordSpec
+import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 class UtilsSpec extends AnyWordSpec with Matchers {
