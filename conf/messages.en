@@ -74,7 +74,12 @@ viewRegistrationCertificate.p1 = It may take up to 48 hours for any changes to t
 
 viewRegistrationCertificate.registrationDate = Registration date
 viewRegistrationCertificate.certificateIssued = Certificate issued
-viewRegistrationCertificate.soleProprietorName = Sole proprietor’s name
+viewRegistrationCertificate.label.soleProprietor=Sole proprietor’s name
+viewRegistrationCertificate.label.unincorporatedBody=Unincorporated body’s name
+viewRegistrationCertificate.label.corporateBody=Corporate body’s name
+viewRegistrationCertificate.label.partnership=Partnership’s name
+viewRegistrationCertificate.label.limitedLiabilityPartnership=Limited liability partnership’s name
+viewRegistrationCertificate.label.default=-
 viewRegistrationCertificate.businessAddress = Business address
 viewRegistrationCertificate.typeOfBusiness = Type of business
 viewRegistrationCertificate.tradeClass = Trade class

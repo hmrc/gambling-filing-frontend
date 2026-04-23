@@ -37,15 +37,15 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
     MgdCertificate(
       mgdRegNumber         = "MGD123",
       registrationDate     = Some(LocalDate.parse("2026-01-01")),
-      individualName       = None,
+      individualName       = Some("John Doe"),
       businessName         = Some("Test Business Ltd"),
       tradingName          = None,
       repMemName           = None,
-      busAddrLine1         = None,
-      busAddrLine2         = None,
+      busAddrLine1         = Some("Line 1"),
+      busAddrLine2         = Some("Line 2"),
       busAddrLine3         = None,
       busAddrLine4         = None,
-      busPostcode          = None,
+      busPostcode          = Some("AB1 2CD"),
       busCountry           = None,
       busAdi               = None,
       repMemLine1          = None,
@@ -96,10 +96,31 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
         val result = route(application, request).value
         val view = application.injector.instanceOf[ViewRegistrationCertificateView]
 
+        val (displayName, displayLabelKey) = certificate.typeOfBusiness.map(_.toLowerCase) match {
+          case Some("sole proprietor") =>
+            certificate.individualName.getOrElse("-") -> "viewRegistrationCertificate.label.soleProprietor"
+          case Some("unincorporated body") =>
+            certificate.businessName.getOrElse("-") -> "viewRegistrationCertificate.label.unincorporatedBody"
+          case Some("corporate body") =>
+            certificate.businessName.getOrElse("-") -> "viewRegistrationCertificate.label.corporateBody"
+          case Some("partnership") =>
+            certificate.partMembers.headOption.map(_.namesOfPartMems).getOrElse("-") -> "viewRegistrationCertificate.label.partnership"
+          case Some("limited liability partnership") =>
+            certificate.businessName.getOrElse("-") -> "viewRegistrationCertificate.label.limitedLiabilityPartnership"
+          case _ =>
+            "-" -> "viewRegistrationCertificate.label.default"
+        }
+
+        val formattedAddress = Seq(
+          certificate.busAddrLine1,
+          certificate.busAddrLine2,
+          certificate.busPostcode
+        ).flatten.mkString("<br>")
+
         status(result) mustBe OK
 
         contentAsString(result) mustBe
-          view(certificate, managementUrl)(request, messages(application)).toString
+          view(certificate, managementUrl, displayName, displayLabelKey, formattedAddress)(request, messages(application)).toString
       }
     }
 

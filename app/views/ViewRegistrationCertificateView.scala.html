@@ -14,102 +14,94 @@
  * limitations under the License.
  *@
 
-@import views.html.components.*
+@import views.html.components._
 @import models.MgdCertificate
 @import java.time.format.DateTimeFormatter
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.content._
 
- @this(
-   layout: templates.Layout,
-   govukButton: GovukButton,
-   govukPanel: GovukPanel,
-   h2:H2,
-   p:Paragraph,
-   link:Link,
-   govukSummaryList: GovukSummaryList
- )
+@this(
+    layout: templates.Layout,
+    govukButton: GovukButton,
+    govukPanel: GovukPanel,
+    h2: H2,
+    p: Paragraph,
+    link: Link,
+    govukSummaryList: GovukSummaryList
+)
 
-@(certificate: MgdCertificate, managementHomeUrl: String)(implicit request: Request[_], messages: Messages)
+@(certificate: MgdCertificate,
+    managementHomeUrl: String,
+    displayName: String,
+    displayLabelKey: String,
+    formattedAddress: String
+)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("viewRegistrationCertificate.title"))) {
 
-    @govukPanel(Panel(
-        title = messages("viewRegistrationCertificate.panel.title"),
-        content = HtmlContent(
-        messages("viewRegistrationCertificate.panel.body",
-        s"<strong>${certificate.mgdRegNumber}</strong>"
-        )
-        )
+@govukPanel(Panel(
+    title = messages("viewRegistrationCertificate.panel.title"),
+    content = HtmlContent(messages(
+    "viewRegistrationCertificate.panel.body",
+    s"<strong>${certificate.mgdRegNumber}</strong>"
     ))
+))
 
-
- @p("viewRegistrationCertificate.p1")
- @h2(messages("viewRegistrationCertificate.h2"))
+@p("viewRegistrationCertificate.p1")
+@h2(messages("viewRegistrationCertificate.h2"))
 
 @govukSummaryList(SummaryList(
-rows = Seq(
-    SummaryListRow(
-        key = Key(content = messages("viewRegistrationCertificate.registrationDate")),
-        value = Value(content = HtmlContent(
-        certificate.registrationDate
-        .map(_.format(DateTimeFormatter.ofPattern("dd MMM yyyy")))
-        .getOrElse("-")
-    ))
-    ),
+    rows = Seq(
+        certificate.registrationDate.map(d =>
         SummaryListRow(
-        key = Key(content = messages("viewRegistrationCertificate.certificateIssued")),
-        value = Value(content = HtmlContent(
-        certificate.dateCertIssued
-        .map(_.format(DateTimeFormatter.ofPattern("dd MMM yyyy")))
-        .getOrElse("-")
-        ))
-    ),
-        SummaryListRow(
-        key = Key(content = messages("viewRegistrationCertificate.soleProprietorName")),
-        value = Value(content = HtmlContent(certificate.individualName.getOrElse("-")))
+        key = Key(content = Text(messages("viewRegistrationCertificate.registrationDate"))),
+        value = Value(content = HtmlContent(d.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))))
+        )
         ),
+        certificate.dateCertIssued.map(d =>
         SummaryListRow(
-        key = Key(content = messages("viewRegistrationCertificate.businessAddress")),
-        value = Value(content = HtmlContent(
-        Seq(
-        certificate.busAddrLine1,
-        certificate.busAddrLine2,
-        certificate.busPostcode
-        ).flatten.mkString("<br>")
-        ))
+        key = Key(content = Text(messages("viewRegistrationCertificate.certificateIssued"))),
+        value = Value(content = HtmlContent(d.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))))
+        )
         ),
+        Some(displayName).filter(_ != "-").map(name =>
         SummaryListRow(
-        key = Key(content = messages("viewRegistrationCertificate.typeOfBusiness")),
-        value = Value(content = HtmlContent(certificate.typeOfBusiness.getOrElse("-")))
+        key = Key(content = Text(messages(displayLabelKey))),
+        value = Value(content = HtmlContent(name))
+        )
         ),
+        Some(formattedAddress).filter(_ != "-").map(addr =>
         SummaryListRow(
-        key = Key(content = messages("viewRegistrationCertificate.tradeClass")),
-        value = Value(content = HtmlContent(certificate.businessTradeClass.map(_.toString).getOrElse("-")))
+        key = Key(content = Text(messages("viewRegistrationCertificate.businessAddress"))),
+        value = Value(content = HtmlContent(addr))
+        )
+        ),
+        certificate.typeOfBusiness.filter(_ != "-").map(b =>
+        SummaryListRow(
+        key = Key(content = Text(messages("viewRegistrationCertificate.typeOfBusiness"))),
+        value = Value(content = HtmlContent(b))
+        )
+        ),
+        certificate.businessTradeClass.map(_.toString).filter(_ != "-").map(tc =>
+        SummaryListRow(
+        key = Key(content = Text(messages("viewRegistrationCertificate.tradeClass"))),
+        value = Value(content = HtmlContent(tc))
         )
         )
-        ))
+    ).flatten
+))
 
-        @h2(messages("viewRegistrationCertificate.h2.upcoming"))
+@h2(messages("viewRegistrationCertificate.h2.upcoming"))
 
-        <ul class="govuk-list">
-            @for(rped <- certificate.returnPeriodEndDates) {
-            <li>@rped.returnPeriodEndDate.format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy"))</li>
-            }
-        </ul>
+<ul class="govuk-list">
+    @for(rped <- certificate.returnPeriodEndDates) {
+    <li>@rped.returnPeriodEndDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))</li>
+    }
+</ul>
 
-        <div class="govuk-inset-text">
-            @messages("viewRegistrationCertificate.print")
-        </div>
+<div class="govuk-inset-text">
+    @messages("viewRegistrationCertificate.print")
+</div>
 
-        @link(
-            messages("viewRegistrationCertificate.dashboard.link"),
-            managementHomeUrl,
-            extraClasses = "dashboard-page-link"
-        )
-
-        @link(
-            messages("viewRegistrationCertificate.change-registration.link"),
-            "#",
-            extraClasses = "change-registration-page-link"
-        )
-
+@link(messages("viewRegistrationCertificate.dashboard.link"), managementHomeUrl, extraClasses = "dashboard-page-link")
+@link(messages("viewRegistrationCertificate.change-registration.link"), "#", extraClasses = "change-registration-page-link")
 }

@@ -42,14 +42,38 @@ class ViewRegistrationCertificateController @Inject() (
     with Logging {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+
+    val mgdRefNum: String = request.mgdRefNum
+
     mgdCertificateService
-      .retrieveCertificate(request.mgdRefNum)
-      .map(certificate => Ok(view(certificate, appConfig.gamblingManagementHomeUrl)))
+      .retrieveCertificate(mgdRefNum)
+      .map { certificate =>
+
+        val (displayName, displayLabelKey) = certificate.typeOfBusiness.map(_.toLowerCase) match {
+          case Some("sole proprietor") =>
+            certificate.individualName.getOrElse("-") -> "viewRegistrationCertificate.label.soleProprietor"
+          case Some("unincorporated body") =>
+            certificate.businessName.getOrElse("-") -> "viewRegistrationCertificate.label.unincorporatedBody"
+          case Some("corporate body") =>
+            certificate.businessName.getOrElse("-") -> "viewRegistrationCertificate.label.corporateBody"
+          case Some("partnership") =>
+            certificate.partMembers.headOption.map(_.namesOfPartMems).getOrElse("-") -> "viewRegistrationCertificate.label.partnership"
+          case Some("limited liability partnership") =>
+            certificate.businessName.getOrElse("-") -> "viewRegistrationCertificate.label.limitedLiabilityPartnership"
+          case _ =>
+            "-" -> "viewRegistrationCertificate.label.default"
+        }
+
+        val formattedAddress = Seq(
+          certificate.busAddrLine1,
+          certificate.busAddrLine2,
+          certificate.busPostcode
+        ).flatten.mkString("<br>")
+
+        Ok(view(certificate, appConfig.gamblingManagementHomeUrl, displayName, displayLabelKey, formattedAddress))
+      }
       .recover { case ex =>
-        logger.error(
-          s"[ViewRegistrationCertificateController] retrieveCertificate failed: ${ex.getMessage}",
-          ex
-        )
+        logger.error(s"[ViewRegistrationCertificateController] retrieveCertificate failed: ${ex.getMessage}", ex)
         Redirect(controllers.routes.SystemErrorController.onPageLoad())
       }
   }

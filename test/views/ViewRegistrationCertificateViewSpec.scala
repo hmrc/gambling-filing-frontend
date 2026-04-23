@@ -61,24 +61,32 @@ class ViewRegistrationCertificateViewSpec extends SpecBase {
 
   "ViewRegistrationCertificateView" - {
 
-    "must render page correctly" in {
+    "must render page correctly with dynamic summary list rows" in {
 
       val app = applicationBuilder().build()
-
       val view = app.injector.instanceOf[views.html.ViewRegistrationCertificateView]
-
       val request = FakeRequest()
 
-      val html = view(certificate, managementUrl)(request, messages(app))
-      val doc = Jsoup.parse(html.body)
-      doc.title must include("Registration certificate")
+      val displayName = certificate.individualName.getOrElse("-")
+      val displayLabelKey = "viewRegistrationCertificate.soleProprietorName"
+      val formattedAddress = Seq(
+        certificate.busAddrLine1,
+        certificate.busAddrLine2,
+        certificate.busPostcode
+      ).flatten.mkString("<br>")
 
+      val html = view(certificate, managementUrl, displayName, displayLabelKey, formattedAddress)(request, messages(app))
+      val doc = Jsoup.parse(html.body)
+
+      doc.title                             must include(messages(app)("viewRegistrationCertificate.title"))
       doc.select(".govuk-panel__body").text must include("MGD123")
 
       val pageText = doc.body().text()
-
-      pageText must include("John Doe")
+      pageText must include(displayName)
       pageText must include("Limited Company")
+      pageText must include("Line 1")
+      pageText must include("Line 2")
+      pageText must include("AB1 2CD")
 
       doc.select(".govuk-list li").text.trim must include("31 Dec 2026")
 
@@ -89,6 +97,12 @@ class ViewRegistrationCertificateViewSpec extends SpecBase {
       val changeLink = doc.select(".change-registration-page-link a")
       changeLink.size() mustBe 1
       changeLink.attr("href") mustBe "#"
+
+      if (certificate.businessTradeClass.isDefined) {
+        pageText must include(certificate.businessTradeClass.get.toString)
+      } else {
+        pageText must not include "Trade class"
+      }
     }
   }
 }
