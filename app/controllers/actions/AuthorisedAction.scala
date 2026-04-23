@@ -74,7 +74,7 @@ class DefaultAuthorisedAction @Inject() (
       .recover {
         case _: InsufficientEnrolments | _: UnsupportedAffinityGroup | _: InsufficientConfidenceLevel | _: UnsupportedCredentialRole |
             _: UnsupportedAuthProvider =>
-          Redirect(controllers.routes.UnauthorisedController.onPageLoad())
+          Redirect(controllers.routes.AccessDeniedController.onPageLoad())
         case ex: AuthorisationException =>
           logger.info(s"Unauthenticated access to ${request.path}: ${ex.getMessage}")
           Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
