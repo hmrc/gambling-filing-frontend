@@ -28,13 +28,13 @@ import org.scalatest.RecoverMethods.*
 
 import scala.concurrent.ExecutionContext
 
-class MgdCertificateConnectorSpec extends AnyWordSpec with Matchers with ScalaFutures with IntegrationPatience with ApplicationWithWiremock {
+class GamblingConnectorSpec extends AnyWordSpec with Matchers with ScalaFutures with IntegrationPatience with ApplicationWithWiremock {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.global
 
-  val connector: MgdCertificateConnector =
-    app.injector.instanceOf[MgdCertificateConnector]
+  val connector: GamblingConnector =
+    app.injector.instanceOf[GamblingConnector]
 
   private val mgdRegNumber = "MGD12345"
 
@@ -72,7 +72,7 @@ class MgdCertificateConnectorSpec extends AnyWordSpec with Matchers with ScalaFu
        |}
        |""".stripMargin
 
-  "MgdCertificateConnector#getCertificate" should {
+  "GamblingConnector#getCertificate" should {
 
     "return MgdCertificate when BE returns 200 with valid JSON" in {
 

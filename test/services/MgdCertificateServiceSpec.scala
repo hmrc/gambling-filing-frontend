@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.MgdCertificateConnector
+import connectors.GamblingConnector
 import models.MgdCertificate
 import org.mockito.Mockito.*
 import org.scalatest.concurrent.ScalaFutures
@@ -35,7 +35,7 @@ class MgdCertificateServiceSpec extends AnyWordSpec with Matchers with ScalaFutu
   implicit val hc: HeaderCarrier = HeaderCarrier()
   implicit val request: Request[AnyContent] = mock[Request[AnyContent]]
 
-  private val connector = mock[MgdCertificateConnector]
+  private val connector = mock[GamblingConnector]
   private val repo = mock[MgdCertificateCacheRepository]
 
   private val service = new MgdCertificateService(connector, repo)

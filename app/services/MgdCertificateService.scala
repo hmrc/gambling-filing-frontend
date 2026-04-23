@@ -16,7 +16,7 @@
 
 package services
 
-import connectors.MgdCertificateConnector
+import connectors.GamblingConnector
 import models.MgdCertificate
 import play.api.mvc.Request
 import repositories.MgdCertificateCacheRepository
@@ -26,7 +26,7 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class MgdCertificateService @Inject() (
-  connector: MgdCertificateConnector,
+  connector: GamblingConnector,
   repo: MgdCertificateCacheRepository
 )(implicit ec: ExecutionContext) {
 
