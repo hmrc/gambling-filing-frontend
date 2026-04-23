@@ -103,7 +103,7 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
       }
     }
 
-    "must return INTERNAL_SERVER_ERROR when service fails" in {
+    "must redirect to system error page when service fails" in {
 
       val mockService = mock[MgdCertificateService]
 
@@ -129,7 +129,9 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
 
         val result = route(application, request).value
 
-        status(result) mustBe INTERNAL_SERVER_ERROR
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe
+          controllers.routes.SystemErrorController.onPageLoad().url
       }
     }
   }

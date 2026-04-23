@@ -46,8 +46,11 @@ class ViewRegistrationCertificateController @Inject() (
       .retrieveCertificate(request.mgdRefNum)
       .map(certificate => Ok(view(certificate, appConfig.gamblingManagementHomeUrl)))
       .recover { case ex =>
-        logger.error(s"[ViewRegistrationCertificateController] retrieveCertificate failed: ${ex.getMessage}", ex)
-        InternalServerError
+        logger.error(
+          s"[ViewRegistrationCertificateController] retrieveCertificate failed: ${ex.getMessage}",
+          ex
+        )
+        Redirect(controllers.routes.SystemErrorController.onPageLoad())
       }
   }
 }
