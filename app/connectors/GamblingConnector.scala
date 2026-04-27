@@ -31,11 +31,11 @@ class GamblingConnector @Inject() (config: ServicesConfig, http: HttpClientV2)(i
     extends HttpReadsInstances
     with Logging {
 
-  private val baseUrl: String = config.baseUrl("gambling") + "/gambling/mgd"
+  private val baseUrl: String = config.baseUrl("gambling") + "/gambling"
 
   def getCertificate(mgdRegNumber: String)(implicit hc: HeaderCarrier): Future[MgdCertificate] = {
     http
-      .get(url"$baseUrl/$mgdRegNumber/certificate")
+      .get(url"$baseUrl/certificate/mgd/$mgdRegNumber")
       .execute[HttpResponse]
       .map { response =>
 
