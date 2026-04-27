@@ -66,7 +66,7 @@ class ViewRegistrationCertificateController @Inject() (
                   "viewRegistrationCertificate.label.corporateBody"
 
               case Some("partnership") =>
-                certificate.partMembers.headOption.map(_.namesOfPartMems).getOrElse("") ->
+                certificate.businessName.getOrElse("") ->
                   "viewRegistrationCertificate.label.partnership"
 
               case Some("limited liability partnership") =>
