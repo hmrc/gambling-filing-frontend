@@ -57,7 +57,7 @@ class ViewRegistrationCertificateController @Inject() (
                 certificate.individualName.getOrElse("") ->
                   "viewRegistrationCertificate.label.soleProprietor"
 
-              case Some("unincorporated body") =>
+              case Some(b) if b.startsWith("unincorporated body") =>
                 certificate.businessName.getOrElse("") ->
                   "viewRegistrationCertificate.label.unincorporatedBody"
 
