@@ -87,3 +87,14 @@ viewRegistrationCertificate.h2.upcoming = Upcoming return period end dates
 viewRegistrationCertificate.print = You can print this page for your records using the print function on your browser.
 viewRegistrationCertificate.dashboard.link = Return to your manage your Machine Games Duty
 viewRegistrationCertificate.change-registration.link = Change registration details
+
+
+viewRegistrationCertificate.tradingName = Trading name
+viewRegistrationCertificate.partnershipDetails = Partnership registration details
+viewRegistrationCertificate.partner = Partner {0}
+viewRegistrationCertificate.groupDetails = Group registration details
+viewRegistrationCertificate.representativeMember = Representative member
+viewRegistrationCertificate.repMemberAddress = Representative member's address
+viewRegistrationCertificate.groupMembers = Group members
+viewRegistrationCertificate.groupMember = Group member {0}
+
