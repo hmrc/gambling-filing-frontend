@@ -18,6 +18,8 @@
 @import models.MgdCertificate
 @import java.time.format.DateTimeFormatter
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.content._
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.panel._
 
 @this(
     layout: templates.Layout,
@@ -47,48 +49,62 @@
 ))
 
 @p("viewRegistrationCertificate.p1")
+
 @h2(messages("viewRegistrationCertificate.h2"))
 
 @govukSummaryList(SummaryList(
-    rows = Seq(
-        certificate.registrationDate.map(d =>
+rows = Seq(
+    certificate.registrationDate.map { d =>
+    SummaryListRow(
+    key = Key(Text(messages("viewRegistrationCertificate.registrationDate"))),
+    value = Value(HtmlContent(d.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))))
+    )
+},
+
+certificate.dateCertIssued.map { d =>
+    SummaryListRow(
+    key = Key(Text(messages("viewRegistrationCertificate.certificateIssued"))),
+    value = Value(HtmlContent(d.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))))
+    )
+},
+
+Option(displayName).filter(_.nonEmpty).map { name =>
+    SummaryListRow(
+    key = Key(Text(messages(displayLabelKey))),
+    value = Value(HtmlContent(name))
+    )
+},
+
+Option(formattedAddress).filter(_.nonEmpty).map { addr =>
+    SummaryListRow(
+    key = Key(Text(messages("viewRegistrationCertificate.businessAddress"))),
+    value = Value(HtmlContent(addr))
+    )
+},
+
+    certificate.tradingName.filter(_.nonEmpty).map { tn =>
         SummaryListRow(
-        key = Key(content = Text(messages("viewRegistrationCertificate.registrationDate"))),
-        value = Value(content = HtmlContent(d.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))))
+        key = Key(Text(messages("viewRegistrationCertificate.tradingName"))),
+        value = Value(HtmlContent(tn))
         )
-        ),
-        certificate.dateCertIssued.map(d =>
+    },
+
+    certificate.typeOfBusiness.map { b =>
         SummaryListRow(
-        key = Key(content = Text(messages("viewRegistrationCertificate.certificateIssued"))),
-        value = Value(content = HtmlContent(d.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))))
+        key = Key(Text(messages("viewRegistrationCertificate.typeOfBusiness"))),
+        value = Value(HtmlContent(b))
         )
-        ),
-        Some(displayName).filter(_ != "-").map(name =>
+    },
+
+    certificate.businessTradeClass.map { tc =>
         SummaryListRow(
-        key = Key(content = Text(messages(displayLabelKey))),
-        value = Value(content = HtmlContent(name))
+        key = Key(Text(messages("viewRegistrationCertificate.tradeClass"))),
+        value = Value(HtmlContent(tc.toString))
         )
-        ),
-        Some(formattedAddress).filter(_ != "-").map(addr =>
-        SummaryListRow(
-        key = Key(content = Text(messages("viewRegistrationCertificate.businessAddress"))),
-        value = Value(content = HtmlContent(addr))
-        )
-        ),
-        certificate.typeOfBusiness.filter(_ != "-").map(b =>
-        SummaryListRow(
-        key = Key(content = Text(messages("viewRegistrationCertificate.typeOfBusiness"))),
-        value = Value(content = HtmlContent(b))
-        )
-        ),
-        certificate.businessTradeClass.map(_.toString).filter(_ != "-").map(tc =>
-        SummaryListRow(
-        key = Key(content = Text(messages("viewRegistrationCertificate.tradeClass"))),
-        value = Value(content = HtmlContent(tc))
-        )
-        )
+        }
+
     ).flatten
-))
+    ))
 
 @h2(messages("viewRegistrationCertificate.h2.upcoming"))
 
@@ -98,10 +114,102 @@
     }
 </ul>
 
+@* ================= PARTNERSHIP SECTION ================= *@
+@if(certificate.partMembers.nonEmpty) {
+
+    @h2(messages("viewRegistrationCertificate.partnershipDetails"))
+
+    @govukSummaryList(SummaryList(
+    rows = certificate.partMembers.zipWithIndex.map { case (p, i) =>
+    SummaryListRow(
+    key = Key(Text(messages("viewRegistrationCertificate.partner", i + 1))),
+    value = Value(Text(p.namesOfPartMems))
+    )
+    }
+    ))
+}
+
+@* ================= GROUP SECTION ================= *@
+    @if(certificate.groupReg == "Y") {
+
+    @* ---- Group registration details ---- *@
+    @if(
+    certificate.repMemName.isDefined ||
+    Seq(
+    certificate.repMemLine1,
+    certificate.repMemLine2,
+    certificate.repMemLine3,
+    certificate.repMemLine4,
+    certificate.repMemPostcode
+    ).flatten.exists(_.nonEmpty)
+    ) {
+
+    @h2(messages("viewRegistrationCertificate.groupDetails"))
+
+    @govukSummaryList(SummaryList(
+    rows = {
+
+    val repMemberRow = certificate.repMemName.map { name =>
+    SummaryListRow(
+    key = Key(Text(messages("viewRegistrationCertificate.representativeMember"))),
+    value = Value(Text(name))
+    )
+    }
+
+    val addressLines = Seq(
+    certificate.repMemLine1,
+    certificate.repMemLine2,
+    certificate.repMemLine3,
+    certificate.repMemLine4,
+    certificate.repMemPostcode
+    ).flatten.filter(_.nonEmpty)
+
+    val addressRow =
+    if (addressLines.nonEmpty)
+    Some(
+    SummaryListRow(
+    key = Key(Text(messages("viewRegistrationCertificate.repMemberAddress"))),
+    value = Value(HtmlContent(addressLines.mkString("<br>")))
+    )
+    )
+    else None
+
+    Seq(repMemberRow, addressRow).flatten
+    }
+    ))
+}
+
+@* ---- Group members (separate heading) ---- *@
+@if(certificate.groupMembers.nonEmpty) {
+
+    @h2(messages("viewRegistrationCertificate.groupMembers"))
+
+    @govukSummaryList(SummaryList(
+    rows = certificate.groupMembers.zipWithIndex.map { case (m, i) =>
+    SummaryListRow(
+    key = Key(Text(messages("viewRegistrationCertificate.groupMember", i + 1))),
+    value = Value(Text(m.namesOfGroupMems))
+    )
+    }
+    ))
+    }
+}
+
 <div class="govuk-inset-text">
     @messages("viewRegistrationCertificate.print")
 </div>
 
-@link(messages("viewRegistrationCertificate.dashboard.link"), managementHomeUrl, extraClasses = "dashboard-page-link")
-@link(messages("viewRegistrationCertificate.change-registration.link"), "#", extraClasses = "change-registration-page-link")
+    @link(
+    messages("viewRegistrationCertificate.dashboard.link"),
+    managementHomeUrl,
+    extraClasses = "dashboard-page-link"
+    )
+
+    @link(
+    messages("viewRegistrationCertificate.change-registration.link"),
+    "#",
+    extraClasses = "change-registration-page-link"
+    )
+
 }
+
