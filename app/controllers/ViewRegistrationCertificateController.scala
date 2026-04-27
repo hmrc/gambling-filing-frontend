@@ -41,40 +41,68 @@ class ViewRegistrationCertificateController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onPageLoad(): Action[AnyContent] =
+    (authorise andThen getData).async { implicit request =>
 
-    val mgdRefNum: String = request.mgdRefNum
+      val mgdRefNum = request.mgdRefNum
 
-    mgdCertificateService
-      .retrieveCertificate(mgdRefNum)
-      .map { certificate =>
+      mgdCertificateService
+        .retrieveCertificate(mgdRefNum)
+        .map { certificate =>
 
-        val (displayName, displayLabelKey) = certificate.typeOfBusiness.map(_.toLowerCase) match {
-          case Some("sole proprietor") =>
-            certificate.individualName.getOrElse("-") -> "viewRegistrationCertificate.label.soleProprietor"
-          case Some("unincorporated body") =>
-            certificate.businessName.getOrElse("-") -> "viewRegistrationCertificate.label.unincorporatedBody"
-          case Some("corporate body") =>
-            certificate.businessName.getOrElse("-") -> "viewRegistrationCertificate.label.corporateBody"
-          case Some("partnership") =>
-            certificate.partMembers.headOption.map(_.namesOfPartMems).getOrElse("-") -> "viewRegistrationCertificate.label.partnership"
-          case Some("limited liability partnership") =>
-            certificate.businessName.getOrElse("-") -> "viewRegistrationCertificate.label.limitedLiabilityPartnership"
-          case _ =>
-            "-" -> "viewRegistrationCertificate.label.default"
+          val (displayName, displayLabelKey) =
+            certificate.typeOfBusiness.map(_.trim.toLowerCase) match {
+
+              case Some("sole proprietor") =>
+                certificate.individualName.getOrElse("") ->
+                  "viewRegistrationCertificate.label.soleProprietor"
+
+              case Some("unincorporated body") =>
+                certificate.businessName.getOrElse("") ->
+                  "viewRegistrationCertificate.label.unincorporatedBody"
+
+              case Some("corporate body") =>
+                certificate.businessName.getOrElse("") ->
+                  "viewRegistrationCertificate.label.corporateBody"
+
+              case Some("partnership") =>
+                certificate.partMembers.headOption.map(_.namesOfPartMems).getOrElse("") ->
+                  "viewRegistrationCertificate.label.partnership"
+
+              case Some("limited liability partnership") =>
+                certificate.businessName.getOrElse("") ->
+                  "viewRegistrationCertificate.label.limitedLiabilityPartnership"
+
+              case _ =>
+                certificate.businessName.getOrElse("") ->
+                  "viewRegistrationCertificate.label.default"
+            }
+
+          val formattedAddress =
+            Seq(
+              certificate.busAddrLine1,
+              certificate.busAddrLine2,
+              certificate.busAddrLine3,
+              certificate.busAddrLine4,
+              certificate.busPostcode
+            ).flatten.filter(_.nonEmpty).mkString("<br>")
+
+          Ok(
+            view(
+              certificate,
+              appConfig.gamblingManagementHomeUrl,
+              displayName,
+              displayLabelKey,
+              formattedAddress
+            )
+          )
         }
-
-        val formattedAddress = Seq(
-          certificate.busAddrLine1,
-          certificate.busAddrLine2,
-          certificate.busPostcode
-        ).flatten.mkString("<br>")
-
-        Ok(view(certificate, appConfig.gamblingManagementHomeUrl, displayName, displayLabelKey, formattedAddress))
-      }
-      .recover { case ex =>
-        logger.error(s"[ViewRegistrationCertificateController] retrieveCertificate failed: ${ex.getMessage}", ex)
-        Redirect(controllers.routes.SystemErrorController.onPageLoad())
-      }
-  }
+        .recover { case ex =>
+          logger.error(
+            s"[ViewRegistrationCertificateController] retrieveCertificate failed for mgdRefNum=$mgdRefNum",
+            ex
+          )
+          Redirect(controllers.routes.SystemErrorController.onPageLoad())
+        }
+    }
 }
