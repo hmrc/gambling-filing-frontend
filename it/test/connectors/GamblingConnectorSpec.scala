@@ -77,7 +77,7 @@ class GamblingConnectorSpec extends AnyWordSpec with Matchers with ScalaFutures 
     "return MgdCertificate when BE returns 200 with valid JSON" in {
 
       stubFor(
-        get(urlEqualTo(s"/gambling/mgd/$mgdRegNumber/certificate"))
+        get(urlEqualTo(s"/gambling/certificate/mgd/$mgdRegNumber"))
           .willReturn(
             aResponse()
               .withStatus(OK)
@@ -98,7 +98,7 @@ class GamblingConnectorSpec extends AnyWordSpec with Matchers with ScalaFutures 
     "fail when BE returns 200 with invalid JSON" in {
 
       stubFor(
-        get(urlEqualTo(s"/gambling/mgd/$mgdRegNumber/certificate"))
+        get(urlEqualTo(s"/gambling/certificate/mgd/$mgdRegNumber"))
           .willReturn(
             aResponse()
               .withStatus(OK)
@@ -117,7 +117,7 @@ class GamblingConnectorSpec extends AnyWordSpec with Matchers with ScalaFutures 
     "propagate UpstreamErrorResponse when BE returns 500" in {
 
       stubFor(
-        get(urlEqualTo(s"/gambling/mgd/$mgdRegNumber/certificate"))
+        get(urlEqualTo(s"/gambling/certificate/mgd/$mgdRegNumber"))
           .willReturn(
             aResponse()
               .withStatus(INTERNAL_SERVER_ERROR)
@@ -135,7 +135,7 @@ class GamblingConnectorSpec extends AnyWordSpec with Matchers with ScalaFutures 
     "propagate UpstreamErrorResponse when BE returns 404" in {
 
       stubFor(
-        get(urlEqualTo(s"/gambling/mgd/$mgdRegNumber/certificate"))
+        get(urlEqualTo(s"/gambling/certificate/mgd/$mgdRegNumber"))
           .willReturn(
             aResponse()
               .withStatus(NOT_FOUND)
