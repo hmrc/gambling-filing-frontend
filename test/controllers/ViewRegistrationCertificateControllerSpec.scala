@@ -24,9 +24,12 @@ import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import play.twirl.api.Html
 import services.MgdCertificateService
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.ViewRegistrationCertificateView
+import org.mockito.Mockito.{verify, when}
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -141,6 +144,168 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
             displayLabelKey,
             formattedAddress
           )(request, messages(application)).toString
+      }
+    }
+
+    "must use sole proprietor branch when typeOfBusiness is sole proprietor" in {
+
+      val solePropCertificate = certificate.copy(
+        typeOfBusiness = Some("sole proprietor"),
+        individualName = Some("John Sole")
+      )
+
+      val mockService = mock[MgdCertificateService]
+
+      when(
+        mockService.retrieveCertificate(any[String])(
+          any[HeaderCarrier],
+          any[play.api.mvc.Request[?]]
+        )
+      ).thenReturn(Future.successful(solePropCertificate))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[MgdCertificateService].toInstance(mockService))
+          .build()
+
+      running(application) {
+
+        val request =
+          FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
+            .withSession("mgdRefNum" -> "MGD123")
+
+        val result = route(application, request).value
+
+        status(result) mustBe OK
+        contentAsString(result) must include("Sole proprietor’s name")
+        contentAsString(result) must include("John Sole")
+      }
+    }
+
+    "must use partnership branch when typeOfBusiness is partnership" in {
+
+      val partnershipCert = certificate.copy(
+        typeOfBusiness = Some("partnership"),
+        businessName   = Some("Partner Business Ltd")
+      )
+
+      val mockService = mock[MgdCertificateService]
+      val mockView = mock[ViewRegistrationCertificateView]
+
+      when(
+        mockService.retrieveCertificate(any[String])(
+          any[HeaderCarrier],
+          any[play.api.mvc.Request[?]]
+        )
+      ).thenReturn(Future.successful(partnershipCert))
+
+      when(
+        mockView.apply(
+          any(),
+          any(),
+          any(),
+          any(),
+          any()
+        )(any(), any())
+      ).thenReturn(Html("success"))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[MgdCertificateService].toInstance(mockService),
+            bind[ViewRegistrationCertificateView].toInstance(mockView)
+          )
+          .build()
+
+      running(application) {
+
+        val request =
+          FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
+            .withSession("mgdRefNum" -> "MGD123")
+
+        val result = route(application, request).value
+
+        status(result) mustBe OK
+
+        verify(mockView).apply(
+          eqTo(partnershipCert),
+          eqTo("http://localhost:10400/gambling/"),
+          eqTo("Partner Business Ltd"),
+          eqTo("viewRegistrationCertificate.label.partnership"),
+          any()
+        )(any(), any())
+      }
+    }
+
+    "must use unincorporated body branch when typeOfBusiness is unincorporated body" in {
+
+      val unincorpCert = certificate.copy(
+        typeOfBusiness = Some("unincorporated body"),
+        businessName   = Some("Unincorporated Group Ltd")
+      )
+
+      val mockService = mock[MgdCertificateService]
+
+      when(
+        mockService.retrieveCertificate(any[String])(
+          any[HeaderCarrier],
+          any[play.api.mvc.Request[?]]
+        )
+      ).thenReturn(Future.successful(unincorpCert))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[MgdCertificateService].toInstance(mockService))
+          .build()
+
+      running(application) {
+
+        val request =
+          FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
+            .withSession("mgdRefNum" -> "MGD123")
+
+        val result = route(application, request).value
+
+        status(result) mustBe OK
+
+        contentAsString(result) must include("Unincorporated Group Ltd")
+        contentAsString(result) must include("Unincorporated body")
+      }
+    }
+
+    "must use limited liability partnership branch when typeOfBusiness is LLP" in {
+
+      val llpCert = certificate.copy(
+        typeOfBusiness = Some("limited liability partnership"),
+        businessName   = Some("LLP Business Ltd")
+      )
+
+      val mockService = mock[MgdCertificateService]
+
+      when(
+        mockService.retrieveCertificate(any[String])(
+          any[HeaderCarrier],
+          any[play.api.mvc.Request[?]]
+        )
+      ).thenReturn(Future.successful(llpCert))
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(bind[MgdCertificateService].toInstance(mockService))
+          .build()
+
+      running(application) {
+
+        val request =
+          FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
+            .withSession("mgdRefNum" -> "MGD123")
+
+        val result = route(application, request).value
+
+        status(result) mustBe OK
+
+        contentAsString(result) must include("LLP Business Ltd")
+        contentAsString(result) must include("limited liability partnership")
       }
     }
 
