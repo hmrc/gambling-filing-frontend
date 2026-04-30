@@ -132,18 +132,26 @@ Option(formattedAddress).filter(_.nonEmpty).map { addr =>
     }
 
 @* ================= PARTNERSHIP SECTION ================= *@
+
 @if(certificate.partMembers.nonEmpty) {
+        @h2(messages("viewRegistrationCertificate.partnershipDetails"))
 
-    @h2(messages("viewRegistrationCertificate.partnershipDetails"))
+        @govukSummaryList(SummaryList(
+        rows = certificate.partMembers.zipWithIndex.map { case (p, i) =>
 
-    @govukSummaryList(SummaryList(
-    rows = certificate.partMembers.zipWithIndex.map { case (p, i) =>
-    SummaryListRow(
-    key = Key(Text(messages("viewRegistrationCertificate.partner", i + 1))),
-    value = Value(Text(p.namesOfPartMems))
-    )
-    }
-    ))
+        // Use the optional value, fallback to concatenated soleProp names if None
+        val displayName = p.namesOfPartMems.getOrElse {
+        Seq(p.solePropTitle, p.solePropFirstName, p.solePropMiddleName, p.solePropLastName)
+        .flatten
+        .mkString(" ")
+        }
+
+        SummaryListRow(
+        key = Key(Text(messages("viewRegistrationCertificate.partner", i + 1))),
+        value = Value(Text(displayName))
+        )
+        }
+        ))
 }
 
 @* ================= GROUP SECTION ================= *@
