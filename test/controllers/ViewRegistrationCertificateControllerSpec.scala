@@ -99,7 +99,6 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
 
         val (displayName, displayLabelKey) =
           certificate.typeOfBusiness.map(_.trim.toLowerCase) match {
-
             case Some("sole proprietor") =>
               certificate.individualName.getOrElse("") ->
                 "viewRegistrationCertificate.label.soleProprietor"
@@ -113,7 +112,7 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
                 "viewRegistrationCertificate.label.corporateBody"
 
             case Some("partnership") =>
-              certificate.partMembers.headOption.map(_.namesOfPartMems).getOrElse("") ->
+              certificate.partMembers.headOption.flatMap(_.namesOfPartMems).getOrElse("") ->
                 "viewRegistrationCertificate.label.partnership"
 
             case Some("limited liability partnership") =>

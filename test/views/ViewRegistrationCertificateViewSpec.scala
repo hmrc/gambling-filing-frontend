@@ -111,8 +111,8 @@ class ViewRegistrationCertificateViewSpec extends SpecBase {
 
       val cert = baseCertificate.copy(
         partMembers = Seq(
-          PartnerMember("Partner A", None, None, None, None, 1),
-          PartnerMember("Partner B", None, None, None, None, 1)
+          PartnerMember(Some("Partner A"), None, None, None, None, 1),
+          PartnerMember(Some("Partner B"), None, None, None, None, 1)
         )
       )
 
