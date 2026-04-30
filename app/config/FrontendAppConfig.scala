@@ -36,6 +36,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val loginContinueUrl: String = configuration.get[String]("urls.loginContinue")
   val signOutUrl: String = configuration.get[String]("urls.signOut")
   lazy val hmrcOnlineServiceDesk: String = configuration.get[String]("urls.hmrcOnlineServiceDesk")
+  lazy val gamblingManagementHomeUrl: String = configuration.get[String]("urls.gamblingManagementHome")
   private val exitSurveyBaseUrl: String = configuration.get[Service]("microservice.services.feedback-frontend").baseUrl
   val exitSurveyUrl: String = s"$exitSurveyBaseUrl/feedback/gambling-filing-frontend"
 
@@ -51,13 +52,5 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val countdown: Int = configuration.get[Int]("timeout-dialog.countdown")
 
   val cacheTtl: Long = configuration.get[Int]("mongodb.timeToLiveInSeconds")
-
-  lazy val gamblingManagementFrontendBaseUrl: String =
-    configuration
-      .get[Service]("microservice.services.gambling-management-frontend")
-      .baseUrl
-
-  val gamblingManagementHomeUrl: String =
-    s"${gamblingManagementFrontendBaseUrl.stripSuffix("/")}/gambling/"
 
 }
