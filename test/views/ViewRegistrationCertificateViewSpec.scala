@@ -178,5 +178,24 @@ class ViewRegistrationCertificateViewSpec extends SpecBase {
 
       pageText must not include messages(app)("viewRegistrationCertificate.groupMembers")
     }
+
+    "must display correct trade class label for businessTradeClass" in {
+
+      val app = applicationBuilder().build()
+      val view = app.injector.instanceOf[views.html.ViewRegistrationCertificateView]
+      val request = FakeRequest()
+
+      val cert = baseCertificate.copy(
+        businessTradeClass = Some(6)
+      )
+
+      val html = view(cert, managementUrl, "Test Business Ltd", "viewRegistrationCertificate.label.corporateBody", "")(request, messages(app))
+      val doc = Jsoup.parse(html.body)
+
+      val pageText = doc.body().text()
+
+      pageText must include("Casino")
+    }
+
   }
 }

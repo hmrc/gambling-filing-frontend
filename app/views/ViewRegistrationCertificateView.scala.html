@@ -97,22 +97,39 @@ Option(formattedAddress).filter(_.nonEmpty).map { addr =>
     },
 
     certificate.businessTradeClass.map { tc =>
+        val label = tc match {
+        case 1 => "Amusement or gaming machine supplier"
+        case 2 => "Adult gaming centre"
+        case 3 => "Family entertainment centre"
+        case 4 => "Bookmaker or betting activities"
+        case 5 => "Bingo promoter"
+        case 6 => "Casino"
+        case 7 => "Public house"
+        case 8 => "Club"
+        case 9 => "Other"
+        case _ => "Unknown"
+        }
+
         SummaryListRow(
         key = Key(Text(messages("viewRegistrationCertificate.tradeClass"))),
-        value = Value(HtmlContent(tc.toString))
+        value = Value(HtmlContent(label))
         )
-        }
+    }
 
     ).flatten
     ))
 
-@h2(messages("viewRegistrationCertificate.h2.upcoming"))
+    @if(certificate.returnPeriodEndDates.nonEmpty) {
 
-<ul class="govuk-list">
-    @for(rped <- certificate.returnPeriodEndDates) {
-    <li>@rped.returnPeriodEndDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))</li>
+    @h2(messages("viewRegistrationCertificate.h2.upcoming"))
+
+    <ul class="govuk-list">
+        @for(rped <- certificate.returnPeriodEndDates) {
+        <li>@rped.returnPeriodEndDate.format(DateTimeFormatter.ofPattern("dd MMM yyyy"))</li>
+        }
+    </ul>
+
     }
-</ul>
 
 @* ================= PARTNERSHIP SECTION ================= *@
 @if(certificate.partMembers.nonEmpty) {
@@ -207,9 +224,10 @@ Option(formattedAddress).filter(_.nonEmpty).map { addr =>
 
     @link(
     messages("viewRegistrationCertificate.change-registration.link"),
-    "#",
-    extraClasses = "change-registration-page-link"
+    controllers.routes.IndexController.onPageLoad().url,
+    extraClasses = "change-registration-page-link govuk-!-margin-bottom-8"
     )
+
 
 }
 
