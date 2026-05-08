@@ -18,8 +18,8 @@ package controllers
 
 import base.SpecBase
 import models.*
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.ArgumentMatchers.{any, eq as eqTo}
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.inject.bind
 import play.api.test.FakeRequest
@@ -28,8 +28,6 @@ import play.twirl.api.Html
 import services.MgdCertificateService
 import uk.gov.hmrc.http.HeaderCarrier
 import views.html.ViewRegistrationCertificateView
-import org.mockito.Mockito.{verify, when}
-import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 
 import java.time.LocalDate
 import scala.concurrent.Future
