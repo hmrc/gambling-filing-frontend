@@ -38,5 +38,6 @@ class AccessDeniedControllerSpec extends SpecBase {
         contentAsString(result) must include("Continue to your account")
       }
     }
+
   }
 }
