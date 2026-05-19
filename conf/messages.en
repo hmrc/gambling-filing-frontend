@@ -1,4 +1,4 @@
-service.name = Manage your Machine Games Duty
+service.name = Manage your gambling tax
 
 site.back = Back
 site.remove = Remove
@@ -27,8 +27,8 @@ error.title.prefix = Error:
 error.prefix = Error
 error.summary.title = There is a problem
 
-index.title = Manage your Machine Games Duty
-index.heading = Manage your Machine Games Duty
+index.title = Manage your gambling tax
+index.heading = Manage your gambling tax
 index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
 checkYourAnswers.title = Check your answers
@@ -85,7 +85,7 @@ viewRegistrationCertificate.typeOfBusiness = Type of business
 viewRegistrationCertificate.tradeClass = Trade class
 viewRegistrationCertificate.h2.upcoming = Upcoming return period end dates
 viewRegistrationCertificate.print = You can print this page for your records using the print function on your browser.
-viewRegistrationCertificate.dashboard.link = Return to your manage your Machine Games Duty
+viewRegistrationCertificate.dashboard.link = Return to your manage your gambling tax
 viewRegistrationCertificate.change-registration.link = Change registration details
 
 
