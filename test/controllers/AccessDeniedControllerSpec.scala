@@ -33,7 +33,7 @@ class AccessDeniedControllerSpec extends SpecBase {
 
         val result = route(application, request).value
 
-        status(result) mustEqual OK
+        status(result) mustEqual 403
         contentAsString(result) must include("Sorry, there is a problem with the service")
         contentAsString(result) must include("Continue to your account")
       }
