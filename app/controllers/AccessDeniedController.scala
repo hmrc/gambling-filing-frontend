@@ -42,7 +42,7 @@ class AccessDeniedController @Inject() (
     sessionRepository
       .clear(request.mgdRefNum)
       .map { _ =>
-        Ok(view(appConfig.accountUrl))
+        Forbidden(view(appConfig.accountUrl))
       }
   }
 }
