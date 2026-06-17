@@ -195,14 +195,19 @@ class MappingsSpec extends AnyFreeSpec with Matchers with OptionValues with Mapp
       result.get mustEqual 1234.01
     }
 
-    "must not bind values with a `£` after any numbers" in {
-      val result = testForm.bind(Map("value" -> "123 £456"))
-      result.errors must contain only FormError("value", "error.nonNumeric")
+    "must bind negative numbers" in {
+      val result = testForm.bind(Map("value" -> "-1"))
+      result.get mustEqual -1
+    }
+
+    "must bind a negative decimal" in {
+      val result = testForm.bind(Map("value" -> "-123.45"))
+      result.get mustEqual -123.45
     }
 
     "must not bind values with non-numeric characters except commas, spaces and `£`s" in {
       val result = testForm.bind(Map("value" -> "abc"))
-      result.errors must contain only FormError("value", "error.nonNumeric")
+      result.errors must contain only FormError("value", "error.invalid")
     }
 
     "must not bind an empty value" in {
@@ -217,12 +222,27 @@ class MappingsSpec extends AnyFreeSpec with Matchers with OptionValues with Mapp
 
     "must not bind a number with more than 2 decimal places" in {
       val result = testForm.bind(Map("value" -> "1.234"))
-      result.errors must contain only FormError("value", "error.invalidNumeric")
+      result.errors must contain only FormError("value", "error.invalid")
     }
 
-    "must not bind negative numbers" in {
-      val result = testForm.bind(Map("value" -> "-1"))
-      result.errors must contain only FormError("value", "error.nonNumeric")
+    "must bind a value at the max boundary" in {
+      val result = testForm.bind(Map("value" -> "999999999.99"))
+      result.get mustEqual BigDecimal("999999999.99")
+    }
+
+    "must bind a value at the min boundary" in {
+      val result = testForm.bind(Map("value" -> "-999999999.99"))
+      result.get mustEqual BigDecimal("-999999999.99")
+    }
+
+    "must not bind a value exceeding the max" in {
+      val result = testForm.bind(Map("value" -> "1000000000"))
+      result.errors must contain only FormError("value", "error.range")
+    }
+
+    "must not bind a value below the min" in {
+      val result = testForm.bind(Map("value" -> "-1000000000"))
+      result.errors must contain only FormError("value", "error.range")
     }
 
     "must unbind a valid value" in {
