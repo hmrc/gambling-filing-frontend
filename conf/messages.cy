@@ -65,7 +65,7 @@ accessDenied.p1.link = cy:Continue to your account
 
 netTakingsLower.title = What are your total net takings liable to the lower rate of duty?
 netTakingsLower.heading = What are your total net takings liable to the lower rate of duty?
-netTakingsLower.caption = File a return for 1 Jan 2014 to 31 Dec 2014
+netTakingsLower.caption = File a return for {0} to {1}
 netTakingsLower.error.required = Enter your net takings
 netTakingsLower.error.invalid = Enter your net takings in pounds and pence
 netTakingsLower.error.range = Your net takings must be between -£1 billion and £1 billion
