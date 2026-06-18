@@ -24,3 +24,8 @@ GET        /there-is-a-problem-access-denied             controllers.AccessDenie
 GET        /page-not-found                               controllers.PageNotFoundController.onPageLoad()
 
 GET        /registration-certificate                     controllers.ViewRegistrationCertificateController.onPageLoad()
+
+GET        /net-takings-liable-to-the-lower-rate-of-duty          controllers.NetTakingsLowerController.onPageLoad(mode: Mode = NormalMode)
+POST       /net-takings-liable-to-the-lower-rate-of-duty          controllers.NetTakingsLowerController.onSubmit(mode: Mode = NormalMode)
+GET        /change-net-takings-liable-to-the-lower-rate-of-duty   controllers.NetTakingsLowerController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-net-takings-liable-to-the-lower-rate-of-duty   controllers.NetTakingsLowerController.onSubmit(mode: Mode = CheckMode)

@@ -83,12 +83,20 @@ class DefaultAuthorisedAction @Inject() (
 }
 
 object AuthorisedAction {
-  val organisationEnrolmentKey = "HMRC-MGD-ORG"
-  val organisationIdentifierName = "HMRCMGDRN"
-  val agentEnrolmentKey = "HMRC-MGD-AGNT"
-  val agentIdentifierName = "HMRCMGDAGENTREF"
 
-  def getEnrolmentIdentifier(
+  private val organisationEnrolments: Seq[(String, String)] = Seq(
+    "HMRC-MGD-ORG" -> "HMRCMGDRN",
+    "HMRC-GTS-GBD" -> "HMRCGTSGBRN",
+    "HMRC-GTS-PBD" -> "HMRCGTSGBRN",
+    "HMRC-GTS-RGD" -> "HMRCGTSGBRN"
+  )
+
+  private val agentEnrolments: Seq[(String, String)] = Seq(
+    "HMRC-MGD-AGNT" -> "HMRCMGDAGENTREF",
+    "HMRC-GTS-AGNT" -> "HMRCGTSAGENTREF"
+  )
+
+  private def getEnrolmentIdentifier(
     enrolments: Enrolments,
     enrolmentKey: String,
     identifierName: String
@@ -102,13 +110,16 @@ object AuthorisedAction {
         .filter(_.nonEmpty)
     }
 
+  private def findActiveEnrolment(enrolments: Enrolments, candidates: Seq[(String, String)]): Option[String] =
+    candidates.view.flatMap { case (key, identifier) => getEnrolmentIdentifier(enrolments, key, identifier) }.headOption
+
   object HasActiveAgentEnrolment {
     def unapply(enrolments: Enrolments): Option[String] =
-      getEnrolmentIdentifier(enrolments, agentEnrolmentKey, agentIdentifierName)
+      findActiveEnrolment(enrolments, agentEnrolments)
   }
 
   object HasActiveOrganisationEnrolment {
     def unapply(enrolments: Enrolments): Option[String] =
-      getEnrolmentIdentifier(enrolments, organisationEnrolmentKey, organisationIdentifierName)
+      findActiveEnrolment(enrolments, organisationEnrolments)
   }
 }

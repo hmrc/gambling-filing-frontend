@@ -103,30 +103,35 @@ trait Formatters {
 
   private[mappings] def currencyFormatter(
     requiredKey: String,
-    invalidNumericKey: String,
-    nonNumericKey: String,
+    invalidKey: String,
+    rangeKey: String,
     args: Seq[String] = Seq.empty
   ): Formatter[BigDecimal] =
     new Formatter[BigDecimal] {
-      val isNumeric = """(^£?\d*$)|(^£?\d*\.\d*$)"""
-      val validDecimal = """(^£?\d*$)|(^£?\d*\.\d{1,2}$)"""
+      val validCurrency = """^-?[0-9]*\.?[0-9]{0,2}$"""
+      val maxValue = BigDecimal("999999999.99")
+      val minValue = BigDecimal("-999999999.99")
 
       private val baseFormatter = stringFormatter(requiredKey, args)
 
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], BigDecimal] =
         baseFormatter
           .bind(key, data)
-          .map(_.replace(",", "").replace(" ", ""))
+          .map(_.replace(",", "").replace(" ", "").replace("£", ""))
           .flatMap {
-            case s if !s.matches(isNumeric) =>
-              Left(Seq(FormError(key, nonNumericKey, args)))
-            case s if !s.matches(validDecimal) =>
-              Left(Seq(FormError(key, invalidNumericKey, args)))
+            case s if !s.matches(validCurrency) =>
+              Left(Seq(FormError(key, invalidKey, args)))
             case s =>
               nonFatalCatch
-                .either(BigDecimal(s.replace("£", "")))
+                .either(BigDecimal(s))
                 .left
-                .map(_ => Seq(FormError(key, nonNumericKey, args)))
+                .map(_ => Seq(FormError(key, invalidKey, args)))
+                .flatMap { value =>
+                  if (value < minValue || value > maxValue)
+                    Left(Seq(FormError(key, rangeKey, args)))
+                  else
+                    Right(value)
+                }
           }
 
       override def unbind(key: String, value: BigDecimal): Map[String, String] =

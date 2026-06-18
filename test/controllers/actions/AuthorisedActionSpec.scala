@@ -96,6 +96,119 @@ class AuthorisedActionSpec extends SpecBase {
       contentAsString(result) mustBe "1234567890"
     }
 
+    "create AuthorisedRequest when Organisation has HMRC-GTS-GBD enrolment" in {
+      val mockAuthConnector: AuthConnector = mock[AuthConnector]
+
+      (mockAuthConnector
+        .authorise(_: Predicate, _: Retrieval[Option[AffinityGroup] ~ Enrolments])(using
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *)
+        .returning(
+          Future.successful(
+            `~`(
+              Some(AffinityGroup.Organisation),
+              Enrolments(
+                Set(Enrolment("HMRC-GTS-GBD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "GBD123")), "Activated"))
+              )
+            )
+          )
+        )
+      val authorisedAction =
+        new DefaultAuthorisedAction(mockAuthConnector, testFrontendAppConfig, bodyParser)
+
+      val controller = new Harness(authorisedAction)
+      val result = controller.onPageLoad(FakeRequest("GET", "/test"))
+      status(result) mustBe OK
+      contentAsString(result) mustBe "GBD123"
+    }
+
+    "create AuthorisedRequest when Organisation has HMRC-GTS-PBD enrolment" in {
+      val mockAuthConnector: AuthConnector = mock[AuthConnector]
+
+      (mockAuthConnector
+        .authorise(_: Predicate, _: Retrieval[Option[AffinityGroup] ~ Enrolments])(using
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *)
+        .returning(
+          Future.successful(
+            `~`(
+              Some(AffinityGroup.Organisation),
+              Enrolments(
+                Set(Enrolment("HMRC-GTS-PBD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "PBD123")), "Activated"))
+              )
+            )
+          )
+        )
+      val authorisedAction =
+        new DefaultAuthorisedAction(mockAuthConnector, testFrontendAppConfig, bodyParser)
+
+      val controller = new Harness(authorisedAction)
+      val result = controller.onPageLoad(FakeRequest("GET", "/test"))
+      status(result) mustBe OK
+      contentAsString(result) mustBe "PBD123"
+    }
+
+    "create AuthorisedRequest when Organisation has HMRC-GTS-RGD enrolment" in {
+      val mockAuthConnector: AuthConnector = mock[AuthConnector]
+
+      (mockAuthConnector
+        .authorise(_: Predicate, _: Retrieval[Option[AffinityGroup] ~ Enrolments])(using
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *)
+        .returning(
+          Future.successful(
+            `~`(
+              Some(AffinityGroup.Organisation),
+              Enrolments(
+                Set(Enrolment("HMRC-GTS-RGD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "RGD123")), "Activated"))
+              )
+            )
+          )
+        )
+      val authorisedAction =
+        new DefaultAuthorisedAction(mockAuthConnector, testFrontendAppConfig, bodyParser)
+
+      val controller = new Harness(authorisedAction)
+      val result = controller.onPageLoad(FakeRequest("GET", "/test"))
+      status(result) mustBe OK
+      contentAsString(result) mustBe "RGD123"
+    }
+
+    "create AuthorisedRequest when Agent has HMRC-GTS-AGNT enrolment" in {
+      val mockAuthConnector: AuthConnector = mock[AuthConnector]
+
+      (mockAuthConnector
+        .authorise(_: Predicate, _: Retrieval[Option[AffinityGroup] ~ Enrolments])(using
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *)
+        .returning(
+          Future.successful(
+            `~`(
+              Some(AffinityGroup.Agent),
+              Enrolments(
+                Set(Enrolment("HMRC-GTS-AGNT", Seq(EnrolmentIdentifier("HMRCGTSAGENTREF", "AGENT789")), "Activated"))
+              )
+            )
+          )
+        )
+
+      val authorisedAction =
+        new DefaultAuthorisedAction(mockAuthConnector, testFrontendAppConfig, bodyParser)
+
+      val controller = new Harness(authorisedAction)
+      val result = controller.onPageLoad(FakeRequest("GET", "/test"))
+      status(result) mustBe OK
+      contentAsString(result) mustBe "AGENT789"
+    }
+
     "redirect to access denied page when user has no affinity group" in {
       val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
