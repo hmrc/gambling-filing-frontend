@@ -29,3 +29,6 @@ GET        /net-takings-liable-to-the-lower-rate-of-duty          controllers.Ne
 POST       /net-takings-liable-to-the-lower-rate-of-duty          controllers.NetTakingsLowerController.onSubmit(mode: Mode = NormalMode)
 GET        /change-net-takings-liable-to-the-lower-rate-of-duty   controllers.NetTakingsLowerController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-net-takings-liable-to-the-lower-rate-of-duty   controllers.NetTakingsLowerController.onSubmit(mode: Mode = CheckMode)
+
+GET        /select-filed-return                  controllers.SubmittedReturnsController.onPageLoad(sortBy: Option[Int], orderBy: Option[String])
+
