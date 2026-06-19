@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.*
-import forms. NetTakingsStandardFormProvider
+import forms.NetTakingsStandardFormProvider
 import models.{Mode, UserAnswers}
 import navigation.Navigator
 import pages.NetTakingsStandardPage
@@ -31,16 +31,16 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class NetTakingsStandardController @Inject() (
-                                            override val messagesApi: MessagesApi,
-                                            sessionRepository: SessionRepository,
-                                            navigator: Navigator,
-                                            authorise: AuthorisedAction,
-                                            getData: DataRetrievalAction,
-                                            formProvider: NetTakingsStandardFormProvider,
-                                            val controllerComponents: MessagesControllerComponents,
-                                            view: NetTakingsStandardView
-                                          )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
+  override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: Navigator,
+  authorise: AuthorisedAction,
+  getData: DataRetrievalAction,
+  formProvider: NetTakingsStandardFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: NetTakingsStandardView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   val form = formProvider()
