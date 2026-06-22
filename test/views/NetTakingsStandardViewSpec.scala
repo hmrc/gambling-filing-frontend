@@ -63,6 +63,7 @@ class NetTakingsStandardViewSpec extends SpecBase {
 
       doc.select("#value").`val` mustBe "123.45"
     }
+    
   }
 
   trait Setup {
