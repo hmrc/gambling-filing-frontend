@@ -30,10 +30,10 @@ POST       /net-takings-liable-to-the-lower-rate-of-duty          controllers.Ne
 GET        /change-net-takings-liable-to-the-lower-rate-of-duty   controllers.NetTakingsLowerController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-net-takings-liable-to-the-lower-rate-of-duty   controllers.NetTakingsLowerController.onSubmit(mode: Mode = CheckMode)
 
-GET        /net-takings-liable-to-the-standard-rate-of-duty          controllers.NetTakingsStandardController.onPageLoad(mode: Mode = NormalMode)
-POST       /net-takings-liable-to-the-standard-rate-of-duty          controllers.NetTakingsStandardController.onSubmit(mode: Mode = NormalMode)
-GET        /change-net-takings-liable-to-the-standard-rate-of-duty   controllers.NetTakingsStandardController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-net-takings-liable-to-the-standard-rate-of-duty   controllers.NetTakingsStandardController.onSubmit(mode: Mode = CheckMode)
+GET        /net-takings-liable-to-standard-rate-of-duty          controllers.NetTakingsStandardController.onPageLoad(mode: Mode = NormalMode)
+POST       /net-takings-liable-to-standard-rate-of-duty          controllers.NetTakingsStandardController.onSubmit(mode: Mode = NormalMode)
+GET        /change-net-takings-liable-to-standard-rate-of-duty   controllers.NetTakingsStandardController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-net-takings-liable-to-standard-rate-of-duty   controllers.NetTakingsStandardController.onSubmit(mode: Mode = CheckMode)
 
 GET        /net-takings-liable-to-the-higher-rate-of-duty         controllers.NetTakingsHigherController.onPageLoad(mode: Mode = NormalMode)
 POST       /net-takings-liable-to-the-higher-rate-of-duty         controllers.NetTakingsHigherController.onSubmit(mode: Mode = NormalMode)
