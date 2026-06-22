@@ -1,0 +1,76 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.components._
+@import models.SubmittedReturns
+@import utils.DateTimeFormats
+
+@this(
+    govukTable: GovukTable,
+    layout: templates.Layout,
+    govukButton: GovukButton,
+    govukPanel: GovukPanel,
+    h2: H2,
+    p: Paragraph,
+    link: Link,
+    govukSummaryList: GovukSummaryList
+)
+
+@(regNumber: String, model: SubmittedReturns, sortBy: Int, orderBy: String)(implicit request: Request[_], messages: Messages)
+
+@link(label: String, href: String) = @{HtmlContent(s"""<a class="govuk-link" href="$href">$label</a>""")}
+
+@tableRows = @{
+model.items.zipWithIndex.map { case (item, i) =>
+        Seq(
+            TableRow(content = link(item.mgd_period, "#"), attributes = Map("data-testid" -> s"select-filed-return-mgd_period-$i")),
+            TableRow(content = Text(DateTimeFormats.formatDateMMM(Some(item.submitted_date))), attributes = Map("data-testid" -> s"select-filed-return-submitted_date-$i")),
+            TableRow(content = Text(item.ack_ref), attributes = Map("data-testid" -> s"select-filed-return-ack_ref-$i"))
+        )
+    }
+}
+
+@layout(
+    pageTitle     = titleNoForm(messages("selectFiledReturn.title")),
+    showBackLink  = true
+) {
+
+    <span class="govuk-caption-l" data-testid="select-filed-return-heading">
+        @messages("selectFiledReturn.heading")
+    </span>
+
+    <h1 class="govuk-heading-l" data-testid="select-filed-return-h1">
+        @if(model.items.isEmpty) {
+            @messages("selectFiledReturn.empty1")
+        } else {
+            @messages("selectFiledReturn.h1")
+        }
+    </h1>
+
+    @if(model.items.isEmpty) {
+        <p class="govuk-body">@messages("selectFiledReturn.empty2")</p>
+    } else {
+        @govukTable(Table(
+            attributes = Map("data-testid" -> "select-filed-return-table"),
+            head = Some(Seq(
+                HeadCell(content = Text(messages("selectFiledReturn.table.returnPeriod"))),
+                HeadCell(content = Text(messages("selectFiledReturn.table.dateFiled"))),
+                HeadCell(content = Text(messages("selectFiledReturn.table.reference")))
+            )),
+            rows = tableRows
+        ))
+    }
+}

@@ -34,3 +34,6 @@ GET        /net-takings-liable-to-the-higher-rate-of-duty         controllers.Ne
 POST       /net-takings-liable-to-the-higher-rate-of-duty         controllers.NetTakingsHigherController.onSubmit(mode: Mode = NormalMode)
 GET        /change-net-takings-liable-to-the-higher-rate-of-duty  controllers.NetTakingsHigherController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-net-takings-liable-to-the-higher-rate-of-duty  controllers.NetTakingsHigherController.onSubmit(mode: Mode = CheckMode)
+
+GET        /select-filed-return                  controllers.SubmittedReturnsController.onPageLoad(sortBy: Option[Int], orderBy: Option[String])
+

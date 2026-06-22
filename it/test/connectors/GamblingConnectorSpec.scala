@@ -18,14 +18,15 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import itutil.ApplicationWithWiremock
-import models.MgdCertificate
+import models.{MgdCertificate, SubmittedReturns, SubmittedReturnsItem}
+import org.scalatest.RecoverMethods.*
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.http.Status.*
 import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
-import org.scalatest.RecoverMethods.*
 
+import java.time.LocalDate
 import scala.concurrent.ExecutionContext
 
 class GamblingConnectorSpec extends AnyWordSpec with Matchers with ScalaFutures with IntegrationPatience with ApplicationWithWiremock {
@@ -148,6 +149,69 @@ class GamblingConnectorSpec extends AnyWordSpec with Matchers with ScalaFutures 
       }.map { ex =>
         ex.statusCode mustBe NOT_FOUND
       }
+    }
+  }
+
+  "getSubmittedReturns" should {
+
+    val regNumber = "XWM00003102200"
+    val submittedReturnsResponseJson =
+      s"""
+         |{
+         |  "items": [
+         |    {
+         |      "consec_no":12345,
+         |      "mgd_period":"01/01/2025 - 30/03/2025",
+         |      "submitted_date":"2025-04-01",
+         |      "ack_ref":"123456789012345"
+         |    }
+         |  ]
+         |}
+         |""".stripMargin
+
+    val expectedSubmittedReturnsResponse = SubmittedReturns(
+      items = Seq(
+        SubmittedReturnsItem(consec_no      = 12345,
+                             mgd_period     = "01/01/2025 - 30/03/2025",
+                             submitted_date = LocalDate.of(2025, 4, 1),
+                             ack_ref        = "123456789012345"
+                            )
+      )
+    )
+
+    "must return a deserialized SubmittedReturns for a 200 response" in {
+      stubFor(
+        get(urlEqualTo(s"/gambling/submitted-returns/$regNumber?sortBy=2&orderBy=DESC"))
+          .willReturn(okJson(submittedReturnsResponseJson))
+      )
+
+      val result = connector.getSubmittedReturns(regNumber, 2, "DESC").futureValue
+      result mustEqual expectedSubmittedReturnsResponse
+    }
+
+    "must forward the correct registration number in the URL" in {
+      val otherRegNumber = "XWM00003102999"
+
+      stubFor(
+        get(urlEqualTo(s"/gambling/submitted-returns/$otherRegNumber?sortBy=2&orderBy=DESC"))
+          .willReturn(okJson(submittedReturnsResponseJson))
+      )
+
+      val result = connector.getSubmittedReturns(otherRegNumber, 2, "DESC").futureValue
+      result mustEqual expectedSubmittedReturnsResponse
+    }
+
+    "must forward custom sortBy and orderBy query parameters" in {
+      val customSortBy = 1
+      val customOrderBy = "DESC"
+
+      stubFor(
+        get(urlEqualTo(s"/gambling/submitted-returns/$regNumber?sortBy=$customSortBy&orderBy=$customOrderBy"))
+          .willReturn(okJson(submittedReturnsResponseJson))
+      )
+
+      val result = connector.getSubmittedReturns(regNumber, customSortBy, customOrderBy).futureValue
+      result mustEqual expectedSubmittedReturnsResponse
     }
   }
 }
