@@ -17,29 +17,25 @@
 package views
 
 import base.SpecBase
-import forms.NetTakingsStandardFormProvider
+import forms.NetTakingsLowerFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import play.api.Application
-import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import play.twirl.api.HtmlFormat
-import views.html.NetTakingsStandardView
+import views.html.NetTakingsLowerView
 
-class NetTakingsStandardViewSpec extends SpecBase {
+class NetTakingsLowerViewSpec extends SpecBase {
 
-  "NetTakingsStandardView" - {
+  "NetTakingsLowerView" - {
 
     "must render the page with correct heading, caption and input" in new Setup {
 
-      val html: HtmlFormat.Appendable = view(form, NormalMode)
-      val doc: Document = Jsoup.parse(html.body)
+      val html = view(form, NormalMode)
+      val doc = Jsoup.parse(html.body)
 
-      doc.title must include(messages("netTakingsStandard.title"))
-      doc.select("h1").text mustBe messages("netTakingsStandard.heading")
-      doc.select(".govuk-caption-l").text mustBe messages("netTakingsStandard.caption", "1 Jan 2014", "31 Dec 2014")
+      doc.title must include(messages("netTakingsLower.title"))
+      doc.select("h1").text mustBe messages("netTakingsLower.heading")
+      doc.select(".govuk-caption-l").text mustBe messages("netTakingsLower.caption", "1 Jan 2014", "31 Dec 2014")
       doc.select(".govuk-input__prefix").text mustBe "£"
       doc.select("input.govuk-input").hasClass("govuk-input--width-15") mustBe true
       doc.select("button").text mustBe messages("site.continue")
@@ -47,28 +43,28 @@ class NetTakingsStandardViewSpec extends SpecBase {
 
     "must render error summary when form has errors" in new Setup {
 
-      val boundForm: Form[BigDecimal] = form.bind(Map("value" -> ""))
-      val html: HtmlFormat.Appendable = view(boundForm, NormalMode)
-      val doc: Document = Jsoup.parse(html.body)
+      val boundForm = form.bind(Map("value" -> ""))
+      val html = view(boundForm, NormalMode)
+      val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
-      doc.select(".govuk-error-summary__list a").text must include(messages("netTakingsStandard.error.required"))
+      doc.select(".govuk-error-summary__list a").text must include(messages("netTakingsLower.error.required"))
     }
 
     "must populate the input when form has a value" in new Setup {
 
-      val boundForm: Form[BigDecimal] = form.fill(BigDecimal("123.45"))
-      val html: HtmlFormat.Appendable = view(boundForm, NormalMode)
-      val doc: Document = Jsoup.parse(html.body)
+      val boundForm = form.fill(BigDecimal("123.45"))
+      val html = view(boundForm, NormalMode)
+      val doc = Jsoup.parse(html.body)
 
       doc.select("#value").`val` mustBe "123.45"
     }
   }
 
   trait Setup {
-    val app: Application = applicationBuilder().build()
-    val view: NetTakingsStandardView = app.injector.instanceOf[NetTakingsStandardView]
-    val form = new NetTakingsStandardFormProvider()()
+    val app = applicationBuilder().build()
+    val view = app.injector.instanceOf[NetTakingsLowerView]
+    val form = new NetTakingsLowerFormProvider()()
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 

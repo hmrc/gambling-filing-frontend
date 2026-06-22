@@ -67,7 +67,7 @@ netTakingsLower.title = What are your total net takings liable to the lower rate
 netTakingsLower.heading = What are your total net takings liable to the lower rate of duty?
 netTakingsLower.caption = File a return for {0} to {1}
 netTakingsLower.error.required = Enter your net takings
-netTakingsLower.error.invalid = Enter your net takings in pounds and pence
+netTakingsLower.error.invalid = Enter your net takings in pounds and pence, like 1,510.72
 netTakingsLower.error.range = Your net takings must be between -£1 billion and £1 billion
 
 netTakingsStandard.title = What are your total net takings liable to the standard rate of duty?
@@ -76,3 +76,10 @@ netTakingsStandard.caption = File a return for {0} to {1}
 netTakingsStandard.error.required = Enter your net takings
 netTakingsStandard.error.invalid = Enter your net takings in pounds and pence, like 1,510.72
 netTakingsStandard.error.range = Your net takings must be between -£1 billion and £1 billion
+
+netTakingsHigher.title = What are your total net takings liable to the higher rate of duty?
+netTakingsHigher.heading = What are your total net takings liable to the higher rate of duty?
+netTakingsHigher.caption = File a return for {0} to {1}
+netTakingsHigher.error.required = Enter your net takings
+netTakingsHigher.error.invalid = Enter your net takings in pounds and pence, like 1,510.72
+netTakingsHigher.error.range = Your net takings must be between -£1 billion and £1 billion
