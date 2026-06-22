@@ -37,7 +37,7 @@ class NetTakingsHigherViewSpec extends SpecBase {
       doc.select("h1").text mustBe messages("netTakingsHigher.heading")
       doc.select(".govuk-caption-l").text mustBe messages("netTakingsHigher.caption", "1 Jan 2014", "31 Dec 2014")
       doc.select(".govuk-input__prefix").text mustBe "£"
-      doc.select("input.govuk-input").hasClass("govuk-input--width-15") mustBe true
+      doc.select("input.govuk-input").hasClass("govuk-input--width-20") mustBe true
       doc.select("button").text mustBe messages("site.continue")
     }
 
