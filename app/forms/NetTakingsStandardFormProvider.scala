@@ -27,7 +27,7 @@ class NetTakingsStandardFormProvider @Inject() extends Mappings {
       "value" -> currency(
         "netTakingsStandard.error.required",
         "netTakingsStandard.error.invalid",
-        "netTakingsStanadard.error.range"
+        "netTakingsStandard.error.range"
       )
     )
 }
