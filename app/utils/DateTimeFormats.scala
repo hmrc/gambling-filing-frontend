@@ -21,6 +21,7 @@ import play.api.i18n.{Lang, Messages}
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
+import scala.util.Try
 
 object DateTimeFormats {
 
@@ -51,5 +52,18 @@ object DateTimeFormats {
 
   def formatDateMMM(date: Option[LocalDate])(implicit messages: Messages): String =
     date.map(_.format(dateTimeFormatMMM()(messages.lang))).getOrElse("")
+
+  def parseMgdPeriod(mgdPeriod: String): Option[(LocalDate, LocalDate)] = {
+    val mgdPeriodFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+    mgdPeriod.split(" - ") match {
+      case Array(start, end) =>
+        for {
+          startDate <- Try(LocalDate.parse(start.trim, mgdPeriodFormatter)).toOption
+          endDate   <- Try(LocalDate.parse(end.trim, mgdPeriodFormatter)).toOption
+        } yield (startDate, endDate)
+      case _ => None
+    }
+  }
 
 }

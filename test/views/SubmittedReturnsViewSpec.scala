@@ -41,13 +41,18 @@ class SubmittedReturnsViewSpec extends SpecBase {
       doc.title() must include(messages(app)("selectFiledReturn.title"))
       val pageText = doc.body().text()
 
-      pageText must include("10/02/2024 - 29/04/2024")
+      pageText must include("10 Feb 2024 to 29 Apr 2024")
       pageText must include("1 May 2024")
       pageText must include("111222111222")
 
       doc.select(".govuk-table__cell").text must include("111222111222")
 
-      doc.select("a[href='#']").attr("href") mustBe "#"
+      val links = doc.select(".govuk-table__cell a")
+      links.size() mustBe validResponseSubmittedReturns.items.size
+
+      validResponseSubmittedReturns.items.zipWithIndex.foreach { case (item, i) =>
+        links.get(i).attr("href") mustEqual controllers.routes.SubmittedReturnsController.viewFiledReturn(item.consec_no).url
+      }
     }
 
     "must render no SubmittedReturns details correctly when no data" in {
@@ -64,9 +69,8 @@ class SubmittedReturnsViewSpec extends SpecBase {
       doc.title() must include(messages(app)("selectFiledReturn.title"))
       val pageText = doc.body().text()
 
-      pageText must include("No submitted returns")
-      pageText must include("You have not submitted any Machine Game Duty returns.")
-
+      pageText must include("No filed returns")
+      pageText must include("You have not filed any Machine Game Duty returns.")
     }
   }
 }

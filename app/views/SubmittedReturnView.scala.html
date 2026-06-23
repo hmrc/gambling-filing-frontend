@@ -1,0 +1,107 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.components._
+@import models.SubmittedReturnSingle
+@import utils.DateTimeFormats
+@import java.time.LocalDate
+
+@this(
+    layout: templates.Layout,
+    govukTable: GovukTable,
+    link: Link
+)
+
+@(model: SubmittedReturnSingle)(implicit request: Request[_], messages: Messages)
+
+@dateRange = @{
+    val parsedMgdPeriod = DateTimeFormats.parseMgdPeriod(model.mgdPeriod)
+    messages("submittedReturn.caption.dates", DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._1)), DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._2)))
+}
+
+@layout(pageTitle = titleNoForm(messages("submittedReturn.title"))) {
+    <h1 class="govuk-caption-l" data-testid="submitted-return-heading">@messages("submittedReturn.heading")</h1>
+    <span class="govuk-heading-l">@dateRange</span>
+    <span class="govuk-heading-m">@messages("submittedReturn.submissionDetails")</span>
+    @govukTable(Table(
+        attributes = Map("data-testid" -> "submission-details-table"),
+        rows = Seq(
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.submittedDate")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(DateTimeFormats.formatDateMMM(Some(model.submittedDate))))
+            ),
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.ackRef")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(model.ackRef))
+            )
+        )
+    ))
+
+    <h3 class="govuk-heading-m">@messages("submittedReturn.returnDetails")</h3>
+    @govukTable(Table(
+        attributes = Map("data-testid" -> "return-details-table"),
+        rows = Seq(
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.noOfMachines")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(model.noOfMachines.toString), format = Some("numeric"))
+            ),
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.netTakingsLowerRate")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(s"£${model.netTakingsLowerRate}"), format = Some("numeric"))
+            ),
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.totalDueLowerRate")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(s"£${model.totalDueLowerRate}"), format = Some("numeric"))
+            ),
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.netTakingsStdRate")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(s"£${model.netTakingsStdRate}"), format = Some("numeric"))
+            ),
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.totalDueStdRate")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(s"£${model.totalDueStdRate}"), format = Some("numeric"))
+            ),
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.netTakingsHigherRate")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(s"£${model.netTakingsHigherRate}"), format = Some("numeric"))
+            ),
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.totalDueHigherRate")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(s"£${model.totalDueHigherRate}"), format = Some("numeric"))
+            ),
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.dutyPayable")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(s"£${model.dutyPayable}"), format = Some("numeric"))
+            ),
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.underDeclaredDuty")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(s"£${model.underDeclaredDuty}"), format = Some("numeric"))
+            ),
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.previousReturnAmount")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(s"£${model.previousReturnAmount}"), format = Some("numeric"))
+            ),
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.negativeAmountCarriedForward")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(s"£${model.negativeAmountCarriedForward}"), format = Some("numeric"))
+            ),
+            Seq(
+                TableRow(content = Text(messages("submittedReturn.totalNetDutyPayable")), classes = "govuk-!-font-weight-bold"),
+                TableRow(content = Text(s"£${model.totalNetDutyPayable}"), format = Some("numeric"))
+            )
+        )
+    ))
+}

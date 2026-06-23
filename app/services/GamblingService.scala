@@ -17,7 +17,7 @@
 package services
 
 import connectors.GamblingConnector
-import models.SubmittedReturns
+import models.{SubmittedReturnSingle, SubmittedReturns}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -27,4 +27,7 @@ class GamblingService @Inject() (connector: GamblingConnector) {
 
   def getSubmittedReturns(regNumber: String, sortBy: Int, orderBy: String)(implicit hc: HeaderCarrier): Future[SubmittedReturns] =
     connector.getSubmittedReturns(regNumber, sortBy, orderBy)
+
+  def getSubmittedReturn(mgdRegNumber: String, consecNo: Int)(implicit hc: HeaderCarrier): Future[SubmittedReturnSingle] =
+    connector.getSubmittedReturn(mgdRegNumber, consecNo)
 }

@@ -18,7 +18,7 @@ package connectors
 
 import com.github.tomakehurst.wiremock.client.WireMock.*
 import itutil.ApplicationWithWiremock
-import models.{MgdCertificate, SubmittedReturns, SubmittedReturnsItem}
+import models.{MgdCertificate, SubmittedReturnSingle, SubmittedReturns, SubmittedReturnsItem}
 import org.scalatest.RecoverMethods.*
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.must.Matchers
@@ -212,6 +212,128 @@ class GamblingConnectorSpec extends AnyWordSpec with Matchers with ScalaFutures 
 
       val result = connector.getSubmittedReturns(regNumber, customSortBy, customOrderBy).futureValue
       result mustEqual expectedSubmittedReturnsResponse
+    }
+  }
+
+  "getSubmittedReturn" should {
+
+    val regNumber = "XWM00003102200"
+    val consecNo  = 12345
+
+    def submittedReturnResponseJson(consecNo: Int = consecNo) =
+      s"""
+         |{
+         |  "consecNo": $consecNo,
+         |  "mgdPeriod": "01/01/2025 - 30/03/2025",
+         |  "submittedDate": "2025-04-01",
+         |  "ackRef": "123456789012345",
+         |  "noOfMachines": 10,
+         |  "netTakingsHigherRate": 5000.00,
+         |  "netTakingsStdRate": 3000.00,
+         |  "netTakingsLowerRate": 1000.00,
+         |  "totalDueHigherRate": 1500.00,
+         |  "totalDueStdRate": 600.00,
+         |  "totalDueLowerRate": 50.00,
+         |  "dutyPayable": 2150.00,
+         |  "underDeclaredDuty": 0.00,
+         |  "previousReturnAmount": 0.00,
+         |  "negativeAmountCarriedForward": 0.00,
+         |  "totalNetDutyPayable": 2150.00
+         |}
+         |""".stripMargin
+
+    val expectedSubmittedReturnResponse = SubmittedReturnSingle(
+      consecNo                     = consecNo,
+      mgdPeriod                    = "01/01/2025 - 30/03/2025",
+      submittedDate                = LocalDate.of(2025, 4, 1),
+      ackRef                       = "123456789012345",
+      noOfMachines                 = 10,
+      netTakingsHigherRate         = BigDecimal(5000.00),
+      netTakingsStdRate            = BigDecimal(3000.00),
+      netTakingsLowerRate          = BigDecimal(1000.00),
+      totalDueHigherRate           = BigDecimal(1500.00),
+      totalDueStdRate              = BigDecimal(600.00),
+      totalDueLowerRate            = BigDecimal(50.00),
+      dutyPayable                  = BigDecimal(2150.00),
+      underDeclaredDuty            = BigDecimal(0.00),
+      previousReturnAmount         = BigDecimal(0.00),
+      negativeAmountCarriedForward = BigDecimal(0.00),
+      totalNetDutyPayable          = BigDecimal(2150.00)
+    )
+
+    "must return a deserialized SubmittedReturnSingle for a 200 response" in {
+      stubFor(
+        get(urlEqualTo(s"/gambling/submitted-return-details/$regNumber/$consecNo"))
+          .willReturn(okJson(submittedReturnResponseJson()))
+      )
+
+      val result = connector.getSubmittedReturn(regNumber, consecNo).futureValue
+      result mustEqual expectedSubmittedReturnResponse
+    }
+
+    "must forward the correct registration number and consecNo in the URL" in {
+      val otherRegNumber = "XWM00003102999"
+      val otherConsecNo  = 99999
+
+      stubFor(
+        get(urlEqualTo(s"/gambling/submitted-return-details/$otherRegNumber/$otherConsecNo"))
+          .willReturn(okJson(submittedReturnResponseJson(otherConsecNo)))
+      )
+
+      val result = connector.getSubmittedReturn(otherRegNumber, otherConsecNo).futureValue
+      result.consecNo mustEqual otherConsecNo
+    }
+
+    "must fail when BE returns 200 with invalid JSON" in {
+      stubFor(
+        get(urlEqualTo(s"/gambling/submitted-return-details/$regNumber/$consecNo"))
+          .willReturn(
+            aResponse()
+              .withStatus(OK)
+              .withHeader("Content-Type", "application/json")
+              .withBody("""{ "unexpectedField": true }""")
+          )
+      )
+
+      val ex = intercept[Exception] {
+        connector.getSubmittedReturn(regNumber, consecNo).futureValue
+      }
+
+      ex.getMessage.toLowerCase must include("js")
+    }
+
+    "must propagate UpstreamErrorResponse when BE returns 500" in {
+      stubFor(
+        get(urlEqualTo(s"/gambling/submitted-return-details/$regNumber/$consecNo"))
+          .willReturn(
+            aResponse()
+              .withStatus(INTERNAL_SERVER_ERROR)
+              .withBody("boom")
+          )
+      )
+
+      recoverToExceptionIf[UpstreamErrorResponse] {
+        connector.getSubmittedReturn(regNumber, consecNo)
+      }.map { ex =>
+        ex.statusCode mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "must propagate UpstreamErrorResponse when BE returns 404" in {
+      stubFor(
+        get(urlEqualTo(s"/gambling/submitted-return-details/$regNumber/$consecNo"))
+          .willReturn(
+            aResponse()
+              .withStatus(NOT_FOUND)
+              .withBody("not found")
+          )
+      )
+
+      recoverToExceptionIf[UpstreamErrorResponse] {
+        connector.getSubmittedReturn(regNumber, consecNo)
+      }.map { ex =>
+        ex.statusCode mustBe NOT_FOUND
+      }
     }
   }
 }
