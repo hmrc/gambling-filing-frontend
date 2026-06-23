@@ -25,8 +25,8 @@ import scala.concurrent.Future
 
 class GamblingService @Inject() (connector: GamblingConnector) {
 
-  def getSubmittedReturns(regNumber: String, sortBy: Int, orderBy: String)(implicit hc: HeaderCarrier): Future[SubmittedReturns] =
-    connector.getSubmittedReturns(regNumber, sortBy, orderBy)
+  def getSubmittedReturns(mgdRegNumber: String, sortBy: Int, orderBy: String)(implicit hc: HeaderCarrier): Future[SubmittedReturns] =
+    connector.getSubmittedReturns(mgdRegNumber, sortBy, orderBy)
 
   def getSubmittedReturn(mgdRegNumber: String, consecNo: Int)(implicit hc: HeaderCarrier): Future[SubmittedReturnSingle] =
     connector.getSubmittedReturn(mgdRegNumber, consecNo)

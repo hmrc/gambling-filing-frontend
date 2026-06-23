@@ -47,8 +47,8 @@ class SubmittedReturnViewSpec extends SpecBase {
   "SubmittedReturnView" - {
 
     "must render the page title" in {
-      val app     = applicationBuilder().build()
-      val view    = app.injector.instanceOf[views.html.SubmittedReturnView]
+      val app = applicationBuilder().build()
+      val view = app.injector.instanceOf[views.html.SubmittedReturnView]
       val request = FakeRequest()
 
       val doc = Jsoup.parse(view(filedReturn)(request, messages(app)).body)
@@ -57,11 +57,11 @@ class SubmittedReturnViewSpec extends SpecBase {
     }
 
     "must render the header text correctly" in {
-      val app     = applicationBuilder().build()
-      val view    = app.injector.instanceOf[views.html.SubmittedReturnView]
+      val app = applicationBuilder().build()
+      val view = app.injector.instanceOf[views.html.SubmittedReturnView]
       val request = FakeRequest()
 
-      val doc      = Jsoup.parse(view(filedReturn)(request, messages(app)).body)
+      val doc = Jsoup.parse(view(filedReturn)(request, messages(app)).body)
       val pageText = doc.body().text()
 
       pageText must include(messages(app)("submittedReturn.heading"))
@@ -73,11 +73,11 @@ class SubmittedReturnViewSpec extends SpecBase {
     }
 
     "must render the submission details table with date submitted and acknowledgement reference" in {
-      val app     = applicationBuilder().build()
-      val view    = app.injector.instanceOf[views.html.SubmittedReturnView]
+      val app = applicationBuilder().build()
+      val view = app.injector.instanceOf[views.html.SubmittedReturnView]
       val request = FakeRequest()
 
-      val doc      = Jsoup.parse(view(filedReturn)(request, messages(app)).body)
+      val doc = Jsoup.parse(view(filedReturn)(request, messages(app)).body)
       val pageText = doc.body().text()
 
       pageText must include(messages(app)("submittedReturn.submittedDate"))
@@ -89,11 +89,11 @@ class SubmittedReturnViewSpec extends SpecBase {
     }
 
     "must render the return details table with all fields" in {
-      val app     = applicationBuilder().build()
-      val view    = app.injector.instanceOf[views.html.SubmittedReturnView]
+      val app = applicationBuilder().build()
+      val view = app.injector.instanceOf[views.html.SubmittedReturnView]
       val request = FakeRequest()
 
-      val doc      = Jsoup.parse(view(filedReturn)(request, messages(app)).body)
+      val doc = Jsoup.parse(view(filedReturn)(request, messages(app)).body)
       val pageText = doc.body().text()
 
       pageText must include(messages(app)("submittedReturn.noOfMachines"))
