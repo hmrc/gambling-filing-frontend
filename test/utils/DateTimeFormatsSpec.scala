@@ -19,7 +19,7 @@ package utils
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import play.api.i18n.Lang
-import utils.DateTimeFormats.{dateTimeFormat, dateTimeFormatMMM}
+import utils.DateTimeFormats.{dateTimeFormat, dateTimeFormatMMM, parseMgdPeriod}
 
 import java.time.LocalDate
 
@@ -64,6 +64,39 @@ class DateTimeFormatsSpec extends AnyFreeSpec with Matchers {
       val formatter = dateTimeFormatMMM()(Lang("de"))
       val result = LocalDate.of(2023, 1, 1).format(formatter)
       result mustEqual "1 Jan 2023"
+    }
+  }
+
+  ".parseMgdPeriod" - {
+
+    "must parse a valid period and return the correct start and end dates" in {
+      val result = parseMgdPeriod("01/03/2025 - 30/06/2025")
+      result mustBe Some((LocalDate.of(2025, 3, 1), LocalDate.of(2025, 6, 30)))
+    }
+
+    "must return None when the separator is missing" in {
+      val result = parseMgdPeriod("01/03/2025 30/06/2025")
+      result mustBe None
+    }
+
+    "must return None when the start date is invalid" in {
+      val result = parseMgdPeriod("99/03/2025 - 30/06/2025")
+      result mustBe None
+    }
+
+    "must return None when the end date is invalid" in {
+      val result = parseMgdPeriod("01/03/2025 - 99/06/2025")
+      result mustBe None
+    }
+
+    "must return None for an empty string" in {
+      val result = parseMgdPeriod("")
+      result mustBe None
+    }
+
+    "must return None when the date format is wrong" in {
+      val result = parseMgdPeriod("2025-03-01 - 2025-06-30")
+      result mustBe None
     }
   }
 }

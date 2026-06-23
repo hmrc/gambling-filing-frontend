@@ -33,10 +33,15 @@
 
 @link(label: String, href: String) = @{HtmlContent(s"""<a class="govuk-link" href="$href">$label</a>""")}
 
+@dateRange(mgdPeriod: String) = @{
+    val parsedMgdPeriod = DateTimeFormats.parseMgdPeriod(mgdPeriod)
+    messages("selectFiledReturn.table.returnPeriod.dates", DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._1)), DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._2)))
+}
+
 @tableRows = @{
 model.items.zipWithIndex.map { case (item, i) =>
         Seq(
-            TableRow(content = link(item.mgd_period, "#"), attributes = Map("data-testid" -> s"select-filed-return-mgd_period-$i")),
+            TableRow(content = link(dateRange(item.mgd_period), routes.SubmittedReturnsController.viewFiledReturn(item.consec_no).url), attributes = Map("data-testid" -> s"select-filed-return-mgd_period-$i")),
             TableRow(content = Text(DateTimeFormats.formatDateMMM(Some(item.submitted_date))), attributes = Map("data-testid" -> s"select-filed-return-submitted_date-$i")),
             TableRow(content = Text(item.ack_ref), attributes = Map("data-testid" -> s"select-filed-return-ack_ref-$i"))
         )

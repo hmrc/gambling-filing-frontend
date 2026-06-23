@@ -17,7 +17,7 @@
 package services
 
 import connectors.GamblingConnector
-import models.{SubmittedReturns, SubmittedReturnsItem}
+import models.{SubmittedReturnSingle, SubmittedReturns, SubmittedReturnsItem}
 import org.mockito.ArgumentMatchers.{any, eq as eqTo}
 import org.mockito.Mockito.*
 import org.scalatest.concurrent.ScalaFutures
@@ -34,6 +34,26 @@ class GamblingServiceSpec extends AnyWordSpec with Matchers with ScalaFutures wi
   implicit val ec: ExecutionContext = ExecutionContext.global
   implicit val hc: HeaderCarrier = HeaderCarrier()
   private val regNumber = "XWM00003102200"
+  private val consecNo = 12345
+
+  private val filedReturn = SubmittedReturnSingle(
+    consecNo                     = consecNo,
+    mgdPeriod                    = "01/01/2025 - 30/03/2025",
+    submittedDate                = LocalDate.of(2025, 4, 1),
+    ackRef                       = "123456789012345",
+    noOfMachines                 = 10,
+    netTakingsHigherRate         = BigDecimal(5000.00),
+    netTakingsStdRate            = BigDecimal(3000.00),
+    netTakingsLowerRate          = BigDecimal(1000.00),
+    totalDueHigherRate           = BigDecimal(1500.00),
+    totalDueStdRate              = BigDecimal(600.00),
+    totalDueLowerRate            = BigDecimal(50.00),
+    dutyPayable                  = BigDecimal(2150.00),
+    underDeclaredDuty            = BigDecimal(0.00),
+    previousReturnAmount         = BigDecimal(0.00),
+    negativeAmountCarriedForward = BigDecimal(0.00),
+    totalNetDutyPayable          = BigDecimal(2150.00)
+  )
 
   "GamblingService#getSubmittedReturns" should {
 
@@ -68,6 +88,32 @@ class GamblingServiceSpec extends AnyWordSpec with Matchers with ScalaFutures wi
 
       val service = new GamblingService(mockConnector)
       val result = service.getSubmittedReturns(regNumber, sortBy, orderBy).failed.futureValue
+
+      result mustEqual exception
+    }
+  }
+
+  "GamblingService#getSubmittedReturn" should {
+
+    "must delegate to the connector with the correct arguments and return its result" in {
+      val mockConnector = mock[GamblingConnector]
+      when(mockConnector.getSubmittedReturn(eqTo(regNumber), eqTo(consecNo))(any[HeaderCarrier]))
+        .thenReturn(Future.successful(filedReturn))
+
+      val service = new GamblingService(mockConnector)
+      val result = service.getSubmittedReturn(regNumber, consecNo).futureValue
+
+      result mustEqual filedReturn
+    }
+
+    "must propagate failures from the connector" in {
+      val mockConnector = mock[GamblingConnector]
+      val exception = new RuntimeException("upstream failure")
+      when(mockConnector.getSubmittedReturn(eqTo(regNumber), eqTo(consecNo))(any[HeaderCarrier]))
+        .thenReturn(Future.failed(exception))
+
+      val service = new GamblingService(mockConnector)
+      val result = service.getSubmittedReturn(regNumber, consecNo).failed.futureValue
 
       result mustEqual exception
     }

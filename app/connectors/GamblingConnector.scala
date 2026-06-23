@@ -16,7 +16,7 @@
 
 package connectors
 
-import models.{MgdCertificate, SubmittedReturns}
+import models.{MgdCertificate, SubmittedReturnSingle, SubmittedReturns}
 import play.api.Logging
 import play.api.http.Status.OK
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -58,9 +58,14 @@ class GamblingConnector @Inject() (config: ServicesConfig, http: HttpClientV2)(i
       }
   }
 
-  def getSubmittedReturns(regNumber: String, sortBy: Int, orderBy: String)(using hc: HeaderCarrier): Future[SubmittedReturns] =
+  def getSubmittedReturns(mgdRegNumber: String, sortBy: Int, orderBy: String)(using hc: HeaderCarrier): Future[SubmittedReturns] =
     http
-      .get(url"$baseUrl/submitted-returns/$regNumber?sortBy=$sortBy&orderBy=$orderBy")
+      .get(url"$baseUrl/submitted-returns/$mgdRegNumber?sortBy=$sortBy&orderBy=$orderBy")
       .execute[SubmittedReturns]
 
+  def getSubmittedReturn(mgdRegNumber: String, consecNo: Int)(implicit hc: HeaderCarrier): Future[SubmittedReturnSingle] = {
+    http
+      .get(url"$baseUrl/submitted-return-details/$mgdRegNumber/$consecNo")
+      .execute[SubmittedReturnSingle]
+  }
 }
