@@ -29,7 +29,7 @@
     govukSummaryList: GovukSummaryList
 )
 
-@(regNumber: String, model: SubmittedReturns, sortBy: Int, orderBy: String)(implicit request: Request[_], messages: Messages)
+@(regNumber: String, model: SubmittedReturns)(implicit request: Request[_], messages: Messages)
 
 @link(label: String, href: String) = @{HtmlContent(s"""<a class="govuk-link" href="$href">$label</a>""")}
 

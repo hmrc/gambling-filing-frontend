@@ -17,8 +17,8 @@
 package controllers
 
 import base.SpecBase
-import models.SubmittedReturnsTestData.{validResponseSubmittedReturns, zeroResponseSubmittedReturns}
 import models.SubmittedReturnSingle
+import models.SubmittedReturnsTestData.{validResponseSubmittedReturns, zeroResponseSubmittedReturns}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -27,7 +27,7 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import services.GamblingService
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.{SubmittedReturnView, SubmittedReturnsView}
+import views.html.SubmittedReturnsView
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -37,7 +37,7 @@ class SubmittedReturnsControllerSpec extends SpecBase with MockitoSugar {
   private val regNumber = "XWM00003102200"
   private val consecNo = 12345
 
-  lazy val SubmittedReturnsRoute: String = routes.SubmittedReturnsController.onPageLoad(2, "DESC").url
+  lazy val SubmittedReturnsRoute: String = routes.SubmittedReturnsController.onPageLoad().url
   lazy val ViewFiledReturnRoute: String = routes.SubmittedReturnsController.viewFiledReturn(consecNo).url
 
   private val filedReturn = SubmittedReturnSingle(
@@ -78,7 +78,7 @@ class SubmittedReturnsControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SubmittedReturnsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(regNumber, validResponseSubmittedReturns, 2, "DESC")(request, messages(application)).toString
+        contentAsString(result) mustEqual view(regNumber, validResponseSubmittedReturns)(request, messages(application)).toString
       }
     }
 
@@ -99,7 +99,7 @@ class SubmittedReturnsControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SubmittedReturnsView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(regNumber, zeroResponseSubmittedReturns, 2, "DESC")(request, messages(application)).toString
+        contentAsString(result) mustEqual view(regNumber, zeroResponseSubmittedReturns)(request, messages(application)).toString
       }
     }
   }

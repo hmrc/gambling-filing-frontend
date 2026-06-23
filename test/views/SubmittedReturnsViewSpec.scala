@@ -35,7 +35,7 @@ class SubmittedReturnsViewSpec extends SpecBase {
 
       val base = validResponseSubmittedReturns
 
-      val html = view(regNumber, base, 2, "DESC")(request, messages(app))
+      val html = view(regNumber, base)(request, messages(app))
       val doc = Jsoup.parse(html.body)
 
       doc.title() must include(messages(app)("selectFiledReturn.title"))
@@ -63,7 +63,7 @@ class SubmittedReturnsViewSpec extends SpecBase {
 
       val base = zeroResponseSubmittedReturns
 
-      val html = view(regNumber, base, 2, "DESC")(request, messages(app))
+      val html = view(regNumber, base)(request, messages(app))
       val doc = Jsoup.parse(html.body)
 
       doc.title() must include(messages(app)("selectFiledReturn.title"))

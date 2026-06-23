@@ -22,11 +22,10 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GamblingService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.SubmittedReturnsView
-import views.html.SubmittedReturnView
+import views.html.{SubmittedReturnView, SubmittedReturnsView}
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class SubmittedReturnsController @Inject() (
   val controllerComponents: MessagesControllerComponents,
@@ -40,30 +39,19 @@ class SubmittedReturnsController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(sortBy: Int = 3, orderBy: String = "ASC"): Action[AnyContent] =
+  def onPageLoad(): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
-      val regNumber = request.mgdRefNum
-      val logTxt = s"[SubmittedReturnsController][onPageLoad] for regNumber=$regNumber : sortBy=$sortBy : orderBy=$orderBy :"
+      val mgdRefNum = request.mgdRefNum
+      val SUBMITTED_DATE = 2
+      val logTxt = s"[SubmittedReturnsController][onPageLoad] for mgdRefNum=$mgdRefNum"
 
-      sortBy match {
-        case 1 | 2 | 3 =>
-          orderBy.trim.toUpperCase() match {
-            case order @ ("ASC" | "DESC") =>
-              gamblingService
-                .getSubmittedReturns(regNumber, sortBy, order)
-                .map(submittedReturns => Ok(submittedReturnsView(regNumber, submittedReturns, sortBy, order)))
-                .recover { case _ =>
-                  logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED")
-                  Redirect(controllers.routes.SystemErrorController.onPageLoad())
-                }
-            case _ =>
-              logger.error(s"$logTxt INVALID orderBy")
-              Future.successful(Redirect(controllers.routes.SystemErrorController.onPageLoad()))
-          }
-        case _ =>
-          logger.error(s"$logTxt INVALID sortBy")
-          Future.successful(Redirect(controllers.routes.SystemErrorController.onPageLoad()))
-      }
+      gamblingService
+        .getSubmittedReturns(mgdRefNum, SUBMITTED_DATE, "DESC")
+        .map(submittedReturns => Ok(submittedReturnsView(mgdRefNum, submittedReturns)))
+        .recover { case _ =>
+          logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED")
+          Redirect(controllers.routes.SystemErrorController.onPageLoad())
+        }
     }
 
   def viewFiledReturn(consecNo: Int): Action[AnyContent] =
