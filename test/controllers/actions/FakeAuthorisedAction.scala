@@ -18,17 +18,16 @@ package controllers.actions
 
 import models.Regime
 import models.requests.AuthorisedRequest
-
-import javax.inject.Inject
 import play.api.mvc.*
 import uk.gov.hmrc.auth.core.AffinityGroup
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeAuthorisedAction @Inject() (bodyParsers: PlayBodyParsers) extends AuthorisedAction {
+class FakeAuthorisedAction @Inject() (bodyParsers: PlayBodyParsers, regime: Regime = Regime.MGD) extends AuthorisedAction {
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
-    block(AuthorisedRequest(request, AffinityGroup.Organisation, "id", Regime.MGD))
+    block(AuthorisedRequest(request, AffinityGroup.Organisation, "id", regime))
 
   override def parser: BodyParser[AnyContent] =
     bodyParsers.default
