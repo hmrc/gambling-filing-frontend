@@ -46,7 +46,7 @@ class SubmittedReturnsController @Inject() (
       val logTxt = s"[SubmittedReturnsController][onPageLoad] for mgdRefNum=$mgdRefNum"
 
       gamblingService
-        .getSubmittedReturns(mgdRefNum, SortBy.SubmittedDate, OrderBy.Descending)
+        .getSubmittedReturns(mgdRefNum, SortBy.PeriodStartDate, OrderBy.Descending)
         .map(submittedReturns => Ok(submittedReturnsView(mgdRefNum, submittedReturns)))
         .recover { case ex =>
           logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED", ex)
