@@ -18,6 +18,7 @@ package controllers.actions
 
 import com.google.inject.ImplementedBy
 import config.FrontendAppConfig
+import models.Regime
 import models.requests.AuthorisedRequest
 import play.api.Logging
 import play.api.mvc.*
@@ -51,17 +52,19 @@ class DefaultAuthorisedAction @Inject() (
     authorised()
       .retrieve(Retrievals.affinityGroup.and(Retrievals.allEnrolments)) {
         case Some(affinityGroup @ AffinityGroup.Agent) ~ AuthorisedAction.HasActiveAgentEnrolment(
-              mgdRefNum
+              regNum,
+              regime
             ) =>
-          block(AuthorisedRequest(request, affinityGroup, mgdRefNum))
+          block(AuthorisedRequest(request, affinityGroup, regNum, regime))
         case Some(AffinityGroup.Agent) ~ _ =>
           logger.warn(s"Agent auth failed: enrolment missing or not activated for ${request.path}")
           Future.failed(InsufficientEnrolments("Agent enrolment missing or not activated"))
 
         case Some(affinityGroup @ AffinityGroup.Organisation) ~ AuthorisedAction.HasActiveOrganisationEnrolment(
-              mgdRefNum
+              regNum,
+              regime
             ) =>
-          block(AuthorisedRequest(request, affinityGroup, mgdRefNum))
+          block(AuthorisedRequest(request, affinityGroup, regNum, regime))
         case Some(AffinityGroup.Organisation) ~ _ =>
           logger.warn(s"Organisation auth failed: enrolment missing or not activated for ${request.path}")
           Future.failed(InsufficientEnrolments("Organisation enrolment missing or not activated"))
@@ -84,16 +87,16 @@ class DefaultAuthorisedAction @Inject() (
 
 object AuthorisedAction {
 
-  private val organisationEnrolments: Seq[(String, String)] = Seq(
-    "HMRC-MGD-ORG" -> "HMRCMGDRN",
-    "HMRC-GTS-GBD" -> "HMRCGTSGBRN",
-    "HMRC-GTS-PBD" -> "HMRCGTSGBRN",
-    "HMRC-GTS-RGD" -> "HMRCGTSGBRN"
+  private val organisationEnrolments: Seq[(String, String, Regime)] = Seq(
+    ("HMRC-MGD-ORG", "HMRCMGDRN", Regime.MGD),
+    ("HMRC-GTS-GBD", "HMRCGTSGBRN", Regime.GBD),
+    ("HMRC-GTS-PBD", "HMRCGTSGBRN", Regime.PBD),
+    ("HMRC-GTS-RGD", "HMRCGTSGBRN", Regime.RGD)
   )
 
-  private val agentEnrolments: Seq[(String, String)] = Seq(
-    "HMRC-MGD-AGNT" -> "HMRCMGDAGENTREF",
-    "HMRC-GTS-AGNT" -> "HMRCGTSAGENTREF"
+  private val agentEnrolments: Seq[(String, String, Regime)] = Seq(
+    ("HMRC-MGD-AGNT", "HMRCMGDAGENTREF", Regime.MGD),
+    ("HMRC-GTS-AGNT", "HMRCGTSAGENTREF", Regime.GBD)
   )
 
   private def getEnrolmentIdentifier(
@@ -110,16 +113,18 @@ object AuthorisedAction {
         .filter(_.nonEmpty)
     }
 
-  private def findActiveEnrolment(enrolments: Enrolments, candidates: Seq[(String, String)]): Option[String] =
-    candidates.view.flatMap { case (key, identifier) => getEnrolmentIdentifier(enrolments, key, identifier) }.headOption
+  private def findActiveEnrolment(enrolments: Enrolments, candidates: Seq[(String, String, Regime)]): Option[(String, Regime)] =
+    candidates.view.flatMap { case (key, identifier, regime) =>
+      getEnrolmentIdentifier(enrolments, key, identifier).map(_ -> regime)
+    }.headOption
 
   object HasActiveAgentEnrolment {
-    def unapply(enrolments: Enrolments): Option[String] =
+    def unapply(enrolments: Enrolments): Option[(String, Regime)] =
       findActiveEnrolment(enrolments, agentEnrolments)
   }
 
   object HasActiveOrganisationEnrolment {
-    def unapply(enrolments: Enrolments): Option[String] =
+    def unapply(enrolments: Enrolments): Option[(String, Regime)] =
       findActiveEnrolment(enrolments, organisationEnrolments)
   }
 }

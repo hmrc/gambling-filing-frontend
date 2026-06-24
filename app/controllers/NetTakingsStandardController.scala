@@ -60,7 +60,7 @@ class NetTakingsStandardController @Inject() (
       .fold(
         formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
         value => {
-          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.mgdRefNum))
+          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
           for {
             updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsStandardPage, value))
             _              <- sessionRepository.set(updatedAnswers)

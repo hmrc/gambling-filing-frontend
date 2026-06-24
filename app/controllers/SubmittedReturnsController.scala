@@ -42,12 +42,12 @@ class SubmittedReturnsController @Inject() (
 
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
-      val mgdRefNum = request.mgdRefNum
-      val logTxt = s"[SubmittedReturnsController][onPageLoad] for mgdRefNum=$mgdRefNum"
+      val regNum = request.regNum
+      val logTxt = s"[SubmittedReturnsController][onPageLoad] for regNum=$regNum"
 
       gamblingService
-        .getSubmittedReturns(mgdRefNum, SortBy.PeriodStartDate, OrderBy.Descending)
-        .map(submittedReturns => Ok(submittedReturnsView(mgdRefNum, submittedReturns)))
+        .getSubmittedReturns(regNum, SortBy.PeriodStartDate, OrderBy.Descending)
+        .map(submittedReturns => Ok(submittedReturnsView(regNum, submittedReturns)))
         .recover { case ex =>
           logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED", ex)
           Redirect(controllers.routes.SystemErrorController.onPageLoad())
@@ -56,13 +56,13 @@ class SubmittedReturnsController @Inject() (
 
   def viewFiledReturn(consecNo: Int): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
-      val mgdRefNum = request.mgdRefNum
+      val regNum = request.regNum
 
       gamblingService
-        .getSubmittedReturn(mgdRefNum, consecNo)
+        .getSubmittedReturn(regNum, consecNo)
         .map(filedReturn => Ok(submittedReturnView(filedReturn)))
         .recover { case ex =>
-          logger.error(s"[SubmittedReturnsController] viewFiledReturn failed for mgdRefNum=$mgdRefNum consecNo=$consecNo", ex)
+          logger.error(s"[SubmittedReturnsController] viewFiledReturn failed for regNum=$regNum consecNo=$consecNo", ex)
           Redirect(controllers.routes.SystemErrorController.onPageLoad())
         }
     }

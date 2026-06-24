@@ -71,7 +71,7 @@ class SubmittedReturnsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder().overrides(bind[GamblingService].toInstance(mockService)).build()
 
       running(application) {
-        val request = FakeRequest(GET, SubmittedReturnsRoute).withSession("mgdRefNum" -> regNumber)
+        val request = FakeRequest(GET, SubmittedReturnsRoute).withSession("regNum" -> regNumber)
 
         val result = route(application, request).value
 
@@ -92,7 +92,7 @@ class SubmittedReturnsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder().overrides(bind[GamblingService].toInstance(mockService)).build()
 
       running(application) {
-        val request = FakeRequest(GET, SubmittedReturnsRoute).withSession("mgdRefNum" -> regNumber)
+        val request = FakeRequest(GET, SubmittedReturnsRoute).withSession("regNum" -> regNumber)
 
         val result = route(application, request).value
 
@@ -116,7 +116,7 @@ class SubmittedReturnsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder().overrides(bind[GamblingService].toInstance(mockService)).build()
 
       running(application) {
-        val request = FakeRequest(GET, ViewFiledReturnRoute).withSession("mgdRefNum" -> regNumber)
+        val request = FakeRequest(GET, ViewFiledReturnRoute).withSession("regNum" -> regNumber)
 
         val result = route(application, request).value
         val content = contentAsString(result)
@@ -166,7 +166,7 @@ class SubmittedReturnsControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder().overrides(bind[GamblingService].toInstance(mockService)).build()
 
       running(application) {
-        val request = FakeRequest(GET, ViewFiledReturnRoute).withSession("mgdRefNum" -> regNumber)
+        val request = FakeRequest(GET, ViewFiledReturnRoute).withSession("regNum" -> regNumber)
 
         val result = route(application, request).value
 
