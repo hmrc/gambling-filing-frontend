@@ -178,6 +178,28 @@ class SubmittedReturnsControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to AccessDeniedController when regime is not MGD" in {
+
+      val mockService = mock[GamblingService]
+      when(
+        mockService.getSubmittedReturn(any[String], any[Int])(any[HeaderCarrier])
+      ).thenReturn(Future.successful(filedReturn))
+
+      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
+      regimesExcludingMGD.foreach { code =>
+        val application = applicationBuilder(regime = Regime.fromString(code).get).overrides(bind[GamblingService].toInstance(mockService)).build()
+
+        running(application) {
+          val request = FakeRequest(GET, ViewFiledReturnRoute).withSession("regNum" -> regNumber)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
+        }
+      }
+    }
+
     "must redirect to the system error page when the service call fails" in {
 
       val mockService = mock[GamblingService]
