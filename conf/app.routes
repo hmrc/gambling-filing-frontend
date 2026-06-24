@@ -40,5 +40,5 @@ POST       /total-net-takings-higher-rate                controllers.NetTakingsH
 GET        /change-total-net-takings-higher-rate         controllers.NetTakingsHigherController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-total-net-takings-higher-rate         controllers.NetTakingsHigherController.onSubmit(mode: Mode = CheckMode)
 
-GET        /select-filed-return               controllers.SubmittedReturnsController.onPageLoad(sortBy: Int ?= 3, orderBy: String ?= "ASC")
+GET        /select-filed-return               controllers.SubmittedReturnsController.onPageLoad()
 GET        /view-filed-return/:consecNo       controllers.SubmittedReturnsController.viewFiledReturn(consecNo: Int)
