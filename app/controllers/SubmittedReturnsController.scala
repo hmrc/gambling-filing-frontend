@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import models.SortBy
+import models.{OrderBy, SortBy}
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -46,7 +46,7 @@ class SubmittedReturnsController @Inject() (
       val logTxt = s"[SubmittedReturnsController][onPageLoad] for mgdRefNum=$mgdRefNum"
 
       gamblingService
-        .getSubmittedReturns(mgdRefNum, SortBy.SubmittedDate, "DESC")
+        .getSubmittedReturns(mgdRefNum, SortBy.SubmittedDate, OrderBy.Descending)
         .map(submittedReturns => Ok(submittedReturnsView(mgdRefNum, submittedReturns)))
         .recover { case ex =>
           logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED", ex)
