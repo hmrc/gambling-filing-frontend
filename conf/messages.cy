@@ -85,7 +85,7 @@ netTakingsHigher.error.invalid = Enter your net takings in pounds and pence, lik
 netTakingsHigher.error.range = Your net takings must be between -£1 billion and £1 billion
 
 selectFiledReturn.title = View filed return
-selectFiledReturn.heading = View filed return
+selectFiledReturn.heading = Which period do you want to view?
 selectFiledReturn.h1 = Which period do you want to view?
 selectFiledReturn.table.returnPeriod = Return period
 selectFiledReturn.table.returnPeriod.dates = {0} to {1}
