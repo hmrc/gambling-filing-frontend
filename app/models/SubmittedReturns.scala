@@ -38,3 +38,9 @@ final case class SubmittedReturns(
 object SubmittedReturns {
   implicit val format: OFormat[SubmittedReturns] = Json.format[SubmittedReturns]
 }
+
+object SortBy {
+  val PeriodStartDate = 1
+  val SubmittedDate = 2
+  val PeriodEndDate = 3
+}

@@ -17,6 +17,7 @@
 package controllers
 
 import controllers.actions.{AuthorisedAction, DataRetrievalAction}
+import models.SortBy
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -42,14 +43,13 @@ class SubmittedReturnsController @Inject() (
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
       val mgdRefNum = request.mgdRefNum
-      val SUBMITTED_DATE = 2
       val logTxt = s"[SubmittedReturnsController][onPageLoad] for mgdRefNum=$mgdRefNum"
 
       gamblingService
-        .getSubmittedReturns(mgdRefNum, SUBMITTED_DATE, "DESC")
+        .getSubmittedReturns(mgdRefNum, SortBy.SubmittedDate, "DESC")
         .map(submittedReturns => Ok(submittedReturnsView(mgdRefNum, submittedReturns)))
-        .recover { case _ =>
-          logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED")
+        .recover { case ex =>
+          logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED", ex)
           Redirect(controllers.routes.SystemErrorController.onPageLoad())
         }
     }
