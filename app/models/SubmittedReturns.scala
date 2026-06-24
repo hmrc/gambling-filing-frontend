@@ -44,3 +44,8 @@ object SortBy {
   val SubmittedDate = 2
   val PeriodEndDate = 3
 }
+
+object OrderBy {
+  val Ascending = "ASC"
+  val Descending = "DESC"
+}
