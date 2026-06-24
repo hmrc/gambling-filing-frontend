@@ -44,7 +44,7 @@ class SubmittedReturnsController @Inject() (
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
       val regNum = request.regNum
-      val logTxt = s"[SubmittedReturnsController][onPageLoad] for regNum=$regNum"
+      val logTxt = s"[onPageLoad] for regNum=$regNum"
 
       request.regime match {
         case Regime.MGD =>
@@ -55,13 +55,16 @@ class SubmittedReturnsController @Inject() (
               logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED", ex)
               Redirect(controllers.routes.SystemErrorController.onPageLoad())
             }
-        case _ => Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
+        case _ =>
+          logger.info(s"$logTxt regime ${request.regime} is not Authorised")
+          Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
       }
     }
 
   def viewFiledReturn(consecNo: Int): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
       val regNum = request.regNum
+      val logTxt = s"[viewFiledReturn] for regNum=$regNum"
 
       request.regime match {
         case Regime.MGD =>
@@ -69,10 +72,12 @@ class SubmittedReturnsController @Inject() (
             .getSubmittedReturn(regNum, consecNo)
             .map(filedReturn => Ok(submittedReturnView(filedReturn)))
             .recover { case ex =>
-              logger.error(s"[SubmittedReturnsController] viewFiledReturn failed for regNum=$regNum consecNo=$consecNo", ex)
+              logger.error(s"$logTxt failed for regNum=$regNum consecNo=$consecNo", ex)
               Redirect(controllers.routes.SystemErrorController.onPageLoad())
             }
-        case _ => Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
+        case _ =>
+          logger.info(s"$logTxt regime ${request.regime} is not Authorised")
+          Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
       }
     }
 }
