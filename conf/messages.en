@@ -129,9 +129,8 @@ selectFiledReturn.table.reference = Reference
 selectFiledReturn.empty1 = No filed returns
 selectFiledReturn.empty2 = You have not filed any Machine Game Duty returns.
 
-submittedReturn.title = View filed return
-submittedReturn.heading = View filed return
-submittedReturn.caption.dates = Return details for {0} to {1}
+submittedReturn.dates = Return details for {0} to {1}
+submittedReturn.caption = View filed return
 submittedReturn.submissionDetails = Submission details
 submittedReturn.returnDetails = Return details
 submittedReturn.submittedDate = Date submitted
