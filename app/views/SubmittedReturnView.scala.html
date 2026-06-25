@@ -29,12 +29,12 @@
 
 @dateRange = @{
     val parsedMgdPeriod = DateTimeFormats.parseMgdPeriod(model.mgdPeriod)
-    messages("submittedReturn.caption.dates", DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._1)), DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._2)))
+    messages("submittedReturn.dates", DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._1)), DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._2)))
 }
 
-@layout(pageTitle = titleNoForm(messages("submittedReturn.title"))) {
-    <h1 class="govuk-caption-l" data-testid="submitted-return-heading">@messages("submittedReturn.heading")</h1>
-    <span class="govuk-heading-l">@dateRange</span>
+@layout(pageTitle = titleNoForm(dateRange)) {
+    <span class="govuk-caption-l" data-testid="submitted-return-caption">@messages("submittedReturn.caption")</span>
+    <h1 class="govuk-heading-l" data-testid="submitted-return-heading">@dateRange</h1>
     <span class="govuk-heading-m">@messages("submittedReturn.submissionDetails")</span>
     @govukTable(Table(
         attributes = Map("data-testid" -> "submission-details-table"),
@@ -50,7 +50,7 @@
         )
     ))
 
-    <h3 class="govuk-heading-m">@messages("submittedReturn.returnDetails")</h3>
+    <span class="govuk-heading-m">@messages("submittedReturn.returnDetails")</span>
     @govukTable(Table(
         attributes = Map("data-testid" -> "return-details-table"),
         rows = Seq(

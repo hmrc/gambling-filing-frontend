@@ -53,10 +53,10 @@ class SubmittedReturnViewSpec extends SpecBase {
 
       val doc = Jsoup.parse(view(filedReturn)(request, messages(app)).body)
 
-      doc.title() must include(messages(app)("submittedReturn.title"))
+      doc.title() must include("Return details for 1 Jan 2025 to 30 Mar 2025")
     }
 
-    "must render the header text correctly" in {
+    "must render the header and caption text correctly" in {
       val app = applicationBuilder().build()
       val view = app.injector.instanceOf[views.html.SubmittedReturnView]
       val request = FakeRequest()
@@ -64,12 +64,12 @@ class SubmittedReturnViewSpec extends SpecBase {
       val doc = Jsoup.parse(view(filedReturn)(request, messages(app)).body)
       val pageText = doc.body().text()
 
-      pageText must include(messages(app)("submittedReturn.heading"))
       pageText must include("Return details for 1 Jan 2025 to 30 Mar 2025")
       pageText must include(messages(app)("submittedReturn.submissionDetails"))
       pageText must include(messages(app)("submittedReturn.returnDetails"))
 
-      doc.select("[data-testid=submitted-return-heading]").text() mustEqual messages(app)("submittedReturn.heading")
+      doc.select("[data-testid=submitted-return-caption]").text() mustEqual "View filed return"
+      doc.select("[data-testid=submitted-return-heading]").text() mustEqual "Return details for 1 Jan 2025 to 30 Mar 2025"
     }
 
     "must render the submission details table with date submitted and acknowledgement reference" in {
