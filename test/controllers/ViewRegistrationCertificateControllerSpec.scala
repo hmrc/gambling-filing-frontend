@@ -90,7 +90,7 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
 
         val request =
           FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
-            .withSession("mgdRefNum" -> "MGD123")
+            .withSession("regNum" -> "MGD123")
 
         val result = route(application, request).value
         val view = application.injector.instanceOf[ViewRegistrationCertificateView]
@@ -169,7 +169,7 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
 
         val request =
           FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
-            .withSession("mgdRefNum" -> "MGD123")
+            .withSession("regNum" -> "MGD123")
 
         val result = route(application, request).value
 
@@ -218,7 +218,7 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
 
         val request =
           FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
-            .withSession("mgdRefNum" -> "MGD123")
+            .withSession("regNum" -> "MGD123")
 
         val result = route(application, request).value
 
@@ -259,7 +259,7 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
 
         val request =
           FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
-            .withSession("mgdRefNum" -> "MGD123")
+            .withSession("regNum" -> "MGD123")
 
         val result = route(application, request).value
 
@@ -295,7 +295,7 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
 
         val request =
           FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
-            .withSession("mgdRefNum" -> "MGD123")
+            .withSession("regNum" -> "MGD123")
 
         val result = route(application, request).value
 
@@ -326,7 +326,7 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
 
         val request =
           FakeRequest(GET, routes.ViewRegistrationCertificateController.onPageLoad().url)
-            .withSession("mgdRefNum" -> "MGD123")
+            .withSession("regNum" -> "MGD123")
 
         val result = route(application, request).value
 

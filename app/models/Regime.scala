@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package models.requests
+package models
 
-import models.Regime
-import play.api.mvc.{Request, WrappedRequest}
-import uk.gov.hmrc.auth.core.AffinityGroup
+sealed trait Regime(val code: String)
 
-final case class AuthorisedRequest[A](
-  request: Request[A],
-  affinityGroup: AffinityGroup,
-  regNum: String,
-  regime: Regime
-) extends WrappedRequest[A](request)
+object Regime {
+  case object GBD extends Regime("gbd")
+  case object PBD extends Regime("pbd")
+  case object RGD extends Regime("rgd")
+  case object MGD extends Regime("mgd")
+
+  val values: Seq[Regime] = Seq(GBD, PBD, RGD, MGD)
+
+  def fromString(s: String): Option[Regime] =
+    values.find(_.code == s.toLowerCase)
+}

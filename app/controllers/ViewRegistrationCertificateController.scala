@@ -44,10 +44,10 @@ class ViewRegistrationCertificateController @Inject() (
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
 
-      val mgdRefNum = request.mgdRefNum
+      val regNum = request.regNum
 
       mgdCertificateService
-        .retrieveCertificate(mgdRefNum)
+        .retrieveCertificate(regNum)
         .map { certificate =>
 
           val (displayName, displayLabelKey) =
@@ -99,7 +99,7 @@ class ViewRegistrationCertificateController @Inject() (
         }
         .recover { case ex =>
           logger.error(
-            s"[ViewRegistrationCertificateController] retrieveCertificate failed for mgdRefNum=$mgdRefNum",
+            s"[ViewRegistrationCertificateController] retrieveCertificate failed for regNum=$regNum",
             ex
           )
           Redirect(controllers.routes.SystemErrorController.onPageLoad())

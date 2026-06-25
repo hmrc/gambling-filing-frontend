@@ -53,20 +53,20 @@ model.items.zipWithIndex.map { case (item, i) =>
     showBackLink  = true
 ) {
 
-    <span class="govuk-caption-l" data-testid="select-filed-return-heading">
-        @messages("selectFiledReturn.heading")
+    <span class="govuk-caption-l" data-testid="select-filed-return-caption">
+        @messages("selectFiledReturn.caption")
     </span>
 
-    <h1 class="govuk-heading-l" data-testid="select-filed-return-h1">
+    <h1 class="govuk-heading-l" data-testid="select-filed-return-heading">
         @if(model.items.isEmpty) {
-            @messages("selectFiledReturn.empty1")
+            @messages("selectFiledReturn.empty.heading")
         } else {
-            @messages("selectFiledReturn.h1")
+            @messages("selectFiledReturn.heading")
         }
     </h1>
 
     @if(model.items.isEmpty) {
-        <p class="govuk-body">@messages("selectFiledReturn.empty2")</p>
+        <p class="govuk-body">@messages("selectFiledReturn.empty.body")</p>
     } else {
         @govukTable(Table(
             attributes = Map("data-testid" -> "select-filed-return-table"),

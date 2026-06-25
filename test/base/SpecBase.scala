@@ -19,7 +19,7 @@ package base
 import com.typesafe.config.ConfigFactory
 import config.FrontendAppConfig
 import controllers.actions.*
-import models.UserAnswers
+import models.{Regime, UserAnswers}
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.stream.Materializer
 import org.scalamock.scalatest.MockFactory
@@ -27,11 +27,11 @@ import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.freespec.AnyFreeSpec
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.{OptionValues, TryValues}
-import play.api.{Application, Configuration}
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.FakeRequest
+import play.api.{Application, Configuration}
 
 trait SpecBase extends AnyFreeSpec with Matchers with TryValues with OptionValues with ScalaFutures with IntegrationPatience with MockFactory {
 
@@ -44,11 +44,11 @@ trait SpecBase extends AnyFreeSpec with Matchers with TryValues with OptionValue
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
-  protected def applicationBuilder(userAnswers: Option[UserAnswers] = None): GuiceApplicationBuilder =
+  protected def applicationBuilder(userAnswers: Option[UserAnswers] = None, regime: Regime = Regime.MGD): GuiceApplicationBuilder =
     new GuiceApplicationBuilder()
       .overrides(
         bind[DataRequiredAction].to[DataRequiredActionImpl],
-        bind[AuthorisedAction].to[FakeAuthorisedAction],
+        bind[AuthorisedAction].toInstance(new FakeAuthorisedAction(play.api.mvc.PlayBodyParsers()(mat), regime)),
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )
 

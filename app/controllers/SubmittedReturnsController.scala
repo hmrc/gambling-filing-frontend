@@ -17,16 +17,17 @@
 package controllers
 
 import controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import models.{OrderBy, SortBy}
+import models.{OrderBy, Regime, SortBy}
 import play.api.Logging
 import play.api.i18n.I18nSupport
+import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GamblingService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.{SubmittedReturnView, SubmittedReturnsView}
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class SubmittedReturnsController @Inject() (
   val controllerComponents: MessagesControllerComponents,
@@ -42,28 +43,41 @@ class SubmittedReturnsController @Inject() (
 
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
-      val mgdRefNum = request.mgdRefNum
-      val logTxt = s"[SubmittedReturnsController][onPageLoad] for mgdRefNum=$mgdRefNum"
+      val regNum = request.regNum
+      val logTxt = s"[onPageLoad] for regNum=$regNum"
 
-      gamblingService
-        .getSubmittedReturns(mgdRefNum, SortBy.PeriodStartDate, OrderBy.Descending)
-        .map(submittedReturns => Ok(submittedReturnsView(mgdRefNum, submittedReturns)))
-        .recover { case ex =>
-          logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED", ex)
-          Redirect(controllers.routes.SystemErrorController.onPageLoad())
-        }
+      request.regime match {
+        case Regime.MGD =>
+          gamblingService
+            .getSubmittedReturns(regNum, SortBy.PeriodStartDate, OrderBy.Descending)
+            .map(submittedReturns => Ok(submittedReturnsView(regNum, submittedReturns)))
+            .recover { case ex =>
+              logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED", ex)
+              Redirect(controllers.routes.SystemErrorController.onPageLoad())
+            }
+        case _ =>
+          logger.info(s"$logTxt regime ${request.regime} is not Authorised")
+          Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
+      }
     }
 
   def viewFiledReturn(consecNo: Int): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
-      val mgdRefNum = request.mgdRefNum
+      val regNum = request.regNum
+      val logTxt = s"[viewFiledReturn] for regNum=$regNum"
 
-      gamblingService
-        .getSubmittedReturn(mgdRefNum, consecNo)
-        .map(filedReturn => Ok(submittedReturnView(filedReturn)))
-        .recover { case ex =>
-          logger.error(s"[SubmittedReturnsController] viewFiledReturn failed for mgdRefNum=$mgdRefNum consecNo=$consecNo", ex)
-          Redirect(controllers.routes.SystemErrorController.onPageLoad())
-        }
+      request.regime match {
+        case Regime.MGD =>
+          gamblingService
+            .getSubmittedReturn(regNum, consecNo)
+            .map(filedReturn => Ok(submittedReturnView(filedReturn)))
+            .recover { case ex =>
+              logger.error(s"$logTxt failed for regNum=$regNum consecNo=$consecNo", ex)
+              Redirect(controllers.routes.SystemErrorController.onPageLoad())
+            }
+        case _ =>
+          logger.info(s"$logTxt regime ${request.regime} is not Authorised")
+          Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
+      }
     }
 }

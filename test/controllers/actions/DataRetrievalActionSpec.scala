@@ -17,7 +17,7 @@
 package controllers.actions
 
 import base.SpecBase
-import models.UserAnswers
+import models.{Regime, UserAnswers}
 import models.requests.{AuthorisedRequest, OptionalDataRequest}
 import org.mockito.Mockito.*
 import org.scalatestplus.mockito.MockitoSugar
@@ -44,7 +44,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
         when(sessionRepository.get("id")) thenReturn Future(None)
         val action = new Harness(sessionRepository)
 
-        val result = action.callTransform(AuthorisedRequest(FakeRequest(), AffinityGroup.Organisation, "id")).futureValue
+        val result = action.callTransform(AuthorisedRequest(FakeRequest(), AffinityGroup.Organisation, "id", Regime.MGD)).futureValue
 
         result.userAnswers must not be defined
       }
@@ -58,7 +58,7 @@ class DataRetrievalActionSpec extends SpecBase with MockitoSugar {
         when(sessionRepository.get("id")) thenReturn Future(Some(UserAnswers("id")))
         val action = new Harness(sessionRepository)
 
-        val result = action.callTransform(new AuthorisedRequest(FakeRequest(), AffinityGroup.Organisation, "id")).futureValue
+        val result = action.callTransform(new AuthorisedRequest(FakeRequest(), AffinityGroup.Organisation, "id", Regime.MGD)).futureValue
 
         result.userAnswers mustBe defined
       }
