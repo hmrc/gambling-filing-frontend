@@ -25,6 +25,11 @@ GET        /page-not-found                               controllers.PageNotFoun
 
 GET        /registration-certificate                     controllers.ViewRegistrationCertificateController.onPageLoad()
 
+GET        /machines-available                          controllers.MachinesAvailableController.onPageLoad(mode: Mode = NormalMode)
+POST       /machines-available                          controllers.MachinesAvailableController.onSubmit(mode: Mode = NormalMode)
+GET        /change-machines-available                   controllers.MachinesAvailableController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-machines-available                   controllers.MachinesAvailableController.onSubmit(mode: Mode = CheckMode)
+
 GET        /total-net-takings-lower-rate                 controllers.NetTakingsLowerController.onPageLoad(mode: Mode = NormalMode)
 POST       /total-net-takings-lower-rate                 controllers.NetTakingsLowerController.onSubmit(mode: Mode = NormalMode)
 GET        /change-total-net-takings-lower-rate          controllers.NetTakingsLowerController.onPageLoad(mode: Mode = CheckMode)
