@@ -1,4 +1,4 @@
-service.name = cy: Machine Games Duty
+service.name = Machine Games Duty
 
 site.back = Yn ôl
 site.remove = Tynnu
@@ -32,19 +32,19 @@ error.title.prefix = Gwall:
 error.prefix = Gwall
 error.summary.title = Mae problem
 
-index.title = cy: Welcome to the filing Machine Game Duty
-index.heading = cy: Welcome to the filing Machine Game Duty
-index.guidance = cy: Welcome to your new frontend. Please see the README file for a guide to getting started.
+index.title = Welcome to the filing Machine Game Duty
+index.heading = Welcome to the filing Machine Game Duty
+index.guidance = Welcome to your new frontend. Please see the README file for a guide to getting started.
 
-checkYourAnswers.title = cy: Check your answers
-checkYourAnswers.heading = cy: Check your answers
+checkYourAnswers.title = Check your answers
+checkYourAnswers.heading = Check your answers
 
-journeyRecovery.continue.title = cy: Sorry, there is a problem with the service
-journeyRecovery.continue.heading = cy: Sorry, there is a problem with the service
-journeyRecovery.continue.guidance = cy: [Add content to explain how to proceed.]
-journeyRecovery.startAgain.title = cy: Sorry, there is a problem with the service
-journeyRecovery.startAgain.heading = cy: Sorry, there is a problem with the service
-journeyRecovery.startAgain.guidance = cy: [Add content to explain why the user needs to start again.]
+journeyRecovery.continue.title = Sorry, there is a problem with the service
+journeyRecovery.continue.heading = Sorry, there is a problem with the service
+journeyRecovery.continue.guidance = [Add content to explain how to proceed.]
+journeyRecovery.startAgain.title = Sorry, there is a problem with the service
+journeyRecovery.startAgain.heading = Sorry, there is a problem with the service
+journeyRecovery.startAgain.guidance = [Add content to explain why the user needs to start again.]
 
 signedOut.title = Er eich diogelwch, gwnaethom eich allgofnodi
 signedOut.heading = Er eich diogelwch, gwnaethom eich allgofnodi
@@ -53,15 +53,21 @@ signedOut.guidance = Ni wnaethom gadw’ch atebion.
 unauthorised.title = Ni allwch ddefnyddio’r gwasanaeth hwn gyda’r cyfrif hwn
 unauthorised.heading = Ni allwch ddefnyddio’r gwasanaeth hwn gyda’r cyfrif hwn
 
-systemError.title = cy: Sorry, there is a problem with the service
-systemError.heading = cy: Sorry, there is a problem with the service
-systemError.p1 = cy: Try again later or contact the
-systemError.p1.link = cy: HMRC Online Services Helpdesk (opens in a new tab)
+systemError.title = Sorry, there is a problem with the service
+systemError.heading = Sorry, there is a problem with the service
+systemError.p1 = Try again later or contact the
+systemError.p1.link = HMRC Online Services Helpdesk (opens in a new tab)
 
 accessDenied.title = cy:Sorry, there is a problem with the service
 accessDenied.heading = cy:Sorry, there is a problem with the service
 accessDenied.p1 = cy:You do not have access to this service.
 accessDenied.p1.link = cy:Continue to your account
+
+machinesAvailable.title = Machines available
+machinesAvailable.heading = How many machines were available for play at the end of the return period?
+machinesAvailable.caption = File a return for {0} to {1}
+machinesAvailable.error.required = Enter the number of machines
+machinesAvailable.error.invalid = Enter the number of machines
 
 netTakingsLower.title = What are your total net takings liable to the lower rate of duty?
 netTakingsLower.heading = What are your total net takings liable to the lower rate of duty?

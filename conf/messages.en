@@ -98,6 +98,12 @@ viewRegistrationCertificate.repMemberAddress = Representative member's address
 viewRegistrationCertificate.groupMembers = Group members
 viewRegistrationCertificate.groupMember = Group member {0}
 
+machinesAvailable.title = Machines available
+machinesAvailable.heading = How many machines were available for play at the end of the return period?
+machinesAvailable.caption = File a return for {0} to {1}
+machinesAvailable.error.required = Enter the number of machines
+machinesAvailable.error.invalid = Enter the number of machines
+
 netTakingsLower.title = What are your total net takings liable to the lower rate of duty?
 netTakingsLower.heading = What are your total net takings liable to the lower rate of duty?
 netTakingsLower.caption = File a return for {0} to {1}
