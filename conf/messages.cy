@@ -90,6 +90,12 @@ netTakingsHigher.error.required = Enter your net takings
 netTakingsHigher.error.invalid = Enter your net takings in pounds and pence, like 1,510.72
 netTakingsHigher.error.range = Your net takings must be between -£1 billion and £1 billion
 
+lowerRateCalculationCheck.title = We have calculated your tax to be £{0}
+lowerRateCalculationCheck.heading = Is this correct?
+lowerRateCalculationCheck.caption = File a return for {0} to {1}
+lowerRateCalculationCheck.body = This is based on £{0} net takings for the lower rate of duty.
+lowerRateCalculationCheck.error.required = Select yes if this calculation is correct
+
 selectFiledReturn.title = Which period do you want to view?
 selectFiledReturn.caption = View filed return
 selectFiledReturn.heading = Which period do you want to view?

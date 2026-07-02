@@ -21,7 +21,7 @@ import play.api.data.Form
 
 import javax.inject.Inject
 
-class LowerRateCalculationCheckFormProvider @Inject() extends Mappings {
+class CalculationLowerCheckFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(

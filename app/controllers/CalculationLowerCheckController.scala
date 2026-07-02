@@ -17,29 +17,29 @@
 package controllers
 
 import controllers.actions.*
-import forms.LowerRateCalculationCheckFormProvider
+import forms.CalculationLowerCheckFormProvider
 import models.{Mode, Regime, UserAnswers}
 import navigation.Navigator
-import pages.LowerRateCalculationCheckPage
+import pages.{CalculationLowerCheckPage, DutyLowerPage, NetTakingsLowerPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.LowerRateCalculationCheckView
+import views.html.CalculationLowerCheckView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class LowerRateCalculationCheckController @Inject() (
+class CalculationLowerCheckController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
-  formProvider: LowerRateCalculationCheckFormProvider,
+  formProvider: CalculationLowerCheckFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: LowerRateCalculationCheckView
+  view: CalculationLowerCheckView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -50,11 +50,19 @@ class LowerRateCalculationCheckController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        val preparedForm = request.userAnswers.flatMap(_.get(LowerRateCalculationCheckPage)) match {
+        val radioAnswer = request.userAnswers.flatMap(_.get(CalculationLowerCheckPage)) match {
           case None        => form
           case Some(value) => form.fill(value)
         }
-        Future.successful(Ok(view(preparedForm, mode)))
+
+        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
+          case Some(value) => value
+          case None        => throw new Exception("NetTakingsLowerPage not found")
+        }
+
+        val duty = netTakings * 0.05
+
+        Future.successful(Ok(view(radioAnswer, netTakings, duty, mode)))
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
@@ -64,16 +72,28 @@ class LowerRateCalculationCheckController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
+        val netTakings =
+          request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
+            case Some(value) => value
+            case None        => throw new Exception("NetTakingsLowerPage not found")
+          }
+
+        val duty = netTakings * BigDecimal(0.05)
+
         form
           .bindFromRequest()
           .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, netTakings, duty, mode))),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
               for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(LowerRateCalculationCheckPage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(LowerRateCalculationCheckPage, mode, updatedAnswers))
+                answersRadioCheck <- Future.fromTry(userAnswers.set(CalculationLowerCheckPage, value))
+
+                finalAnswers <- if (value) { Future.fromTry(answersRadioCheck.set(DutyLowerPage, duty)) }
+                                else { Future.successful(answersRadioCheck) }
+
+                _ <- sessionRepository.set(finalAnswers)
+              } yield Redirect(navigator.nextPage(CalculationLowerCheckPage, mode, finalAnswers))
             }
           )
       case _ =>
