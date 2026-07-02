@@ -17,46 +17,45 @@
 package controllers
 
 import base.SpecBase
-import forms.NetTakingsLowerRateYesNoFormProvider
-import models.{NormalMode, UserAnswers}
+import forms.NetTakingsLowerRateFormProvider
+import models.{NormalMode, Regime, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.NetTakingsLowerRateYesNoPage
+import pages.NetTakingsLowerRatePage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.NetTakingsLowerRateYesNoView
+import views.html.NetTakingsLowerRateView
 
 import scala.concurrent.Future
 
-class NetTakingsLowerRateYesNoControllerSpec extends SpecBase with MockitoSugar {
+class NetTakingsLowerRateControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider = new NetTakingsLowerRateYesNoFormProvider()
+  val formProvider = new NetTakingsLowerRateFormProvider()
   val form = formProvider()
 
   def onwardRoute: Call = Call("GET", "/foo")
 
   val validAnswer: Boolean = true
 
-  lazy val netTakingsLowerRateYesNoRoute: String =
-    routes.NetTakingsLowerRateYesNoController.onPageLoad(NormalMode).url
+  lazy val netTakingsLowerRateRoute: String =
+    routes.NetTakingsLowerRateController.onPageLoad(NormalMode).url
 
-  "NetTakingsLowerRateYesNo Controller" - {
+  "NetTakingsLowerRate Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), regime = Regime.MGD).build()
 
       running(application) {
-        val request = FakeRequest(GET, netTakingsLowerRateYesNoRoute)
-
+        val request = FakeRequest(GET, netTakingsLowerRateRoute)
         val result = route(application, request).value
-
-        val view = application.injector.instanceOf[NetTakingsLowerRateYesNoView]
+        val view = application.injector.instanceOf[NetTakingsLowerRateView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -67,18 +66,17 @@ class NetTakingsLowerRateYesNoControllerSpec extends SpecBase with MockitoSugar 
 
       val userAnswers =
         UserAnswers(userAnswersId)
-          .set(NetTakingsLowerRateYesNoPage, validAnswer)
+          .set(NetTakingsLowerRatePage, validAnswer)
           .success
           .value
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswers), regime = Regime.MGD).build()
 
       running(application) {
-        val request = FakeRequest(GET, netTakingsLowerRateYesNoRoute)
-
-        val view = application.injector.instanceOf[NetTakingsLowerRateYesNoView]
-
+        val request = FakeRequest(GET, netTakingsLowerRateRoute)
         val result = route(application, request).value
+        val view = application.injector.instanceOf[NetTakingsLowerRateView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode)(request, messages(application)).toString
@@ -92,7 +90,7 @@ class NetTakingsLowerRateYesNoControllerSpec extends SpecBase with MockitoSugar 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), regime = Regime.MGD)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -101,7 +99,7 @@ class NetTakingsLowerRateYesNoControllerSpec extends SpecBase with MockitoSugar 
 
       running(application) {
         val request =
-          FakeRequest(POST, netTakingsLowerRateYesNoRoute)
+          FakeRequest(POST, netTakingsLowerRateRoute)
             .withFormUrlEncodedBody("value" -> validAnswer.toString)
 
         val result = route(application, request).value
@@ -113,17 +111,16 @@ class NetTakingsLowerRateYesNoControllerSpec extends SpecBase with MockitoSugar 
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), regime = Regime.MGD).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, netTakingsLowerRateYesNoRoute)
+          FakeRequest(POST, netTakingsLowerRateRoute)
             .withFormUrlEncodedBody("value" -> "invalid value")
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
-
-        val view = application.injector.instanceOf[NetTakingsLowerRateYesNoView]
-
+        val view = application.injector.instanceOf[NetTakingsLowerRateView]
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
@@ -131,16 +128,54 @@ class NetTakingsLowerRateYesNoControllerSpec extends SpecBase with MockitoSugar 
       }
     }
 
+    "must redirect to AccessDeniedController on GET when regime is not MGD" in {
+
+      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
+
+      regimesExcludingMGD.foreach { code =>
+        val application =
+          applicationBuilder(regime = Regime.fromString(code).get).build()
+
+        running(application) {
+          val request = FakeRequest(GET, netTakingsLowerRateRoute)
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
+        }
+      }
+    }
+
+    "must redirect to AccessDeniedController on POST when regime is not MGD" in {
+
+      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
+
+      regimesExcludingMGD.foreach { code =>
+        val application =
+          applicationBuilder(regime = Regime.fromString(code).get).build()
+
+        running(application) {
+          val request =
+            FakeRequest(POST, netTakingsLowerRateRoute)
+              .withFormUrlEncodedBody("value" -> validAnswer.toString)
+
+          val result = route(application, request).value
+
+          status(result) mustEqual SEE_OTHER
+          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
+        }
+      }
+    }
+
     "must return OK and the correct view for a GET when no existing data is found" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application =
+        applicationBuilder(userAnswers = None, regime = Regime.MGD).build()
 
       running(application) {
-        val request = FakeRequest(GET, netTakingsLowerRateYesNoRoute)
-
-        val view = application.injector.instanceOf[NetTakingsLowerRateYesNoView]
-
+        val request = FakeRequest(GET, netTakingsLowerRateRoute)
         val result = route(application, request).value
+        val view = application.injector.instanceOf[NetTakingsLowerRateView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
@@ -154,7 +189,7 @@ class NetTakingsLowerRateYesNoControllerSpec extends SpecBase with MockitoSugar 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = None)
+        applicationBuilder(userAnswers = None, regime = Regime.MGD)
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -163,7 +198,7 @@ class NetTakingsLowerRateYesNoControllerSpec extends SpecBase with MockitoSugar 
 
       running(application) {
         val request =
-          FakeRequest(POST, netTakingsLowerRateYesNoRoute)
+          FakeRequest(POST, netTakingsLowerRateRoute)
             .withFormUrlEncodedBody("value" -> validAnswer.toString)
 
         val result = route(application, request).value

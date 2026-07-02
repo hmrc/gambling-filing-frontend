@@ -20,10 +20,10 @@ import forms.mappings.Mappings
 import javax.inject.Inject
 import play.api.data.Form
 
-class NetTakingsLowerRateYesNoFormProvider @Inject() extends Mappings {
+class NetTakingsLowerRateFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(
-      "value" -> boolean("netTakingsLowerRateYesNo.error.required")
+      "value" -> boolean("netTakingsLowerRate.error.required")
     )
 }

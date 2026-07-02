@@ -17,35 +17,35 @@
 package views
 
 import base.SpecBase
-import forms.NetTakingsLowerRateYesNoFormProvider
+import forms.NetTakingsLowerRateFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import views.html.NetTakingsLowerRateYesNoView
+import views.html.NetTakingsLowerRateView
 
-class NetTakingsLowerRateYesNoViewSpec extends SpecBase {
+class NetTakingsLowerRateViewSpec extends SpecBase {
 
-  "NetTakingsLowerRateYesNoView" - {
+  "NetTakingsLowerRateView" - {
 
     "must render the page with the correct content" in new Setup {
 
       val html = view(form, NormalMode)
       val doc = Jsoup.parse(html.body)
 
-      doc.title must include(messages("netTakingsLowerRateYesNo.title"))
-      doc.select("h1").text mustBe messages("netTakingsLowerRateYesNo.heading")
+      doc.title must include(messages("netTakingsLowerRate.title"))
+      doc.select("h1").text mustBe messages("netTakingsLowerRate.heading")
       doc.select(".govuk-caption-l").text mustBe
-        messages("netTakingsLowerRateYesNo.caption", "1 Jan 2014", "31 Dec 2014")
+        messages("netTakingsLowerRate.caption", "1 Jan 2014", "31 Dec 2014")
 
       doc.select("p.govuk-body").text mustBe
-        messages("netTakingsLowerRateYesNo.p1")
+        messages("netTakingsLowerRate.p1")
 
       val bullets = doc.select("ul.govuk-list--bullet li")
-      bullets.get(0).text mustBe messages("netTakingsLowerRateYesNo.bullet1")
-      bullets.get(1).text mustBe messages("netTakingsLowerRateYesNo.bullet2")
+      bullets.get(0).text mustBe messages("netTakingsLowerRate.bullet1")
+      bullets.get(1).text mustBe messages("netTakingsLowerRate.bullet2")
 
-      doc.select("legend").text must include(messages("netTakingsLowerRateYesNo.question"))
+      doc.select("legend").text must include(messages("netTakingsLowerRate.question"))
 
       doc.select("input[value=true]").isEmpty mustBe false
       doc.select("input[value=false]").isEmpty mustBe false
@@ -61,7 +61,7 @@ class NetTakingsLowerRateYesNoViewSpec extends SpecBase {
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
       doc.select(".govuk-error-summary__list a").text must include(
-        messages("netTakingsLowerRateYesNo.error.required")
+        messages("netTakingsLowerRate.error.required")
       )
     }
 
@@ -87,8 +87,8 @@ class NetTakingsLowerRateYesNoViewSpec extends SpecBase {
   trait Setup {
     val app = applicationBuilder().build()
 
-    val view = app.injector.instanceOf[NetTakingsLowerRateYesNoView]
-    val form = new NetTakingsLowerRateYesNoFormProvider()()
+    val view = app.injector.instanceOf[NetTakingsLowerRateView]
+    val form = new NetTakingsLowerRateFormProvider()()
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 

@@ -28,35 +28,34 @@
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("netTakingsLowerRateYesNo.title"))) {
-
-    @formHelper(action = routes.NetTakingsLowerRateYesNoController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+@layout(pageTitle = title(form, messages("netTakingsLowerRate.title"))) {
+    @formHelper(action = routes.NetTakingsLowerRateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
         <span class="govuk-caption-l">
-            @messages("netTakingsLowerRateYesNo.caption", "1 Jan 2014", "31 Dec 2014")
+            @messages("netTakingsLowerRate.caption", "1 Jan 2014", "31 Dec 2014")
         </span>
 
         <h1 class="govuk-heading-l">
-            @messages("netTakingsLowerRateYesNo.heading")
+            @messages("netTakingsLowerRate.heading")
         </h1>
 
         <p class="govuk-body">
-            @messages("netTakingsLowerRateYesNo.p1")
+            @messages("netTakingsLowerRate.p1")
         </p>
 
         <ul class="govuk-list govuk-list--bullet">
-            <li>@messages("netTakingsLowerRateYesNo.bullet1")</li>
-            <li>@messages("netTakingsLowerRateYesNo.bullet2")</li>
+            <li>@messages("netTakingsLowerRate.bullet1")</li>
+            <li>@messages("netTakingsLowerRate.bullet2")</li>
         </ul>
 
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("netTakingsLowerRateYesNo.question")).withCssClass("govuk-fieldset__legend--m")
+                legend = LegendViewModel(messages("netTakingsLowerRate.question")).withCssClass("govuk-fieldset__legend--m")
             )
         )
 
