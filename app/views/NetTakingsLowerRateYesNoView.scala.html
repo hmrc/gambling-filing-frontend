@@ -1,0 +1,67 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import viewmodels.InputWidth._
+@import viewmodels.LabelSize
+
+
+@this(
+    layout: templates.Layout,
+    formHelper: FormWithCSRF,
+    govukErrorSummary: GovukErrorSummary,
+    govukRadios: GovukRadios,
+    govukButton: GovukButton
+)
+
+@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = title(form, messages("netTakingsLowerRateYesNo.title"))) {
+
+    @formHelper(action = routes.NetTakingsLowerRateYesNoController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
+
+        <span class="govuk-caption-l">
+            @messages("netTakingsLowerRateYesNo.caption", "1 Jan 2014", "31 Dec 2014")
+        </span>
+
+        <h1 class="govuk-heading-l">
+            @messages("netTakingsLowerRateYesNo.heading")
+        </h1>
+
+        <p class="govuk-body">
+            @messages("netTakingsLowerRateYesNo.p1")
+        </p>
+
+        <ul class="govuk-list govuk-list--bullet">
+            <li>@messages("netTakingsLowerRateYesNo.bullet1")</li>
+            <li>@messages("netTakingsLowerRateYesNo.bullet2")</li>
+        </ul>
+
+        @govukRadios(
+            RadiosViewModel.yesNo(
+                field = form("value"),
+                legend = LegendViewModel(messages("netTakingsLowerRateYesNo.question")).withCssClass("govuk-fieldset__legend--m")
+            )
+        )
+
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
+}

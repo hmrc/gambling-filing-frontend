@@ -125,3 +125,12 @@ submittedReturn.underDeclaredDuty = Under-declared tax from previous returns
 submittedReturn.previousReturnAmount = Amount brought forward
 submittedReturn.negativeAmountCarriedForward = Negative amount of duty to carry forward to next return
 submittedReturn.totalNetDutyPayable = Net MGD payable on this return
+
+netTakingsLowerRateYesNo.title = Net takings for lower rate of duty
+netTakingsLowerRateYesNo.heading = Net takings for lower rate of duty
+netTakingsLowerRateYesNo.caption = File a return for {0} to {1}
+netTakingsLowerRateYesNo.p1 = To qualify for the lower rate of duty, every dutiable game on the machine must:
+netTakingsLowerRateYesNo.bullet1 = cost no more than 20p to play
+netTakingsLowerRateYesNo.bullet2 = have a maximum cash prize of £10
+netTakingsLowerRateYesNo.question = Do you have any net takings liable to the lower rate of duty?
+netTakingsLowerRateYesNo.error.required = Select yes if you have net takings liable to the lower rate of duty
