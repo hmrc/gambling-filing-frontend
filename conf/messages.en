@@ -102,7 +102,10 @@ machinesAvailable.title = Machines available
 machinesAvailable.heading = How many machines were available for play at the end of the return period?
 machinesAvailable.caption = File a return for {0} to {1}
 machinesAvailable.error.required = Enter the number of machines
-machinesAvailable.error.invalid = Enter the number of machines
+machinesAvailable.error.negative = The number of machines must be 0 or more
+machinesAvailable.error.maximum = The number of machines must be less than 10 million
+machinesAvailable.error.nonNumeric = The number of machines must be a number
+machinesAvailable.error.wholeNumber = The number of machines must be a whole number
 
 mgdLowerRate.title = How much MGD at lower rate do you owe?
 mgdLowerRate.heading = How much MGD at lower rate do you owe?

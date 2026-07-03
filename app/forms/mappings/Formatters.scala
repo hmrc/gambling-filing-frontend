@@ -74,9 +74,14 @@ trait Formatters {
               Left(Seq(FormError(key, wholeNumberKey, args)))
             case s =>
               nonFatalCatch
-                .either(s.toInt)
+                .either(s.toLong)
                 .left
                 .map(_ => Seq(FormError(key, nonNumericKey, args)))
+                .map {
+                  case long if long > Int.MaxValue => Int.MaxValue
+                  case long if long < Int.MinValue => Int.MinValue
+                  case long                        => long.toInt
+                }
           }
 
       override def unbind(key: String, value: Int) =

@@ -26,8 +26,13 @@ class MachinesAvailableFormProvider @Inject() extends Mappings {
     Form(
       "value" -> int(
         "machinesAvailable.error.required",
-        "machinesAvailable.error.invalid",
-        "machinesAvailable.error.invalid"
-      ).verifying(minimumValue(0, "machinesAvailable.error.invalid"))
+        "machinesAvailable.error.wholeNumber",
+        "machinesAvailable.error.nonNumeric"
+      ).verifying(
+        firstError(
+          minimumValue(0, "machinesAvailable.error.negative"),
+          maximumValue(9999999, "machinesAvailable.error.maximum")
+        )
+      )
     )
 }
