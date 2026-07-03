@@ -24,7 +24,7 @@
 
 @(form: Form[_],netTakings: BigDecimal,duty: BigDecimal, mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("lowerRateCalculationCheck.title", duty))) {
+@layout(pageTitle = title(form, messages("calculationLowerCheck.title", duty))) {
 
 @formHelper(action = routes.CalculationLowerCheckController.onSubmit(mode)) {
 
@@ -33,22 +33,22 @@
         }
 
         <span class="govuk-caption-l">
-            @messages("lowerRateCalculationCheck.caption", "1 Jan 2014", "31 Dec 2014")
+            @messages("calculationLowerCheck.caption", "1 Jan 2014", "31 Dec 2014")
         </span>
         <h1 class="govuk-heading-l">
-            @messages("lowerRateCalculationCheck.title", duty)
+            @messages("calculationLowerCheck.title", duty)
         </h1>
         <p class="govuk-body">
-            @messages("lowerRateCalculationCheck.body", netTakings)
+            @messages("calculationLowerCheck.body", netTakings)
         </p>
 
 @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
                 legend = Legend(
-                    content = Text(messages("lowerRateCalculationCheck.heading")),
+                    content = Text(messages("calculationLowerCheck.heading")),
                     isPageHeading = false,
-                    classes = "govuk-fieldset__legend--l"
+                    classes = "govuk-fieldset__legend--m"
                 )
             )
         )

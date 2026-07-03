@@ -26,7 +26,7 @@ class CalculationLowerCheckFormProvider @Inject() extends Mappings {
   def apply(): Form[Boolean] =
     Form(
       "value" -> boolean(
-        "lowerRateCalculationCheck.error.required"
+        "calculationLowerCheck.error.required"
       )
     )
 }

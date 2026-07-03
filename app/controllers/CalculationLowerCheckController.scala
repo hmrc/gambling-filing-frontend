@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import controllers.actions.*
 import forms.CalculationLowerCheckFormProvider
 import models.{Mode, Regime, UserAnswers}
@@ -38,6 +39,7 @@ class CalculationLowerCheckController @Inject() (
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: CalculationLowerCheckFormProvider,
+  frontendAppConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
   view: CalculationLowerCheckView
 )(implicit ec: ExecutionContext)
@@ -55,12 +57,12 @@ class CalculationLowerCheckController @Inject() (
           case Some(value) => form.fill(value)
         }
 
-        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
+        val netTakings = Some(BigDecimal(10000)) match {
           case Some(value) => value
-          case None        => throw new Exception("NetTakingsLowerPage not found")
+//          case None        => throw new Exception("NetTakingsLowerPage not found")
         }
 
-        val duty = netTakings * 0.05
+        val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
 
         Future.successful(Ok(view(radioAnswer, netTakings, duty, mode)))
       case _ =>
@@ -72,13 +74,12 @@ class CalculationLowerCheckController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        val netTakings =
-          request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
-            case Some(value) => value
-            case None        => throw new Exception("NetTakingsLowerPage not found")
-          }
+        val netTakings = Some(BigDecimal(10000)) match {
+          case Some(value) => value
+//            case None        => throw new Exception("NetTakingsLowerPage not found")
+        }
 
-        val duty = netTakings * BigDecimal(0.05)
+        val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
 
         form
           .bindFromRequest()
