@@ -20,19 +20,10 @@ import forms.mappings.Mappings
 import javax.inject.Inject
 import play.api.data.Form
 
-class MachinesAvailableFormProvider @Inject() extends Mappings {
+class NetTakingsLowerRateFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[Int] =
+  def apply(): Form[Boolean] =
     Form(
-      "value" -> int(
-        "machinesAvailable.error.required",
-        "machinesAvailable.error.wholeNumber",
-        "machinesAvailable.error.nonNumeric"
-      ).verifying(
-        firstError(
-          minimumValue(0, "machinesAvailable.error.negative"),
-          maximumValue(9999999, "machinesAvailable.error.maximum")
-        )
-      )
+      "value" -> boolean("netTakingsLowerRate.error.required")
     )
 }

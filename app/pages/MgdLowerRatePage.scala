@@ -14,25 +14,13 @@
  * limitations under the License.
  */
 
-package forms
+package pages
 
-import forms.mappings.Mappings
-import javax.inject.Inject
-import play.api.data.Form
+import play.api.libs.json.JsPath
 
-class MachinesAvailableFormProvider @Inject() extends Mappings {
+case object MgdLowerRatePage extends QuestionPage[BigDecimal] {
 
-  def apply(): Form[Int] =
-    Form(
-      "value" -> int(
-        "machinesAvailable.error.required",
-        "machinesAvailable.error.wholeNumber",
-        "machinesAvailable.error.nonNumeric"
-      ).verifying(
-        firstError(
-          minimumValue(0, "machinesAvailable.error.negative"),
-          maximumValue(9999999, "machinesAvailable.error.maximum")
-        )
-      )
-    )
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "mgdLowerRate"
 }

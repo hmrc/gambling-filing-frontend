@@ -102,7 +102,17 @@ machinesAvailable.title = Machines available
 machinesAvailable.heading = How many machines were available for play at the end of the return period?
 machinesAvailable.caption = File a return for {0} to {1}
 machinesAvailable.error.required = Enter the number of machines
-machinesAvailable.error.invalid = Enter the number of machines
+machinesAvailable.error.negative = The number of machines must be 0 or more
+machinesAvailable.error.maximum = The number of machines must be less than 10 million
+machinesAvailable.error.nonNumeric = The number of machines must be a number
+machinesAvailable.error.wholeNumber = The number of machines must be a whole number
+
+mgdLowerRate.title = How much MGD at the lower rate do you owe?
+mgdLowerRate.heading = How much MGD at the lower rate do you owe?
+mgdLowerRate.caption = File a return for {0} to {1}
+mgdLowerRate.error.required = Enter how much MGD at the lower rate you owe
+mgdLowerRate.error.invalid = Enter your lower rate MGD in pounds and pence, like 1,510.72
+mgdLowerRate.error.range = Your lower rate MGD must be between -£1 billion and £1 billion
 
 netTakingsLower.title = What are your total net takings liable to the lower rate of duty?
 netTakingsLower.heading = What are your total net takings liable to the lower rate of duty?
@@ -159,3 +169,12 @@ submittedReturn.underDeclaredDuty = Under-declared tax from previous returns
 submittedReturn.previousReturnAmount = Amount brought forward
 submittedReturn.negativeAmountCarriedForward = Negative amount of duty to carry forward to next return
 submittedReturn.totalNetDutyPayable = Net MGD payable on this return
+
+netTakingsLowerRate.title = Net takings for the lower rate of duty
+netTakingsLowerRate.heading = Net takings for the lower rate of duty
+netTakingsLowerRate.caption = File a return for {0} to {1}
+netTakingsLowerRate.p1 = To qualify for the lower rate of duty, every dutiable game on the machine must:
+netTakingsLowerRate.bullet1 = cost no more than 20p to play
+netTakingsLowerRate.bullet2 = have a maximum cash prize of £10
+netTakingsLowerRate.question = Do you have any net takings liable to the lower rate of duty?
+netTakingsLowerRate.error.required = Select yes if you have net takings liable to the lower rate of duty
