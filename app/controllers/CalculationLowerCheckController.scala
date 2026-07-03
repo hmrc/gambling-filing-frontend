@@ -57,9 +57,9 @@ class CalculationLowerCheckController @Inject() (
           case Some(value) => form.fill(value)
         }
 
-        val netTakings = Some(BigDecimal(10000)) match {
+        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
           case Some(value) => value
-//          case None        => throw new Exception("NetTakingsLowerPage not found")
+          case None        => throw new Exception("NetTakingsLowerPage not found")
         }
 
         val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
@@ -74,9 +74,9 @@ class CalculationLowerCheckController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        val netTakings = Some(BigDecimal(10000)) match {
+        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
           case Some(value) => value
-//            case None        => throw new Exception("NetTakingsLowerPage not found")
+          case None        => throw new Exception("NetTakingsLowerPage not found")
         }
 
         val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
