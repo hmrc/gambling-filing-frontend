@@ -52,3 +52,8 @@ POST       /change-total-net-takings-higher-rate         controllers.NetTakingsH
 
 GET        /select-filed-return               controllers.SubmittedReturnsController.onPageLoad()
 GET        /view-filed-return/:consecNo       controllers.SubmittedReturnsController.viewFiledReturn(consecNo: Int)
+
+GET        /net-takings-lower-rate                 controllers.NetTakingsLowerRateController.onPageLoad(mode: Mode = NormalMode)
+POST       /net-takings-lower-rate                 controllers.NetTakingsLowerRateController.onSubmit(mode: Mode = NormalMode)
+GET        /change-net-takings-lower-rate          controllers.NetTakingsLowerRateController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-net-takings-lower-rate          controllers.NetTakingsLowerRateController.onSubmit(mode: Mode = CheckMode)

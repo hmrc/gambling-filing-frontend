@@ -23,25 +23,100 @@ import models.*
 
 class NavigatorSpec extends SpecBase {
 
-  val navigator = new Navigator
+  val navigator = new Navigator()
 
   "Navigator" - {
 
     "in Normal mode" - {
 
       "must go from a page that doesn't exist in the route map to Index" in {
-
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe routes.IndexController.onPageLoad()
+
+        navigator.nextPage(UnknownPage, NormalMode, UserAnswers("id")) mustBe
+          routes.IndexController.onPageLoad()
       }
+
+      "must go from MachinesAvailablePage to NetTakingsLowerRatePage" in {
+        navigator.nextPage(
+          MachinesAvailablePage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe routes.NetTakingsLowerRateController.onPageLoad(NormalMode)
+      }
+
+      "must go from NetTakingsLowerRatePage to NetTakingsLowerPage when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsLowerRatePage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          NetTakingsLowerRatePage,
+          NormalMode,
+          answers
+        ) mustBe routes.NetTakingsLowerController.onPageLoad(NormalMode)
+      }
+
+      "must go from NetTakingsLowerRatePage to NetTakingsStandardPage when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsLowerRatePage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          NetTakingsLowerRatePage,
+          NormalMode,
+          answers
+        ) mustBe routes.NetTakingsStandardController.onPageLoad(NormalMode)
+      }
+
     }
 
     "in Check mode" - {
 
       "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
-
         case object UnknownPage extends Page
-        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe routes.CheckYourAnswersController.onPageLoad()
+
+        navigator.nextPage(UnknownPage, CheckMode, UserAnswers("id")) mustBe
+          routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from MachinesAvailablePage to NetTakingsLowerRatePage" in {
+        navigator.nextPage(
+          MachinesAvailablePage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.NetTakingsLowerRateController.onPageLoad(CheckMode)
+      }
+
+      "must go from NetTakingsLowerRatePage to NetTakingsLowerPage when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsLowerRatePage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          NetTakingsLowerRatePage,
+          CheckMode,
+          answers
+        ) mustBe routes.NetTakingsLowerController.onPageLoad(CheckMode)
+      }
+
+      "must go from NetTakingsLowerRatePage to NetTakingsStandardPage when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsLowerRatePage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          NetTakingsLowerRatePage,
+          CheckMode,
+          answers
+        ) mustBe routes.NetTakingsStandardController.onPageLoad(CheckMode)
       }
     }
   }
