@@ -35,8 +35,8 @@
 @layout(pageTitle = title(form, messages("netTakingsLowerRate.title"))) {
     @formHelper(action = routes.NetTakingsLowerRateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
-        @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
+        @if(form.hasErrors) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
         @caption(
