@@ -14,16 +14,20 @@
  * limitations under the License.
  *@
 
-@import viewmodels.InputWidth._
-@import viewmodels.LabelSize
+@import viewmodels.LegendSize.Medium
+@import views.html.components._
 
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
+    heading: H1,
+    paragraph: Paragraph,
+    bulletList: BulletList,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton
+    govukButton: GovukButton,
+    caption: components.Caption
 )
 
 @(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
@@ -32,25 +36,25 @@
     @formHelper(action = routes.NetTakingsLowerRateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
-            @govukErrorSummary(ErrorSummaryViewModel(form))
+            @govukErrorSummary(ErrorSummaryViewModel(form, errorLinkOverrides = Map("value" -> "value_0")))
         }
 
-        <span class="govuk-caption-l">
-            @messages("netTakingsLowerRate.caption", "1 Jan 2014", "31 Dec 2014")
-        </span>
+        @caption(
+            messages("netTakingsLowerRate.caption", "1 Jan 2014", "31 Dec 2014")
+        )
 
-        <h1 class="govuk-heading-l">
-            @messages("netTakingsLowerRate.heading")
-        </h1>
 
-        <p class="govuk-body">
-            @messages("netTakingsLowerRate.p1")
-        </p>
+        @heading(
+            messages("netTakingsLowerRate.heading")
+        )
 
-        <ul class="govuk-list govuk-list--bullet">
-            <li>@messages("netTakingsLowerRate.bullet1")</li>
-            <li>@messages("netTakingsLowerRate.bullet2")</li>
-        </ul>
+        @paragraph(messages("netTakingsLowerRate.p1"))
+
+
+        @bulletList(Seq(
+            messages("netTakingsLowerRate.bullet1"),
+            messages("netTakingsLowerRate.bullet2")
+        ))
 
         @govukRadios(
             RadiosViewModel.yesNo(
