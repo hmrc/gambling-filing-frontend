@@ -72,12 +72,12 @@ machinesAvailable.error.maximum = The number of machines must be less than 10 mi
 machinesAvailable.error.nonNumeric = The number of machines must be a number
 machinesAvailable.error.wholeNumber = The number of machines must be a whole number
 
-mgdLowerRate.title = How much MGD at lower rate do you owe?
-mgdLowerRate.heading = How much MGD at lower rate do you owe?
+mgdLowerRate.title = How much MGD at the lower rate do you owe?
+mgdLowerRate.heading = How much MGD at the lower rate do you owe?
 mgdLowerRate.caption = File a return for {0} to {1}
-mgdLowerRate.error.required = Enter how much MGD at lower rate you owe
-mgdLowerRate.error.invalid = Enter your net takings in pounds and pence, like 1,510.72
-mgdLowerRate.error.range = Your net takings must be between -£1 billion and £1 billion
+mgdLowerRate.error.required = Enter how much MGD at the lower rate you owe
+mgdLowerRate.error.invalid = Enter your lower rate MGD in pounds and pence, like 1,510.72
+mgdLowerRate.error.range = Your lower rate MGD must be between -£1 billion and £1 billion
 
 netTakingsLower.title = What are your total net takings liable to the lower rate of duty?
 netTakingsLower.heading = What are your total net takings liable to the lower rate of duty?
