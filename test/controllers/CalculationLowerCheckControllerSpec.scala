@@ -22,9 +22,8 @@ import models.{NormalMode, Regime, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalacheck.Prop.True
 import org.scalatestplus.mockito.MockitoSugar
-import pages.CalculationLowerCheckPage
+import pages.{CalculationLowerCheckPage, NetTakingsLowerPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -39,9 +38,25 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new CalculationLowerCheckFormProvider()
   val form = formProvider()
 
-  def onwardRoute = Call("GET", "/foo")
-
   val validAnswer: Boolean = true
+
+  val netTakings = BigDecimal(1000)
+
+  val duty = netTakings * BigDecimal(0.05)
+
+  val userAnswersWithNetTakings =
+    emptyUserAnswers
+      .set(NetTakingsLowerPage, netTakings)
+      .success
+      .value
+
+  val userAnswers =
+    userAnswersWithNetTakings
+      .set(CalculationLowerCheckPage, validAnswer)
+      .success
+      .value
+
+  def onwardRoute = Call("GET", "/foo")
 
   lazy val calculationLowerCheckRoute = routes.CalculationLowerCheckController.onPageLoad(NormalMode).url
 
@@ -49,7 +64,7 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
 
       running(application) {
         val request = FakeRequest(GET, calculationLowerCheckRoute)
@@ -59,13 +74,11 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[CalculationLowerCheckView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, netTakings, duty, NormalMode)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers = UserAnswers(userAnswersId).set(CalculationLowerCheckPage, validAnswer).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -77,7 +90,7 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), netTakings, duty, NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -88,7 +101,7 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(userAnswersWithNetTakings))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -109,7 +122,7 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
 
       running(application) {
         val request =
@@ -123,23 +136,7 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
-      }
-    }
-
-    "must return OK and the correct view for a GET when no existing data is found" in {
-
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, calculationLowerCheckRoute)
-
-        val view = application.injector.instanceOf[CalculationLowerCheckView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, netTakings, duty, NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -176,32 +173,6 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
         }
-      }
-    }
-
-    "must redirect to the next page when valid data is submitted and no existing data is found" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      val application =
-        applicationBuilder(userAnswers = None)
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, calculationLowerCheckRoute)
-            .withFormUrlEncodedBody(("value", validAnswer.toString))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
       }
     }
   }

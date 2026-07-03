@@ -30,11 +30,11 @@ class CalculationLowerCheckViewSpec extends SpecBase {
 
     "must render the page with correct heading, caption and input" in new Setup {
 
-      val html = view(form, NormalMode)
+      val html = view(form, BigDecimal(1000), BigDecimal(50), NormalMode)
       val doc = Jsoup.parse(html.body)
 
-      doc.title must include(messages("lowerRateCalculationCheck.title"))
-      doc.select("h1").text mustBe messages("lowerRateCalculationCheck.heading")
+      doc.title must include(messages("lowerRateCalculationCheck.title", BigDecimal(50)))
+      doc.select("h1").text mustBe messages("lowerRateCalculationCheck.title", BigDecimal(50))
       doc.select(".govuk-caption-l").text mustBe messages("lowerRateCalculationCheck.caption", "1 Jan 2014", "31 Dec 2014")
       doc.select("button").text mustBe messages("site.continue")
     }
@@ -42,7 +42,7 @@ class CalculationLowerCheckViewSpec extends SpecBase {
     "must render error summary when form has errors" in new Setup {
 
       val boundForm = form.bind(Map("value" -> ""))
-      val html = view(boundForm, NormalMode)
+      val html = view(boundForm, BigDecimal(1000), BigDecimal(50), NormalMode)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
@@ -52,7 +52,7 @@ class CalculationLowerCheckViewSpec extends SpecBase {
     "must populate the input when form has a value" in new Setup {
 
       val boundForm = form.fill(true)
-      val html = view(boundForm, NormalMode)
+      val html = view(boundForm, BigDecimal(1000), BigDecimal(50), NormalMode)
       val doc = Jsoup.parse(html.body)
 
       doc.select("input[value=true]").hasAttr("checked") mustBe true
