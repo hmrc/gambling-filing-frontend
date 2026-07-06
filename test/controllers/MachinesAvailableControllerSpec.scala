@@ -18,12 +18,12 @@ package controllers
 
 import base.SpecBase
 import forms.MachinesAvailableFormProvider
-import models.{NormalMode, Regime, UserAnswers}
+import models.{FileReturn, NormalMode, Regime, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.MachinesAvailablePage
+import pages.{FileReturnPage, MachinesAvailablePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -31,6 +31,7 @@ import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.MachinesAvailableView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
@@ -42,13 +43,17 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
 
   val validAnswer: Int = 10
 
+  val fileReturn: FileReturn = FileReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+
+  def userAnswersWithFileReturn: UserAnswers = UserAnswers(userAnswersId).set(FileReturnPage, fileReturn).success.value
+
   lazy val machinesAvailableRoute = routes.MachinesAvailableController.onPageLoad(NormalMode).url
 
   "MachinesAvailable Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithFileReturn)).build()
 
       running(application) {
         val request = FakeRequest(GET, machinesAvailableRoute)
@@ -58,13 +63,13 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[MachinesAvailableView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, fileReturn)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
 
-      val userAnswers = UserAnswers(userAnswersId).set(MachinesAvailablePage, validAnswer).success.value
+      val userAnswers = userAnswersWithFileReturn.set(MachinesAvailablePage, validAnswer).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -76,7 +81,7 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, fileReturn)(request, messages(application)).toString
       }
     }
 
@@ -87,7 +92,7 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(userAnswersWithFileReturn))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -108,7 +113,7 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when a negative number is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithFileReturn)).build()
 
       running(application) {
         val request =
@@ -122,13 +127,13 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, fileReturn)(request, messages(application)).toString
       }
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(emptyUserAnswers)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithFileReturn)).build()
 
       running(application) {
         val request =
@@ -142,23 +147,21 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, fileReturn)(request, messages(application)).toString
       }
     }
 
-    "must return OK and the correct view for a GET when no existing data is found" in {
+    "must redirect to PageNotFoundController on a GET when no FileReturn is found in the session" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
         val request = FakeRequest(GET, machinesAvailableRoute)
 
-        val view = application.injector.instanceOf[MachinesAvailableView]
-
         val result = route(application, request).value
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode)(request, messages(application)).toString
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.PageNotFoundController.onPageLoad().url
       }
     }
 
@@ -198,19 +201,9 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to the next page when valid data is submitted and no existing data is found" in {
+    "must redirect to PageNotFoundController on a POST when no FileReturn is found in the session" in {
 
-      val mockSessionRepository = mock[SessionRepository]
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      val application =
-        applicationBuilder(userAnswers = None)
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+      val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
         val request =
@@ -220,7 +213,7 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual routes.PageNotFoundController.onPageLoad().url
       }
     }
   }

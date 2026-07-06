@@ -1,0 +1,95 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.components._
+@import models.OpenReturnPeriods
+@import utils.DateTimeFormats
+
+@this(
+    govukTable: GovukTable,
+    layout: templates.Layout,
+    govukButton: GovukButton,
+    govukPanel: GovukPanel,
+    h2: H2,
+    p: Paragraph,
+    link: Link,
+    formHelper: FormWithCSRF,
+    govukSummaryList: GovukSummaryList
+)
+
+@(regNumber: String, model: OpenReturnPeriods)(implicit request: Request[_], messages: Messages)
+
+@periodForm(period: String, label: String) = {
+    @formHelper(action = routes.OpenReturnsController.onSubmit()) {
+        <input type="hidden" name="period" value="@period" />
+        <button type="submit" class="govuk-link" style="background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;font:inherit;">@label</button>
+    }
+}
+
+@dateRange(mgdPeriod: String) = @{
+    val parsedMgdPeriod = DateTimeFormats.parseMgdPeriod(mgdPeriod)
+    messages("openReturns.table.returnPeriod.dates", DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._1)), DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._2)))
+}
+
+@statusTag(status: Int) = @{
+    val tagClass = status match {
+        case 2 => "govuk-tag govuk-tag--red"
+        case _ => "govuk-tag"
+    }
+    HtmlContent(s"""<strong class="$tagClass">${messages(s"openReturns.status.$status")}</strong>""")
+}
+
+@tableRows = @{
+model.openPeriods.zipWithIndex.map { case (item, i) =>
+        Seq(
+            TableRow(content = HtmlContent(periodForm(item.period, dateRange(item.period))), attributes = Map("data-testid" -> s"open-returns-mgd_period-$i")),
+            TableRow(content = Text(DateTimeFormats.formatDateMMM(Some(item.dueDate))), attributes = Map("data-testid" -> s"open-returns-due_date-$i")),
+            TableRow(content = statusTag(item.status), attributes = Map("data-testid" -> s"open-returns-status-$i"))
+        )
+    }
+}
+
+@layout(
+    pageTitle     = titleNoForm(messages(if(model.openPeriods.isEmpty) "openReturns.empty.title" else "openReturns.title")),
+    showBackLink  = true
+) {
+
+    <span class="govuk-caption-l" data-testid="open-returns-caption">
+        @messages("openReturns.caption")
+    </span>
+
+    <h1 class="govuk-heading-l" data-testid="open-returns-heading">
+        @if(model.openPeriods.isEmpty) {
+            @messages("openReturns.empty.heading")
+        } else {
+            @messages("openReturns.heading")
+        }
+    </h1>
+
+    @if(model.openPeriods.isEmpty) {
+        <p class="govuk-body">@messages("openReturns.empty.body")</p>
+    } else {
+        @govukTable(Table(
+            attributes = Map("data-testid" -> "open-returns-table"),
+            head = Some(Seq(
+                HeadCell(content = Text(messages("openReturns.table.returnPeriod"))),
+                HeadCell(content = Text(messages("openReturns.table.dueDate"))),
+                HeadCell(content = Text(messages("openReturns.table.status")))
+            )),
+            rows = tableRows
+        ))
+    }
+}
