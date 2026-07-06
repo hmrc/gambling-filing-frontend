@@ -14,6 +14,8 @@
  * limitations under the License.
  *@
 
+@import config.CurrencyFormatter
+
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
@@ -36,7 +38,7 @@
             @messages("calculationLowerCheck.caption", "1 Jan 2014", "31 Dec 2014")
         </span>
         <h1 class="govuk-heading-l">
-            @messages("calculationLowerCheck.title", duty)
+            @messages("calculationLowerCheck.title", CurrencyFormatter.currencyFormat(duty))
         </h1>
         <p class="govuk-body">
             @messages("calculationLowerCheck.body", netTakings)
