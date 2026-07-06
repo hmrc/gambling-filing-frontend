@@ -17,7 +17,16 @@
 package config
 
 trait CurrencyFormatter {
-  def currencyFormat(amt: BigDecimal): String = f"£$amt%,1.2f".replace(".00", "")
+  def currencyFormat(amt: BigDecimal): String = {
+    val formatted =
+      f"${amt.abs}%,1.2f".replace(".00", "")
+
+    if (amt < 0) {
+      s"-£$formatted"
+    } else {
+      s"£$formatted"
+    }
+  }
 }
 
 object CurrencyFormatter extends CurrencyFormatter

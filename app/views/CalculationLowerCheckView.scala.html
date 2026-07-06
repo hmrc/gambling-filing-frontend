@@ -38,10 +38,10 @@
             @messages("calculationLowerCheck.caption", "1 Jan 2014", "31 Dec 2014")
         </span>
         <h1 class="govuk-heading-l">
-            @messages("calculationLowerCheck.title", CurrencyFormatter.currencyFormat(duty))
+            @messages("calculationLowerCheck.title", "\u00A0" + CurrencyFormatter.currencyFormat(duty))
         </h1>
         <p class="govuk-body">
-            @messages("calculationLowerCheck.body", netTakings)
+            @messages("calculationLowerCheck.body", CurrencyFormatter.currencyFormat(netTakings))
         </p>
 
 @govukRadios(

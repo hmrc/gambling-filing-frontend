@@ -62,7 +62,7 @@ class CalculationLowerCheckController @Inject() (
           case None        => throw new Exception("NetTakingsLowerPage not found")
         }
 
-        val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
+        val duty = (netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)).max(BigDecimal(0))
 
         Future.successful(Ok(view(radioAnswer, netTakings, duty, mode)))
       case _ =>
