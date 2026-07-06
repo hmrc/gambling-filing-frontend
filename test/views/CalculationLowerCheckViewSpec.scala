@@ -17,6 +17,7 @@
 package views
 
 import base.SpecBase
+import config.CurrencyFormatter
 import forms.CalculationLowerCheckFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
@@ -33,9 +34,9 @@ class CalculationLowerCheckViewSpec extends SpecBase {
       val html = view(form, BigDecimal(1000), BigDecimal(50), NormalMode)
       val doc = Jsoup.parse(html.body)
 
-      doc.title must include(messages("lowerRateCalculationCheck.title", BigDecimal(50)))
-      doc.select("h1").text mustBe messages("lowerRateCalculationCheck.title", BigDecimal(50))
-      doc.select(".govuk-caption-l").text mustBe messages("lowerRateCalculationCheck.caption", "1 Jan 2014", "31 Dec 2014")
+      doc.title must include(messages("calculationLowerCheck.title", CurrencyFormatter.currencyFormat(BigDecimal(50))))
+      doc.select("h1").text mustBe messages("calculationLowerCheck.title", CurrencyFormatter.currencyFormat(BigDecimal(50)))
+      doc.select(".govuk-caption-l").text mustBe messages("calculationLowerCheck.caption", "1 Jan 2014", "31 Dec 2014")
       doc.select("button").text mustBe messages("site.continue")
     }
 
@@ -46,7 +47,7 @@ class CalculationLowerCheckViewSpec extends SpecBase {
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
-      doc.select(".govuk-error-summary__list a").text must include(messages("lowerRateCalculationCheck.error.required"))
+      doc.select(".govuk-error-summary__list a").text must include(messages("calculationLowerCheck.error.required"))
     }
 
     "must populate the input when form has a value" in new Setup {
