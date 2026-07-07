@@ -103,7 +103,8 @@ netTakingsHigher.error.range = Your net takings must be between -£1 billion and
 calculationLowerCheck.title = We have worked out your tax to be
 calculationLowerCheck.heading = Is this correct?
 calculationLowerCheck.caption = File a return for {0} to {1}
-calculationLowerCheck.body = This is based on {0}% of your declared net takings of {1} for the lower rate of duty
+calculationLowerCheck.body.prefix = This is based on {0}% of your declared net takings of
+calculationLowerCheck.body.suffix = for the lower rate of duty.
 calculationLowerCheck.error.required = Select yes if this calculation is correct
 
 selectFiledReturn.title = Which period do you want to view?
