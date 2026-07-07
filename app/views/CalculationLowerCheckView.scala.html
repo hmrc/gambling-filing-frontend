@@ -24,7 +24,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_],netTakings: BigDecimal,duty: BigDecimal, mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_],netTakings: BigDecimal,duty: BigDecimal, percentage: Int, mode: Mode)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("calculationLowerCheck.title", CurrencyFormatter.currencyFormat(duty)))) {
 
@@ -38,10 +38,37 @@
             @messages("calculationLowerCheck.caption", "1 Jan 2014", "31 Dec 2014")
         </span>
         <h1 class="govuk-heading-l">
-            @messages("calculationLowerCheck.title", "\u00A0" + CurrencyFormatter.currencyFormat(duty))
+            @messages("calculationLowerCheck.title")
+
+            @if(duty < 0) {
+
+            <span style="white-space: nowrap;">
+            <span aria-hidden="true">-</span>
+            <span class="govuk-visually-hidden">minus</span>
+            @CurrencyFormatter.currencyFormat(duty.abs)
+            </span>
+                        } else {
+
+            @CurrencyFormatter.currencyFormat(duty)
+
+            }
         </h1>
+
         <p class="govuk-body">
-            @messages("calculationLowerCheck.body", CurrencyFormatter.currencyFormat(netTakings))
+            @messages("calculationLowerCheck.body.prefix", percentage)
+
+            @if(netTakings < 0) {
+            <span aria-hidden="true">-</span>
+            <span class="govuk-visually-hidden">minus</span>
+            @CurrencyFormatter.currencyFormat(netTakings.abs)
+
+            } else {
+
+            @CurrencyFormatter.currencyFormat(netTakings)
+
+            }
+
+            @messages("calculationLowerCheck.body.suffix")
         </p>
 
 @govukRadios(

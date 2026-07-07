@@ -62,9 +62,11 @@ class CalculationLowerCheckController @Inject() (
           case None        => throw new Exception("NetTakingsLowerPage not found")
         }
 
-        val duty = (netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)).max(BigDecimal(0))
+        val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
 
-        Future.successful(Ok(view(radioAnswer, netTakings, duty, mode)))
+        val percentage = if (netTakings == 0) 0 else (frontendAppConfig.lowerRateDutyPercentage * 100).toInt
+
+        Future.successful(Ok(view(radioAnswer, netTakings, duty, percentage, mode)))
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
@@ -81,10 +83,12 @@ class CalculationLowerCheckController @Inject() (
 
         val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
 
+        val percentage = if (netTakings == 0) 0 else (frontendAppConfig.lowerRateDutyPercentage * 100).toInt
+
         form
           .bindFromRequest()
           .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, netTakings, duty, mode))),
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, netTakings, duty, percentage, mode))),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
               for {

@@ -44,6 +44,8 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
 
   val duty = netTakings * BigDecimal(0.05)
 
+  val percentage = 5
+
   val userAnswersWithNetTakings =
     emptyUserAnswers
       .set(NetTakingsLowerPage, netTakings)
@@ -74,7 +76,7 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[CalculationLowerCheckView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, netTakings, duty, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, netTakings, duty, percentage, NormalMode)(request, messages(application)).toString
       }
     }
 
@@ -90,7 +92,9 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), netTakings, duty, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), netTakings, duty, percentage, NormalMode)(request,
+                                                                                                                 messages(application)
+                                                                                                                ).toString
       }
     }
 
@@ -136,7 +140,7 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, netTakings, duty, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, netTakings, duty, percentage, NormalMode)(request, messages(application)).toString
       }
     }
 
