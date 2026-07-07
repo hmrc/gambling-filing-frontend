@@ -114,6 +114,13 @@ mgdLowerRate.error.required = Enter how much MGD at the lower rate you owe
 mgdLowerRate.error.invalid = Enter your lower rate MGD in pounds and pence, like 1,510.72
 mgdLowerRate.error.range = Your lower rate MGD must be between -£1 billion and £1 billion
 
+mgdStandardRate.title = How much MGD at the standard rate do you owe?
+mgdStandardRate.heading = How much MGD at the standard rate do you owe?
+mgdStandardRate.caption = File a return for {0} to {1}
+mgdStandardRate.error.required = Enter how much MGD at the standard rate you owe
+mgdStandardRate.error.invalid = Enter your standard rate MGD in pounds and pence, like 1,510.72
+mgdStandardRate.error.range = Your standard rate MGD must be between -£1 billion and £1 billion
+
 netTakingsLower.title = What are your total net takings liable to the lower rate of duty?
 netTakingsLower.heading = What are your total net takings liable to the lower rate of duty?
 netTakingsLower.caption = File a return for {0} to {1}
