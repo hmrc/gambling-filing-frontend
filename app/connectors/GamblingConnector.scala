@@ -16,7 +16,7 @@
 
 package connectors
 
-import models.{MgdCertificate, SubmittedReturnSingle, SubmittedReturns}
+import models.{MgdCertificate, OpenReturnPeriods, SubmittedReturnSingle, SubmittedReturns}
 import play.api.Logging
 import play.api.http.Status.OK
 import uk.gov.hmrc.http.client.HttpClientV2
@@ -68,4 +68,9 @@ class GamblingConnector @Inject() (config: ServicesConfig, http: HttpClientV2)(i
       .get(url"$baseUrl/submitted-return-details/$mgdRegNumber/$consecNo")
       .execute[SubmittedReturnSingle]
   }
+
+  def getOpenReturnPeriods(regime: String, regNumber: String, sortBy: Int, orderBy: String)(using hc: HeaderCarrier): Future[OpenReturnPeriods] =
+    http
+      .get(url"$baseUrl/open-periods/$regime/$regNumber?sortBy=$sortBy&orderBy=$orderBy")
+      .execute[OpenReturnPeriods]
 }

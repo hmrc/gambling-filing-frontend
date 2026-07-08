@@ -14,33 +14,12 @@
  * limitations under the License.
  */
 
-package models
+package utils
 
-import play.api.libs.json.{Json, OFormat}
+object QueryParameters {
 
-import java.time.LocalDate
-
-final case class SubmittedReturnsItem(
-  consec_no: Int,
-  mgd_period: String,
-  submitted_date: LocalDate,
-  ack_ref: String
-)
-
-object SubmittedReturnsItem {
-  implicit val format: OFormat[SubmittedReturnsItem] = Json.format[SubmittedReturnsItem]
-}
-
-final case class SubmittedReturns(
-  items: Seq[SubmittedReturnsItem]
-)
-
-object SubmittedReturns {
-  implicit val format: OFormat[SubmittedReturns] = Json.format[SubmittedReturns]
-}
-
-object SortBy {
-  val PeriodStartDate = 1
-  val SubmittedDate = 2
-  val PeriodEndDate = 3
+  object OrderBy {
+    val Ascending = "ASC"
+    val Descending = "DESC"
+  }
 }

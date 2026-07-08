@@ -17,60 +17,54 @@
 package views
 
 import base.SpecBase
-import forms.MachinesAvailableFormProvider
-import models.{NormalMode, SelectedReturn}
+import forms.MgdStandardRateFormProvider
+import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import views.html.MachinesAvailableView
+import views.html.MgdStandardRateView
 
-import java.time.LocalDate
+class MgdStandardRateViewSpec extends SpecBase {
 
-class MachinesAvailableViewSpec extends SpecBase {
-
-  "MachinesAvailableView" - {
+  "MgdStandardRateView" - {
 
     "must render the page with correct heading, caption and input" in new Setup {
 
-      val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
-      val html = view(form, NormalMode, selectedReturn)
+      val html = view(form, NormalMode)
       val doc = Jsoup.parse(html.body)
 
-      doc.title must include(messages("machinesAvailable.title"))
-      doc.select("h1").text mustBe messages("machinesAvailable.heading")
-      doc.select(".govuk-caption-l").text mustBe messages(
-        "machinesAvailable.caption",
-        "1 Jan 2025",
-        "31 Mar 2025"
-      )
-      doc.select("input.govuk-input").hasClass("govuk-input--width-10") mustBe true
+      doc.title must include(messages("mgdStandardRate.title"))
+      doc.select("h1").text mustBe messages("mgdStandardRate.heading")
+      doc.select(".govuk-caption-l").text mustBe messages("mgdStandardRate.caption", "1 Jan 2014", "31 Dec 2014")
+      doc.select(".govuk-input__prefix").text mustBe "£"
+      doc.select("input.govuk-input").hasClass("govuk-input--width-20") mustBe true
       doc.select("button").text mustBe messages("site.continue")
     }
 
     "must render error summary when form has errors" in new Setup {
 
       val boundForm = form.bind(Map("value" -> ""))
-      val html = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
-      doc.select(".govuk-error-summary__list a").text must include(messages("machinesAvailable.error.required"))
+      doc.select(".govuk-error-summary__list a").text must include(messages("mgdStandardRate.error.required"))
     }
 
     "must populate the input when form has a value" in new Setup {
 
-      val boundForm = form.fill(10)
-      val html = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val boundForm = form.fill(BigDecimal("123.45"))
+      val html = view(boundForm, NormalMode)
       val doc = Jsoup.parse(html.body)
 
-      doc.select("#value").`val` mustBe "10"
+      doc.select("#value").`val` mustBe "123.45"
     }
   }
 
   trait Setup {
     val app = applicationBuilder().build()
-    val view = app.injector.instanceOf[MachinesAvailableView]
-    val form = new MachinesAvailableFormProvider()()
+    val view = app.injector.instanceOf[MgdStandardRateView]
+    val form = new MgdStandardRateFormProvider()()
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 

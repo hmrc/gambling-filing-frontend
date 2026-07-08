@@ -79,6 +79,13 @@ mgdLowerRate.error.required = Enter how much MGD at the lower rate you owe
 mgdLowerRate.error.invalid = Enter your lower rate MGD in pounds and pence, like 1,510.72
 mgdLowerRate.error.range = Your lower rate MGD must be between -£1 billion and £1 billion
 
+mgdStandardRate.title = How much MGD at the standard rate do you owe?
+mgdStandardRate.heading = How much MGD at the standard rate do you owe?
+mgdStandardRate.caption = File a return for {0} to {1}
+mgdStandardRate.error.required = Enter how much MGD at the standard rate you owe
+mgdStandardRate.error.invalid = Enter your standard rate MGD in pounds and pence, like 1,510.72
+mgdStandardRate.error.range = Your standard rate MGD must be between -£1 billion and £1 billion
+
 netTakingsLower.title = What are your total net takings liable to the lower rate of duty?
 netTakingsLower.heading = What are your total net takings liable to the lower rate of duty?
 netTakingsLower.caption = File a return for {0} to {1}
@@ -134,6 +141,19 @@ submittedReturn.underDeclaredDuty = Under-declared tax from previous returns
 submittedReturn.previousReturnAmount = Amount brought forward
 submittedReturn.negativeAmountCarriedForward = Negative amount of duty to carry forward to next return
 submittedReturn.totalNetDutyPayable = Net MGD payable on this return
+
+selectReturn.title = Which period are you filing a return for?
+selectReturn.caption = File a return
+selectReturn.heading = Which period are you filing a return for?
+selectReturn.table.returnPeriod = Return period
+selectReturn.table.returnPeriod.dates = {0} to {1}
+selectReturn.table.dueDate = Date due
+selectReturn.table.status = Status
+selectReturn.status.1 = Open
+selectReturn.status.2 = Overdue
+selectReturn.empty.title = No returns to file
+selectReturn.empty.heading = No returns to file
+selectReturn.empty.body = You are up to date on your returns.
 
 netTakingsLowerRate.title = Net takings for the lower rate of duty
 netTakingsLowerRate.heading = Net takings for the lower rate of duty
