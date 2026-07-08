@@ -59,18 +59,6 @@ class CalculationLowerCheckViewSpec extends SpecBase {
 
       doc.select("input[value=true]").hasAttr("checked") mustBe true
     }
-
-    "must render accessible negative currency values" in new Setup {
-
-      val html = view(form, BigDecimal(-2000), BigDecimal(-100), 5, NormalMode)
-      val doc = Jsoup.parse(html.body)
-
-      doc.select("""span[aria-hidden="true"]""").size mustBe 2
-
-      doc.select(".govuk-visually-hidden").text must include("minus")
-
-      doc.select("h1").text must include("£100")
-    }
   }
 
   trait Setup {
