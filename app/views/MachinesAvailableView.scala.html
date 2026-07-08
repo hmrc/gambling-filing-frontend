@@ -16,7 +16,7 @@
 
 @import viewmodels.InputWidth._
 @import viewmodels.LabelSize
-@import models.FileReturn
+@import models.SelectedReturn
 @import utils.DateTimeFormats
 
 @this(
@@ -27,7 +27,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, fileReturn: FileReturn)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("machinesAvailable.title"))) {
 
@@ -39,8 +39,8 @@
 
         <span class="govuk-caption-l">@messages(
             "machinesAvailable.caption",
-            DateTimeFormats.formatDateMMM(Some(fileReturn.periodStart)),
-            DateTimeFormats.formatDateMMM(Some(fileReturn.periodEnd))
+            DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
+            DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
         )</span>
 
         @govukInput(

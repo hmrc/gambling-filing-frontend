@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.MachinesAvailableFormProvider
 import models.{Mode, Regime, UserAnswers}
 import navigation.Navigator
-import pages.{FileReturnPage, MachinesAvailablePage}
+import pages.{SelectReturnPage, MachinesAvailablePage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -50,16 +50,16 @@ class MachinesAvailableController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        request.userAnswers.flatMap(_.get(FileReturnPage)) match {
+        request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
           case None =>
-            logger.info(s"[onPageLoad] no fileReturn found for regNum=${request.regNum}")
+            logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
             Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
-          case Some(fileReturn) =>
+          case Some(selectedReturn) =>
             val preparedForm = request.userAnswers.flatMap(_.get(MachinesAvailablePage)) match {
               case None        => form
               case Some(value) => form.fill(value)
             }
-            Future.successful(Ok(view(preparedForm, mode, fileReturn)))
+            Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
         }
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
@@ -70,15 +70,15 @@ class MachinesAvailableController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        request.userAnswers.flatMap(_.get(FileReturnPage)) match {
+        request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
           case None =>
-            logger.info(s"[onSubmit] no fileReturn found for regNum=${request.regNum}")
+            logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
             Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
-          case Some(fileReturn) =>
+          case Some(selectedReturn) =>
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, fileReturn))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
                 value => {
                   val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
                   for {

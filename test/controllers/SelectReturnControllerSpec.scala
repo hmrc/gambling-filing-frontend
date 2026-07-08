@@ -17,28 +17,28 @@
 package controllers
 
 import base.SpecBase
-import models.OpenReturnPeriodsTestData.{validResponseOpenReturns, zeroResponseOpenReturns}
-import models.{FileReturn, NormalMode, Regime, UserAnswers}
+import models.SelectReturnTestData.{validResponseOpenReturns, zeroResponseOpenReturns}
+import models.{SelectedReturn, NormalMode, Regime, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.FileReturnPage
+import pages.SelectReturnPage
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
 import services.GamblingService
 import uk.gov.hmrc.http.HeaderCarrier
-import views.html.OpenReturnsView
+import views.html.SelectReturnView
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class OpenReturnsControllerSpec extends SpecBase with MockitoSugar {
+class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
 
   private val regNumber = "XWM00003102200"
 
-  lazy val OpenReturnsRoute: String = routes.OpenReturnsController.onPageLoad().url
+  lazy val OpenReturnsRoute: String = routes.SelectReturnController.onPageLoad().url
 
   "OpenReturnsController" - {
 
@@ -56,7 +56,7 @@ class OpenReturnsControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[OpenReturnsView]
+        val view = application.injector.instanceOf[SelectReturnView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(regNumber, validResponseOpenReturns)(request, messages(application)).toString
@@ -99,7 +99,7 @@ class OpenReturnsControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[OpenReturnsView]
+        val view = application.injector.instanceOf[SelectReturnView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(regNumber, zeroResponseOpenReturns)(request, messages(application)).toString
@@ -139,7 +139,7 @@ class OpenReturnsControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.OpenReturnsController.onSubmit().url)
+        val request = FakeRequest(POST, routes.SelectReturnController.onSubmit().url)
           .withSession("regNum" -> regNumber)
           .withFormUrlEncodedBody("period" -> "01/07/2025 - 30/09/2025")
 
@@ -151,7 +151,7 @@ class OpenReturnsControllerSpec extends SpecBase with MockitoSugar {
         val captor = org.mockito.ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository).set(captor.capture())
 
-        captor.getValue.get(FileReturnPage).value mustEqual FileReturn(LocalDate.of(2025, 7, 1), LocalDate.of(2025, 9, 30))
+        captor.getValue.get(SelectReturnPage).value mustEqual SelectedReturn(LocalDate.of(2025, 7, 1), LocalDate.of(2025, 9, 30))
       }
     }
 
@@ -165,14 +165,14 @@ class OpenReturnsControllerSpec extends SpecBase with MockitoSugar {
           .build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.OpenReturnsController.onSubmit().url)
+        val request = FakeRequest(POST, routes.SelectReturnController.onSubmit().url)
           .withSession("regNum" -> regNumber)
           .withFormUrlEncodedBody("period" -> "not-a-valid-period")
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.OpenReturnsController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
 
         verify(mockSessionRepository, org.mockito.Mockito.never()).set(any[UserAnswers])
       }

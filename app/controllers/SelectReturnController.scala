@@ -16,10 +16,10 @@
 
 package controllers
 
-import controllers.OpenReturnsController.{OrderBy, SortBy}
+import controllers.SelectReturnController.SortBy
 import controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import models.{FileReturn, NormalMode, Regime, UserAnswers}
-import pages.FileReturnPage
+import models.{SelectedReturn, NormalMode, Regime, UserAnswers}
+import pages.SelectReturnPage
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.Results.Redirect
@@ -28,18 +28,19 @@ import repositories.SessionRepository
 import services.GamblingService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.DateTimeFormats
-import views.html.OpenReturnsView
+import utils.QueryParameters.OrderBy
+import views.html.SelectReturnView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class OpenReturnsController @Inject() (
+class SelectReturnController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   sessionRepository: SessionRepository,
   gamblingService: GamblingService,
-  openReturnsView: OpenReturnsView
+  openReturnsView: SelectReturnView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -73,25 +74,20 @@ class OpenReturnsController @Inject() (
         case Some((periodStart, periodEnd)) =>
           val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
           for {
-            updatedAnswers <- Future.fromTry(userAnswers.set(FileReturnPage, FileReturn(periodStart, periodEnd)))
+            updatedAnswers <- Future.fromTry(userAnswers.set(SelectReturnPage, SelectedReturn(periodStart, periodEnd)))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Redirect(routes.MachinesAvailableController.onPageLoad(NormalMode))
         case None =>
           logger.warn(s"[onSubmit] unable to parse period=$period")
-          Future.successful(Redirect(routes.OpenReturnsController.onPageLoad()))
+          Future.successful(Redirect(routes.SelectReturnController.onPageLoad()))
       }
     }
 }
 
-private object OpenReturnsController {
+private object SelectReturnController {
   object SortBy {
     val Period = 1
     val DueDate = 2
     val Status = 3
-  }
-
-  object OrderBy {
-    val Ascending = "ASC"
-    val Descending = "DESC"
   }
 }

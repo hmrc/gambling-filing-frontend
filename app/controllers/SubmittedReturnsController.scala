@@ -17,13 +17,14 @@
 package controllers
 
 import controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import models.{OrderBy, Regime, SortBy}
+import models.{Regime, SortBy}
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GamblingService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.QueryParameters.OrderBy
 import views.html.{SubmittedReturnView, SubmittedReturnsView}
 
 import javax.inject.Inject

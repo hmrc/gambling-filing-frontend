@@ -33,7 +33,7 @@
 @(regNumber: String, model: OpenReturnPeriods)(implicit request: Request[_], messages: Messages)
 
 @periodForm(period: String, label: String) = {
-    @formHelper(action = routes.OpenReturnsController.onSubmit()) {
+    @formHelper(action = routes.SelectReturnController.onSubmit()) {
         <input type="hidden" name="period" value="@period" />
         <button type="submit" class="govuk-link" style="background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;font:inherit;">@label</button>
     }
@@ -41,7 +41,7 @@
 
 @dateRange(mgdPeriod: String) = @{
     val parsedMgdPeriod = DateTimeFormats.parseMgdPeriod(mgdPeriod)
-    messages("openReturns.table.returnPeriod.dates", DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._1)), DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._2)))
+    messages("selectReturn.table.returnPeriod.dates", DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._1)), DateTimeFormats.formatDateMMM(parsedMgdPeriod.map(_._2)))
 }
 
 @statusTag(status: Int) = @{
@@ -49,7 +49,7 @@
         case 2 => "govuk-tag govuk-tag--red"
         case _ => "govuk-tag"
     }
-    HtmlContent(s"""<strong class="$tagClass">${messages(s"openReturns.status.$status")}</strong>""")
+    HtmlContent(s"""<strong class="$tagClass">${messages(s"selectReturn.status.$status")}</strong>""")
 }
 
 @tableRows = @{
@@ -63,31 +63,31 @@ model.openPeriods.zipWithIndex.map { case (item, i) =>
 }
 
 @layout(
-    pageTitle     = titleNoForm(messages(if(model.openPeriods.isEmpty) "openReturns.empty.title" else "openReturns.title")),
+    pageTitle     = titleNoForm(messages(if(model.openPeriods.isEmpty) "selectReturn.empty.title" else "selectReturn.title")),
     showBackLink  = true
 ) {
 
     <span class="govuk-caption-l" data-testid="open-returns-caption">
-        @messages("openReturns.caption")
+        @messages("selectReturn.caption")
     </span>
 
     <h1 class="govuk-heading-l" data-testid="open-returns-heading">
         @if(model.openPeriods.isEmpty) {
-            @messages("openReturns.empty.heading")
+            @messages("selectReturn.empty.heading")
         } else {
-            @messages("openReturns.heading")
+            @messages("selectReturn.heading")
         }
     </h1>
 
     @if(model.openPeriods.isEmpty) {
-        <p class="govuk-body">@messages("openReturns.empty.body")</p>
+        <p class="govuk-body">@messages("selectReturn.empty.body")</p>
     } else {
         @govukTable(Table(
             attributes = Map("data-testid" -> "open-returns-table"),
             head = Some(Seq(
-                HeadCell(content = Text(messages("openReturns.table.returnPeriod"))),
-                HeadCell(content = Text(messages("openReturns.table.dueDate"))),
-                HeadCell(content = Text(messages("openReturns.table.status")))
+                HeadCell(content = Text(messages("selectReturn.table.returnPeriod"))),
+                HeadCell(content = Text(messages("selectReturn.table.dueDate"))),
+                HeadCell(content = Text(messages("selectReturn.table.status")))
             )),
             rows = tableRows
         ))

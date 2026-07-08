@@ -14,13 +14,27 @@
  * limitations under the License.
  */
 
-package pages
+package models
 
-import play.api.libs.json.JsPath
+import java.time.LocalDate
 
-case object FileReturnPage extends QuestionPage[models.FileReturn] {
+object SelectReturnTestData {
+  val validResponseOpenReturns = OpenReturnPeriods(
+    openPeriods = Seq(
+      OpenPeriod(
+        consecNo = 12345,
+        period   = "01/07/2025 - 30/09/2025",
+        dueDate  = LocalDate.of(2025, 10, 31),
+        status   = 1
+      ),
+      OpenPeriod(
+        consecNo = 22345,
+        period   = "01/04/2025 - 30/06/2025",
+        dueDate  = LocalDate.of(2025, 7, 31),
+        status   = 2
+      )
+    )
+  )
 
-  override def path: JsPath = JsPath \ toString
-
-  override def toString: String = "fileReturn"
+  val zeroResponseOpenReturns = OpenReturnPeriods(openPeriods = Seq())
 }

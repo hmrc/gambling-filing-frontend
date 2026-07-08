@@ -17,11 +17,11 @@
 package views
 
 import base.SpecBase
-import models.OpenReturnPeriodsTestData.{validResponseOpenReturns, zeroResponseOpenReturns}
+import models.SelectReturnTestData.{validResponseOpenReturns, zeroResponseOpenReturns}
 import org.jsoup.Jsoup
 import play.api.test.FakeRequest
 
-class OpenReturnsViewSpec extends SpecBase {
+class SelectReturnViewSpec extends SpecBase {
 
   private val regNumber = "XWM00003102200"
 
@@ -30,7 +30,7 @@ class OpenReturnsViewSpec extends SpecBase {
     "must render OpenReturns details correctly" in {
 
       val app = applicationBuilder().build()
-      val view = app.injector.instanceOf[views.html.OpenReturnsView]
+      val view = app.injector.instanceOf[views.html.SelectReturnView]
       val request = FakeRequest()
 
       val base = validResponseOpenReturns
@@ -38,7 +38,7 @@ class OpenReturnsViewSpec extends SpecBase {
       val html = view(regNumber, base)(request, messages(app))
       val doc = Jsoup.parse(html.body)
 
-      doc.title() must include(messages(app)("openReturns.title"))
+      doc.title() must include(messages(app)("selectReturn.title"))
       val pageText = doc.body().text()
 
       pageText must include("1 Jul 2025 to 30 Sep 2025")
@@ -62,7 +62,7 @@ class OpenReturnsViewSpec extends SpecBase {
       val forms = doc.select(".govuk-table__cell form")
       forms.size() mustBe validResponseOpenReturns.openPeriods.size
 
-      forms.get(0).attr("action") mustEqual controllers.routes.OpenReturnsController.onSubmit().url
+      forms.get(0).attr("action") mustEqual controllers.routes.SelectReturnController.onSubmit().url
       forms.get(0).attr("method").toUpperCase mustEqual "POST"
       forms.get(0).select("""input[name=period]""").attr("value") mustEqual validResponseOpenReturns.openPeriods.head.period
       forms.get(0).select("button[type=submit]").text() mustEqual "1 Jul 2025 to 30 Sep 2025"
@@ -71,7 +71,7 @@ class OpenReturnsViewSpec extends SpecBase {
     "must render view with correct title, heading and body when no data" in {
 
       val app = applicationBuilder().build()
-      val view = app.injector.instanceOf[views.html.OpenReturnsView]
+      val view = app.injector.instanceOf[views.html.SelectReturnView]
       val request = FakeRequest()
 
       val base = zeroResponseOpenReturns
@@ -79,11 +79,11 @@ class OpenReturnsViewSpec extends SpecBase {
       val html = view(regNumber, base)(request, messages(app))
       val doc = Jsoup.parse(html.body)
 
-      doc.title() must include(messages(app)("openReturns.empty.title"))
+      doc.title() must include(messages(app)("selectReturn.empty.title"))
       val pageText = doc.body().text()
 
-      pageText must include(messages(app)("openReturns.empty.heading"))
-      pageText must include(messages(app)("openReturns.empty.body"))
+      pageText must include(messages(app)("selectReturn.empty.heading"))
+      pageText must include(messages(app)("selectReturn.empty.body"))
     }
   }
 }
