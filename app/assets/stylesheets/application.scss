@@ -9,3 +9,11 @@
 .js-enabled .js-visible {
   display: inline-block !important;
 }
+
+.button-as-link {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+}

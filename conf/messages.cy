@@ -136,6 +136,19 @@ submittedReturn.previousReturnAmount = Amount brought forward
 submittedReturn.negativeAmountCarriedForward = Negative amount of duty to carry forward to next return
 submittedReturn.totalNetDutyPayable = Net MGD payable on this return
 
+selectReturn.title = Which period are you filing a return for?
+selectReturn.caption = File a return
+selectReturn.heading = Which period are you filing a return for?
+selectReturn.table.returnPeriod = Return period
+selectReturn.table.returnPeriod.dates = {0} to {1}
+selectReturn.table.dueDate = Date due
+selectReturn.table.status = Status
+selectReturn.status.1 = Open
+selectReturn.status.2 = Overdue
+selectReturn.empty.title = No returns to file
+selectReturn.empty.heading = No returns to file
+selectReturn.empty.body = You are up to date on your returns.
+
 netTakingsLowerRate.title = Net takings for the lower rate of duty
 netTakingsLowerRate.heading = Net takings for the lower rate of duty
 netTakingsLowerRate.caption = File a return for {0} to {1}

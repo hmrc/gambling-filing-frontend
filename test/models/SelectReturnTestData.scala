@@ -16,31 +16,25 @@
 
 package models
 
-import play.api.libs.json.{Json, OFormat}
-
 import java.time.LocalDate
 
-final case class SubmittedReturnsItem(
-  consec_no: Int,
-  mgd_period: String,
-  submitted_date: LocalDate,
-  ack_ref: String
-)
+object SelectReturnTestData {
+  val validResponseOpenReturns = OpenReturnPeriods(
+    openPeriods = Seq(
+      OpenPeriod(
+        consecNo = 12345,
+        period   = "01/07/2025 - 30/09/2025",
+        dueDate  = LocalDate.of(2025, 10, 31),
+        status   = 1
+      ),
+      OpenPeriod(
+        consecNo = 22345,
+        period   = "01/04/2025 - 30/06/2025",
+        dueDate  = LocalDate.of(2025, 7, 31),
+        status   = 2
+      )
+    )
+  )
 
-object SubmittedReturnsItem {
-  implicit val format: OFormat[SubmittedReturnsItem] = Json.format[SubmittedReturnsItem]
-}
-
-final case class SubmittedReturns(
-  items: Seq[SubmittedReturnsItem]
-)
-
-object SubmittedReturns {
-  implicit val format: OFormat[SubmittedReturns] = Json.format[SubmittedReturns]
-}
-
-object SortBy {
-  val PeriodStartDate = 1
-  val SubmittedDate = 2
-  val PeriodEndDate = 3
+  val zeroResponseOpenReturns = OpenReturnPeriods(openPeriods = Seq())
 }

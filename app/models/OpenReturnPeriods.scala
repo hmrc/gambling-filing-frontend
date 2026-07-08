@@ -20,27 +20,21 @@ import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
 
-final case class SubmittedReturnsItem(
-  consec_no: Int,
-  mgd_period: String,
-  submitted_date: LocalDate,
-  ack_ref: String
+final case class OpenPeriod(
+  consecNo: Int,
+  period: String,
+  dueDate: LocalDate,
+  status: Int
 )
 
-object SubmittedReturnsItem {
-  implicit val format: OFormat[SubmittedReturnsItem] = Json.format[SubmittedReturnsItem]
+object OpenPeriod {
+  given format: OFormat[OpenPeriod] = Json.format[OpenPeriod]
 }
 
-final case class SubmittedReturns(
-  items: Seq[SubmittedReturnsItem]
+final case class OpenReturnPeriods(
+  openPeriods: Seq[OpenPeriod]
 )
 
-object SubmittedReturns {
-  implicit val format: OFormat[SubmittedReturns] = Json.format[SubmittedReturns]
-}
-
-object SortBy {
-  val PeriodStartDate = 1
-  val SubmittedDate = 2
-  val PeriodEndDate = 3
+object OpenReturnPeriods {
+  given format: OFormat[OpenReturnPeriods] = Json.format[OpenReturnPeriods]
 }

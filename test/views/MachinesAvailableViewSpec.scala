@@ -18,11 +18,13 @@ package views
 
 import base.SpecBase
 import forms.MachinesAvailableFormProvider
-import models.NormalMode
+import models.{NormalMode, SelectedReturn}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import views.html.MachinesAvailableView
+
+import java.time.LocalDate
 
 class MachinesAvailableViewSpec extends SpecBase {
 
@@ -30,12 +32,17 @@ class MachinesAvailableViewSpec extends SpecBase {
 
     "must render the page with correct heading, caption and input" in new Setup {
 
-      val html = view(form, NormalMode)
+      val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+      val html = view(form, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.title must include(messages("machinesAvailable.title"))
       doc.select("h1").text mustBe messages("machinesAvailable.heading")
-      doc.select(".govuk-caption-l").text mustBe messages("machinesAvailable.caption", "1 Jan 2014", "31 Dec 2014")
+      doc.select(".govuk-caption-l").text mustBe messages(
+        "machinesAvailable.caption",
+        "1 Jan 2025",
+        "31 Mar 2025"
+      )
       doc.select("input.govuk-input").hasClass("govuk-input--width-10") mustBe true
       doc.select("button").text mustBe messages("site.continue")
     }
@@ -43,7 +50,7 @@ class MachinesAvailableViewSpec extends SpecBase {
     "must render error summary when form has errors" in new Setup {
 
       val boundForm = form.bind(Map("value" -> ""))
-      val html = view(boundForm, NormalMode)
+      val html = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
@@ -53,7 +60,7 @@ class MachinesAvailableViewSpec extends SpecBase {
     "must populate the input when form has a value" in new Setup {
 
       val boundForm = form.fill(10)
-      val html = view(boundForm, NormalMode)
+      val html = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
       val doc = Jsoup.parse(html.body)
 
       doc.select("#value").`val` mustBe "10"

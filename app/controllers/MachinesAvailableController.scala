@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.MachinesAvailableFormProvider
 import models.{Mode, Regime, UserAnswers}
 import navigation.Navigator
-import pages.MachinesAvailablePage
+import pages.{MachinesAvailablePage, SelectReturnPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -50,11 +50,17 @@ class MachinesAvailableController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        val preparedForm = request.userAnswers.flatMap(_.get(MachinesAvailablePage)) match {
-          case None        => form
-          case Some(value) => form.fill(value)
+        request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+          case None =>
+            logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
+            Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
+          case Some(selectedReturn) =>
+            val preparedForm = request.userAnswers.flatMap(_.get(MachinesAvailablePage)) match {
+              case None        => form
+              case Some(value) => form.fill(value)
+            }
+            Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
         }
-        Future.successful(Ok(view(preparedForm, mode)))
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
@@ -64,18 +70,24 @@ class MachinesAvailableController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(MachinesAvailablePage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(MachinesAvailablePage, mode, updatedAnswers))
-            }
-          )
+        request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+          case None =>
+            logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
+            Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
+          case Some(selectedReturn) =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+                value => {
+                  val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+                  for {
+                    updatedAnswers <- Future.fromTry(userAnswers.set(MachinesAvailablePage, value))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(MachinesAvailablePage, mode, updatedAnswers))
+                }
+              )
+        }
       case _ =>
         logger.info(s"[onSubmit] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
