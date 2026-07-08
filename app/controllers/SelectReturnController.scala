@@ -18,7 +18,7 @@ package controllers
 
 import controllers.SelectReturnController.SortBy
 import controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import models.{SelectedReturn, NormalMode, Regime, UserAnswers}
+import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import pages.SelectReturnPage
 import play.api.Logging
 import play.api.i18n.I18nSupport

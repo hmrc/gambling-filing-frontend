@@ -18,7 +18,7 @@ package views
 
 import base.SpecBase
 import forms.MachinesAvailableFormProvider
-import models.{SelectedReturn, NormalMode}
+import models.{NormalMode, SelectedReturn}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest

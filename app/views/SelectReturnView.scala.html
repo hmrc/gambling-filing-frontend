@@ -35,7 +35,7 @@
 @periodForm(period: String, label: String) = {
     @formHelper(action = routes.SelectReturnController.onSubmit()) {
         <input type="hidden" name="period" value="@period" />
-        <button type="submit" class="govuk-link" style="background:none;border:none;padding:0;text-decoration:underline;cursor:pointer;font:inherit;">@label</button>
+        <button type="submit" class="govuk-link button-as-link" >@label</button>
     }
 }
 

@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import models.SelectReturnTestData.{validResponseOpenReturns, zeroResponseOpenReturns}
-import models.{SelectedReturn, NormalMode, Regime, UserAnswers}
+import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar

@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.MachinesAvailableFormProvider
 import models.{Mode, Regime, UserAnswers}
 import navigation.Navigator
-import pages.{SelectReturnPage, MachinesAvailablePage}
+import pages.{MachinesAvailablePage, SelectReturnPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
