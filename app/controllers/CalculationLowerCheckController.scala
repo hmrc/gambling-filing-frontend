@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.CalculationLowerCheckFormProvider
 import models.{Mode, Regime, UserAnswers}
 import navigation.Navigator
-import pages.{CalculationLowerCheckPage, DutyLowerPage, NetTakingsLowerPage}
+import pages.{CalculationLowerCheckPage, DutyLowerRatePage, NetTakingsLowerPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -57,16 +57,20 @@ class CalculationLowerCheckController @Inject() (
           case Some(value) => form.fill(value)
         }
 
-        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
-          case Some(value) => value
-          case None        => throw new Exception("NetTakingsLowerPage not found")
+        request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
+          case Some(netTakings) =>
+            val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
+
+            val percentage = if (netTakings == 0) 0 else frontendAppConfig.lowerRateDutyPercentage * 100
+
+            Future.successful(Ok(view(radioAnswer, netTakings, duty, percentage, mode)))
+
+          case None =>
+            Future.successful(
+              Redirect(routes.JourneyRecoveryController.onPageLoad())
+            )
         }
 
-        val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
-
-        val percentage = if (netTakings == 0) 0 else (frontendAppConfig.lowerRateDutyPercentage * 100).toInt
-
-        Future.successful(Ok(view(radioAnswer, netTakings, duty, percentage, mode)))
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
@@ -76,31 +80,38 @@ class CalculationLowerCheckController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
-          case Some(value) => value
-          case None        => throw new Exception("NetTakingsLowerPage not found")
+        request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
+          case Some(netTakings) =>
+            val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
+
+            val percentage = if (netTakings == 0) 0 else frontendAppConfig.lowerRateDutyPercentage * 100
+
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, netTakings, duty, percentage, mode))),
+                value => {
+                  val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+                  for {
+                    updatedAnswers <- Future.fromTry(userAnswers.set(CalculationLowerCheckPage, value))
+
+                    finalAnswers <- if (value) {
+                                      Future.fromTry(updatedAnswers.set(DutyLowerRatePage, duty))
+                                    } else {
+                                      Future.successful(updatedAnswers)
+                                    }
+
+                    _ <- sessionRepository.set(finalAnswers)
+                  } yield Redirect(navigator.nextPage(CalculationLowerCheckPage, mode, finalAnswers))
+                }
+              )
+
+          case None =>
+            Future.successful(
+              Redirect(routes.JourneyRecoveryController.onPageLoad())
+            )
         }
 
-        val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
-
-        val percentage = if (netTakings == 0) 0 else (frontendAppConfig.lowerRateDutyPercentage * 100).toInt
-
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, netTakings, duty, percentage, mode))),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-              for {
-                answersRadioCheck <- Future.fromTry(userAnswers.set(CalculationLowerCheckPage, value))
-
-                finalAnswers <- if (value) { Future.fromTry(answersRadioCheck.set(DutyLowerPage, duty)) }
-                                else { Future.successful(answersRadioCheck) }
-
-                _ <- sessionRepository.set(finalAnswers)
-              } yield Redirect(navigator.nextPage(CalculationLowerCheckPage, mode, finalAnswers))
-            }
-          )
       case _ =>
         logger.info(s"[onSubmit] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))

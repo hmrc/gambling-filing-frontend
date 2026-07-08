@@ -15,18 +15,24 @@
  */
 
 package config
+import play.twirl.api.Html
 
 trait CurrencyFormatter {
-  def currencyFormat(amt: BigDecimal): String = {
-    val formatted =
-      f"${amt.abs}%,1.2f".replace(".00", "")
 
-    if (amt < 0) {
-      s"-£$formatted"
-    } else {
-      s"£$formatted"
-    }
+  private def currencyFormatABS(amt: BigDecimal): String = {
+    f"£${amt.abs}%,1.2f".replace(".00", "")
   }
+
+  def currencyFormat(amt: BigDecimal): String =
+    f"£$amt%,1.2f".replace(".00", "")
+
+  def formatAmountHtml(amount: BigDecimal): Html =
+    Html(
+      if (amount < 0)
+        s"""−${currencyFormatABS(amount)}"""
+      else
+        currencyFormat(amount)
+    )
 }
 
 object CurrencyFormatter extends CurrencyFormatter
