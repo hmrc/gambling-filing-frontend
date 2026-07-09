@@ -45,6 +45,11 @@ POST       /total-net-takings-lower-rate                 controllers.NetTakingsL
 GET        /change-total-net-takings-lower-rate          controllers.NetTakingsLowerController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-total-net-takings-lower-rate          controllers.NetTakingsLowerController.onSubmit(mode: Mode = CheckMode)
 
+GET         /calculated-mgd-lower-rate                   controllers.CalculationLowerCheckController.onPageLoad(mode: Mode = NormalMode)
+POST        /calculated-mgd-lower-rate                   controllers.CalculationLowerCheckController.onSubmit(mode: Mode = NormalMode)
+GET         /change-calculated-mgd-lower-rate            controllers.CalculationLowerCheckController.onPageLoad(mode: Mode = CheckMode)
+POST        /change-calculated-mgd-lower-rate            controllers.CalculationLowerCheckController.onSubmit(mode: Mode = CheckMode)
+
 GET        /total-net-takings-standard-rate              controllers.NetTakingsStandardController.onPageLoad(mode: Mode = NormalMode)
 POST       /total-net-takings-standard-rate              controllers.NetTakingsStandardController.onSubmit(mode: Mode = NormalMode)
 GET        /change-total-net-takings-standard-rate       controllers.NetTakingsStandardController.onPageLoad(mode: Mode = CheckMode)
