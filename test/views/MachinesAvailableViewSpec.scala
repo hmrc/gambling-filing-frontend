@@ -59,7 +59,7 @@ class MachinesAvailableViewSpec extends SpecBase {
 
     "must populate the input when form has a value" in new Setup {
 
-      val boundForm = form.fill(10)
+      val boundForm = form.fill(10L)
       val html = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
       val doc = Jsoup.parse(html.body)
 
