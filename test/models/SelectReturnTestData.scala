@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-package config
-import play.twirl.api.Html
+package models
 
-trait CurrencyFormatter {
+import java.time.LocalDate
 
-  def currencyFormat(amt: BigDecimal): String =
-    f"£$amt%,1.2f".replace(".00", "")
-
-  def formatAmountHtml(amount: BigDecimal): Html =
-    Html(
-      if (amount < 0)
-        s"""<span style="white-space: nowrap">&#8722;${currencyFormat(amount.abs)}</span>"""
-      else
-        currencyFormat(amount)
+object SelectReturnTestData {
+  val validResponseOpenReturns = OpenReturnPeriods(
+    openPeriods = Seq(
+      OpenPeriod(
+        consecNo = 12345,
+        period   = "01/07/2025 - 30/09/2025",
+        dueDate  = LocalDate.of(2025, 10, 31),
+        status   = 1
+      ),
+      OpenPeriod(
+        consecNo = 22345,
+        period   = "01/04/2025 - 30/06/2025",
+        dueDate  = LocalDate.of(2025, 7, 31),
+        status   = 2
+      )
     )
-}
+  )
 
-object CurrencyFormatter extends CurrencyFormatter
+  val zeroResponseOpenReturns = OpenReturnPeriods(openPeriods = Seq())
+}

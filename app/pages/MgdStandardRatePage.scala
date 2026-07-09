@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package config
-import play.twirl.api.Html
+package pages
 
-trait CurrencyFormatter {
+import play.api.libs.json.JsPath
 
-  def currencyFormat(amt: BigDecimal): String =
-    f"£$amt%,1.2f".replace(".00", "")
+case object MgdStandardRatePage extends QuestionPage[BigDecimal] {
 
-  def formatAmountHtml(amount: BigDecimal): Html =
-    Html(
-      if (amount < 0)
-        s"""<span style="white-space: nowrap">&#8722;${currencyFormat(amount.abs)}</span>"""
-      else
-        currencyFormat(amount)
-    )
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "mgdStandardRate"
 }
-
-object CurrencyFormatter extends CurrencyFormatter

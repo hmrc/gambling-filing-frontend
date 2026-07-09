@@ -54,4 +54,6 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
 
   val cacheTtl: Long = configuration.get[Int]("mongodb.timeToLiveInSeconds")
 
+  val lowerRateDutyPercentage: Double = configuration.get[Double]("mgd.lower-rate-duty-percentage")
+
 }

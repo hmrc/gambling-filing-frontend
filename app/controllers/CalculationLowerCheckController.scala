@@ -16,30 +16,32 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import controllers.actions.*
-import forms.MachinesAvailableFormProvider
+import forms.CalculationLowerCheckFormProvider
 import models.{Mode, Regime, UserAnswers}
 import navigation.Navigator
-import pages.{MachinesAvailablePage, SelectReturnPage}
+import pages.{CalculationLowerCheckPage, DutyLowerRatePage, NetTakingsLowerPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.MachinesAvailableView
+import views.html.CalculationLowerCheckView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class MachinesAvailableController @Inject() (
+class CalculationLowerCheckController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
-  formProvider: MachinesAvailableFormProvider,
+  formProvider: CalculationLowerCheckFormProvider,
+  frontendAppConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
-  view: MachinesAvailableView
+  view: CalculationLowerCheckView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -50,17 +52,25 @@ class MachinesAvailableController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-          case None =>
-            logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
-            Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
-          case Some(selectedReturn) =>
-            val preparedForm = request.userAnswers.flatMap(_.get(MachinesAvailablePage)) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
-            Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
+        val radioAnswer = request.userAnswers.flatMap(_.get(CalculationLowerCheckPage)) match {
+          case None        => form
+          case Some(value) => form.fill(value)
         }
+
+        request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
+          case Some(netTakings) =>
+            val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
+
+            val percentage = if (netTakings == 0) 0 else frontendAppConfig.lowerRateDutyPercentage * 100
+
+            Future.successful(Ok(view(radioAnswer, netTakings, duty, percentage, mode)))
+
+          case None =>
+            Future.successful(
+              Redirect(routes.JourneyRecoveryController.onPageLoad())
+            )
+        }
+
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
@@ -70,24 +80,38 @@ class MachinesAvailableController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-          case None =>
-            logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
-            Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
-          case Some(selectedReturn) =>
+        request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
+          case Some(netTakings) =>
+            val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
+
+            val percentage = if (netTakings == 0) 0 else frontendAppConfig.lowerRateDutyPercentage * 100
+
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, netTakings, duty, percentage, mode))),
                 value => {
                   val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
                   for {
-                    updatedAnswers <- Future.fromTry(userAnswers.set(MachinesAvailablePage, value))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(MachinesAvailablePage, mode, updatedAnswers))
+                    updatedAnswers <- Future.fromTry(userAnswers.set(CalculationLowerCheckPage, value))
+
+                    finalAnswers <- if (value) {
+                                      Future.fromTry(updatedAnswers.set(DutyLowerRatePage, duty))
+                                    } else {
+                                      Future.successful(updatedAnswers)
+                                    }
+
+                    _ <- sessionRepository.set(finalAnswers)
+                  } yield Redirect(navigator.nextPage(CalculationLowerCheckPage, mode, finalAnswers))
                 }
               )
+
+          case None =>
+            Future.successful(
+              Redirect(routes.JourneyRecoveryController.onPageLoad())
+            )
         }
+
       case _ =>
         logger.info(s"[onSubmit] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))

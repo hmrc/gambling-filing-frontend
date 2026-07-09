@@ -93,6 +93,9 @@ trait SpecBase extends AnyFreeSpec with Matchers with TryValues with OptionValue
                                               |  countdown = 5
                                               |}
                                               |
+                                              |mgd {
+                                              | lower-rate-duty-percentage = 0.05
+                                              |}
                                               |features {
                                               |  welsh-translation = false
                                               |}

@@ -16,27 +16,31 @@
 
 package controllers
 
+import controllers.SelectReturnController.SortBy
 import controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import models.{Regime, SortBy}
+import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
+import pages.SelectReturnPage
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import services.GamblingService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import utils.DateTimeFormats
 import utils.QueryParameters.OrderBy
-import views.html.{SubmittedReturnView, SubmittedReturnsView}
+import views.html.SelectReturnView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class SubmittedReturnsController @Inject() (
+class SelectReturnController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
+  sessionRepository: SessionRepository,
   gamblingService: GamblingService,
-  submittedReturnsView: SubmittedReturnsView,
-  submittedReturnView: SubmittedReturnView
+  openReturnsView: SelectReturnView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -50,10 +54,10 @@ class SubmittedReturnsController @Inject() (
       request.regime match {
         case Regime.MGD =>
           gamblingService
-            .getSubmittedReturns(regNum, SortBy.PeriodStartDate, OrderBy.Descending)
-            .map(submittedReturns => Ok(submittedReturnsView(regNum, submittedReturns)))
+            .getOpenReturnPeriods(request.regime.code, regNum, SortBy.DueDate, OrderBy.Ascending)
+            .map(openReturns => Ok(openReturnsView(regNum, openReturns)))
             .recover { case ex =>
-              logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED", ex)
+              logger.error(s"$logTxt CALL to gamblingService.getOpenReturnPeriods FAILED", ex)
               Redirect(controllers.routes.SystemErrorController.onPageLoad())
             }
         case _ =>
@@ -62,23 +66,28 @@ class SubmittedReturnsController @Inject() (
       }
     }
 
-  def viewFiledReturn(consecNo: Int): Action[AnyContent] =
+  def onSubmit(): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
-      val regNum = request.regNum
-      val logTxt = s"[viewFiledReturn] for regNum=$regNum"
+      val period = request.body.asFormUrlEncoded.flatMap(_.get("period").flatMap(_.headOption))
 
-      request.regime match {
-        case Regime.MGD =>
-          gamblingService
-            .getSubmittedReturn(regNum, consecNo)
-            .map(filedReturn => Ok(submittedReturnView(filedReturn)))
-            .recover { case ex =>
-              logger.error(s"$logTxt failed for regNum=$regNum consecNo=$consecNo", ex)
-              Redirect(controllers.routes.SystemErrorController.onPageLoad())
-            }
-        case _ =>
-          logger.info(s"$logTxt regime ${request.regime} is not Authorised")
-          Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
+      period.flatMap(DateTimeFormats.parseMgdPeriod) match {
+        case Some((periodStart, periodEnd)) =>
+          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+          for {
+            updatedAnswers <- Future.fromTry(userAnswers.set(SelectReturnPage, SelectedReturn(periodStart, periodEnd)))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Redirect(routes.MachinesAvailableController.onPageLoad(NormalMode))
+        case None =>
+          logger.warn(s"[onSubmit] unable to parse period=$period")
+          Future.successful(Redirect(routes.SelectReturnController.onPageLoad()))
       }
     }
+}
+
+private object SelectReturnController {
+  object SortBy {
+    val Period = 1
+    val DueDate = 2
+    val Status = 3
+  }
 }

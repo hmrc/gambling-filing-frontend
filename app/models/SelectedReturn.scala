@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package config
-import play.twirl.api.Html
+package models
 
-trait CurrencyFormatter {
+import play.api.libs.json.{Json, OFormat}
 
-  def currencyFormat(amt: BigDecimal): String =
-    f"£$amt%,1.2f".replace(".00", "")
+import java.time.LocalDate
 
-  def formatAmountHtml(amount: BigDecimal): Html =
-    Html(
-      if (amount < 0)
-        s"""<span style="white-space: nowrap">&#8722;${currencyFormat(amount.abs)}</span>"""
-      else
-        currencyFormat(amount)
-    )
+final case class SelectedReturn(
+  periodStart: LocalDate,
+  periodEnd: LocalDate
+)
+
+object SelectedReturn {
+  implicit val format: OFormat[SelectedReturn] = Json.format[SelectedReturn]
 }
-
-object CurrencyFormatter extends CurrencyFormatter

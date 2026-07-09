@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package config
-import play.twirl.api.Html
+package forms
 
-trait CurrencyFormatter {
+import forms.mappings.Mappings
+import javax.inject.Inject
+import play.api.data.Form
 
-  def currencyFormat(amt: BigDecimal): String =
-    f"£$amt%,1.2f".replace(".00", "")
+class MgdStandardRateFormProvider @Inject() extends Mappings {
 
-  def formatAmountHtml(amount: BigDecimal): Html =
-    Html(
-      if (amount < 0)
-        s"""<span style="white-space: nowrap">&#8722;${currencyFormat(amount.abs)}</span>"""
-      else
-        currencyFormat(amount)
+  def apply(): Form[BigDecimal] =
+    Form(
+      "value" -> currency(
+        "mgdStandardRate.error.required",
+        "mgdStandardRate.error.invalid",
+        "mgdStandardRate.error.range"
+      )
     )
 }
-
-object CurrencyFormatter extends CurrencyFormatter

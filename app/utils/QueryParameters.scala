@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package config
-import play.twirl.api.Html
+package utils
 
-trait CurrencyFormatter {
+object QueryParameters {
 
-  def currencyFormat(amt: BigDecimal): String =
-    f"£$amt%,1.2f".replace(".00", "")
-
-  def formatAmountHtml(amount: BigDecimal): Html =
-    Html(
-      if (amount < 0)
-        s"""<span style="white-space: nowrap">&#8722;${currencyFormat(amount.abs)}</span>"""
-      else
-        currencyFormat(amount)
-    )
+  object OrderBy {
+    val Ascending = "ASC"
+    val Descending = "DESC"
+  }
 }
-
-object CurrencyFormatter extends CurrencyFormatter

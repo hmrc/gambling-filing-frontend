@@ -16,8 +16,6 @@
 
 @import viewmodels.InputWidth._
 @import viewmodels.LabelSize
-@import models.SelectedReturn
-@import utils.DateTimeFormats
 
 @this(
     layout: templates.Layout,
@@ -27,28 +25,25 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("machinesAvailable.title"))) {
+@layout(pageTitle = title(form, messages("mgdStandardRate.title"))) {
 
-    @formHelper(action = routes.MachinesAvailableController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.MgdStandardRateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <span class="govuk-caption-l">@messages(
-            "machinesAvailable.caption",
-            DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
-            DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
-        )</span>
+        <span class="govuk-caption-l">@messages("mgdStandardRate.caption", "1 Jan 2014", "31 Dec 2014")</span>
 
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("machinesAvailable.heading")).asPageHeading(LabelSize.Large)
+                label = LabelViewModel(messages("mgdStandardRate.heading")).asPageHeading(LabelSize.Large)
             )
-            .withWidth(Fixed10)
+            .withPrefix(PrefixOrSuffix(content = Text("£")))
+            .withWidth(Fixed20)
         )
 
         @govukButton(

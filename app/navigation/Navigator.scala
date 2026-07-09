@@ -44,6 +44,22 @@ class Navigator @Inject() () {
             routes.IndexController.onPageLoad()
         }
 
+    case NetTakingsLowerPage =>
+      _ => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
+
+    case CalculationLowerCheckPage =>
+      userAnswers =>
+        userAnswers.get(CalculationLowerCheckPage) match {
+          case Some(true) =>
+            routes.NetTakingsStandardController.onPageLoad(NormalMode)
+
+          case Some(false) =>
+            routes.MgdLowerRateController.onPageLoad(NormalMode)
+
+          case None =>
+            routes.IndexController.onPageLoad()
+        }
+
     case NetTakingsHigherRatePage =>
       userAnswers =>
         userAnswers.get(NetTakingsHigherRatePage) match {
@@ -59,6 +75,7 @@ class Navigator @Inject() () {
 
     case _ =>
       _ => routes.IndexController.onPageLoad()
+
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
@@ -78,6 +95,9 @@ class Navigator @Inject() () {
           case None =>
             routes.CheckYourAnswersController.onPageLoad()
         }
+
+    case NetTakingsLowerPage =>
+      _ => routes.CalculationLowerCheckController.onPageLoad(CheckMode)
 
     case NetTakingsHigherRatePage =>
       userAnswers =>

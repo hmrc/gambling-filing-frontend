@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package config
-import play.twirl.api.Html
+package forms
 
-trait CurrencyFormatter {
+import forms.mappings.Mappings
+import play.api.data.Form
 
-  def currencyFormat(amt: BigDecimal): String =
-    f"£$amt%,1.2f".replace(".00", "")
+import javax.inject.Inject
 
-  def formatAmountHtml(amount: BigDecimal): Html =
-    Html(
-      if (amount < 0)
-        s"""<span style="white-space: nowrap">&#8722;${currencyFormat(amount.abs)}</span>"""
-      else
-        currencyFormat(amount)
+class CalculationLowerCheckFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean(
+        "calculationLowerCheck.error.required"
+      )
     )
 }
-
-object CurrencyFormatter extends CurrencyFormatter
