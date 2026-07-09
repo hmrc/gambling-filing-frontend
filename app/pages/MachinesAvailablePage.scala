@@ -18,7 +18,7 @@ package pages
 
 import play.api.libs.json.JsPath
 
-case object MachinesAvailablePage extends QuestionPage[Int] {
+case object MachinesAvailablePage extends QuestionPage[Long] {
 
   override def path: JsPath = JsPath \ toString
 
