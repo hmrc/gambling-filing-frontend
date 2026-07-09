@@ -44,6 +44,19 @@ class Navigator @Inject() () {
             routes.IndexController.onPageLoad()
         }
 
+    case NetTakingsHigherRatePage =>
+      userAnswers =>
+        userAnswers.get(NetTakingsHigherRatePage) match {
+          case Some(true) =>
+            routes.NetTakingsHigherController.onPageLoad(NormalMode)
+
+          case Some(false) =>
+            routes.PageNotFoundController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
+
+          case None =>
+            routes.IndexController.onPageLoad()
+        }
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }
@@ -61,6 +74,19 @@ class Navigator @Inject() () {
 
           case Some(false) =>
             routes.NetTakingsStandardController.onPageLoad(CheckMode)
+
+          case None =>
+            routes.CheckYourAnswersController.onPageLoad()
+        }
+
+    case NetTakingsHigherRatePage =>
+      userAnswers =>
+        userAnswers.get(NetTakingsHigherRatePage) match {
+          case Some(true) =>
+            routes.NetTakingsHigherController.onPageLoad(CheckMode)
+
+          case Some(false) =>
+            routes.PageNotFoundController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
 
           case None =>
             routes.CheckYourAnswersController.onPageLoad()

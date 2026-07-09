@@ -172,3 +172,10 @@ netTakingsLowerRate.bullet1 = cost no more than 20p to play
 netTakingsLowerRate.bullet2 = have a maximum cash prize of £10
 netTakingsLowerRate.question = Do you have any net takings liable to the lower rate of duty?
 netTakingsLowerRate.error.required = Select yes if you have net takings liable to the lower rate of duty
+
+netTakingsHigherRate.title = Net takings for the higher rate of duty
+netTakingsHigherRate.heading = Net takings for the higher rate of duty
+netTakingsHigherRate.caption = File a return for {0} to {1}
+netTakingsHigherRate.p1 = Any machines that do not qualify for the lower or standard rates of duty are subject to the higher rate of duty.
+netTakingsHigherRate.question = Do you have any net takings liable to the higher rate of duty?
+netTakingsHigherRate.error.required = Select yes if you have net takings liable to the higher rate of duty
