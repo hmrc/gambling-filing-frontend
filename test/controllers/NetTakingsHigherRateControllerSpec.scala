@@ -41,6 +41,7 @@ class NetTakingsHigherRateControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute: Call = Call("GET", "/foo")
 
   val validAnswer: Boolean = true
+  val backUrl = Some("/manage-gambling-tax/returns/")
 
   lazy val netTakingsHigherRateRoute: String =
     routes.NetTakingsHigherRateController.onPageLoad(NormalMode).url
@@ -58,7 +59,7 @@ class NetTakingsHigherRateControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[NetTakingsHigherRateView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, backUrl)(request, messages(application)).toString
       }
     }
 
@@ -79,7 +80,7 @@ class NetTakingsHigherRateControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[NetTakingsHigherRateView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, backUrl)(request, messages(application)).toString
       }
     }
 
@@ -124,7 +125,7 @@ class NetTakingsHigherRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl)(request, messages(application)).toString
       }
     }
 
@@ -178,7 +179,7 @@ class NetTakingsHigherRateControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[NetTakingsHigherRateView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, None)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, backUrl)(request, messages(application)).toString
       }
     }
 

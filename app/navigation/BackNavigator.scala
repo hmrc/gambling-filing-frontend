@@ -18,8 +18,9 @@ package navigation
 
 import controllers.routes
 import models.*
+import models.requests.OptionalDataRequest
 import pages.*
-import play.api.mvc.Call
+import play.api.mvc.{AnyContent, Call}
 
 import javax.inject.{Inject, Singleton}
 
@@ -51,7 +52,7 @@ class BackNavigator @Inject() () {
       userAnswers =>
         userAnswers.get(NetTakingsLowerRatePage) match { // TODO NetTakingsStandardRatePage
           case Some(true) =>
-            userAnswers.get(NetTakingsLowerRatePage) match { // TODO calculated-mgd-standard-rate PAGE
+            userAnswers.get(NetTakingsLowerRatePage) match { // TODO StandardRateCalculationCheckPage
               case Some(true)  => routes.PageNotFoundController.onPageLoad() // TODO StandardRateCalculationCheckController
               case Some(false) => routes.MgdStandardRateController.onPageLoad(NormalMode)
               case None        => routes.CheckYourAnswersController.onPageLoad()
@@ -64,9 +65,11 @@ class BackNavigator @Inject() () {
       _ => routes.CheckYourAnswersController.onPageLoad()
   }
 
-  def backPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
+  def backPage(page: Page, mode: Mode, request: OptionalDataRequest[AnyContent]): Option[String] = {
+    val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
     mode match {
-      case NormalMode => normalBackRoutes(page)(userAnswers)
-      case CheckMode  => checkBackRouteMap(page)(userAnswers)
+      case NormalMode => Some(normalBackRoutes(page)(userAnswers).url)
+      case CheckMode  => Some(checkBackRouteMap(page)(userAnswers).url)
     }
+  }
 }

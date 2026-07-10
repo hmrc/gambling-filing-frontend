@@ -56,14 +56,7 @@ class NetTakingsHigherRateController @Inject() (
           case None        => form
         }
 
-        Future.successful(
-          Ok(
-            view(preparedForm,
-                 mode,
-                 Some(backNavigator.backPage(NetTakingsHigherRatePage, mode, request.userAnswers.getOrElse(UserAnswers(request.regNum))).url)
-                )
-          )
-        )
+        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsHigherRatePage, mode, request))))
 
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
@@ -78,14 +71,7 @@ class NetTakingsHigherRateController @Inject() (
           .bindFromRequest()
           .fold(
             formWithErrors =>
-              Future.successful(
-                BadRequest(
-                  view(formWithErrors,
-                       mode,
-                       Some(backNavigator.backPage(NetTakingsHigherRatePage, mode, request.userAnswers.getOrElse(UserAnswers(request.regNum))).url)
-                      )
-                )
-              ),
+              Future.successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(NetTakingsHigherRatePage, mode, request)))),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 

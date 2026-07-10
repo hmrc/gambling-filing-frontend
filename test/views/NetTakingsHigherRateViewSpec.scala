@@ -20,8 +20,10 @@ import base.SpecBase
 import forms.NetTakingsHigherRateFormProvider
 import models.NormalMode
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
+import play.twirl.api.HtmlFormat
 import views.html.NetTakingsHigherRateView
 
 class NetTakingsHigherRateViewSpec extends SpecBase {
@@ -30,8 +32,8 @@ class NetTakingsHigherRateViewSpec extends SpecBase {
 
     "must render the page with the correct content" in new Setup {
 
-      val html = view(form, NormalMode, None)
-      val doc = Jsoup.parse(html.body)
+      val html: HtmlFormat.Appendable = view(form, NormalMode, None)
+      val doc: Document = Jsoup.parse(html.body)
 
       doc.title must include(messages("netTakingsHigherRate.title"))
       doc.select("h1").text mustBe messages("netTakingsHigherRate.heading")
