@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.NetTakingsHigherRateFormProvider
 import models.{Mode, Regime, UserAnswers}
-import navigation.Navigator
+import navigation.{BackNavigator, Navigator}
 import pages.NetTakingsHigherRatePage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -35,6 +35,7 @@ class NetTakingsHigherRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
+  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: NetTakingsHigherRateFormProvider,
@@ -54,7 +55,15 @@ class NetTakingsHigherRateController @Inject() (
           case Some(value) => form.fill(value)
           case None        => form
         }
-        Future.successful(Ok(view(preparedForm, mode)))
+
+        Future.successful(
+          Ok(
+            view(preparedForm,
+                 mode,
+                 Some(backNavigator.backPage(NetTakingsHigherRatePage, mode, request.userAnswers.getOrElse(UserAnswers(request.regNum))).url)
+                )
+          )
+        )
 
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
@@ -68,7 +77,15 @@ class NetTakingsHigherRateController @Inject() (
         form
           .bindFromRequest()
           .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+            formWithErrors =>
+              Future.successful(
+                BadRequest(
+                  view(formWithErrors,
+                       mode,
+                       Some(backNavigator.backPage(NetTakingsHigherRatePage, mode, request.userAnswers.getOrElse(UserAnswers(request.regNum))).url)
+                      )
+                )
+              ),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 

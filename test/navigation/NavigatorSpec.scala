@@ -97,7 +97,7 @@ class NavigatorSpec extends SpecBase {
           NetTakingsHigherRatePage,
           NormalMode,
           answers
-        ) mustBe routes.PageNotFoundController.onPageLoad()  // TODO: /manage-gambling-tax/under-declared-duty
+        ) mustBe routes.PageNotFoundController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
       }
     }
 
