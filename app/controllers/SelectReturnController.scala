@@ -19,7 +19,6 @@ package controllers
 import controllers.SelectReturnController.SortBy
 import controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
-import pages.SelectReturnPage
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.Results.Redirect
@@ -74,7 +73,7 @@ class SelectReturnController @Inject() (
         case Some((periodStart, periodEnd)) =>
           val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
           for {
-            updatedAnswers <- Future.fromTry(userAnswers.set(SelectReturnPage, SelectedReturn(periodStart, periodEnd)))
+            updatedAnswers <- Future.fromTry(userAnswers.selectPeriod(SelectedReturn(periodStart, periodEnd)))
             _              <- sessionRepository.set(updatedAnswers)
           } yield Redirect(routes.MachinesAvailableController.onPageLoad(NormalMode))
         case None =>

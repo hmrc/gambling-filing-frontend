@@ -20,7 +20,7 @@ import play.api.libs.json.JsPath
 
 case object CalculationLowerCheckPage extends QuestionPage[Boolean] {
 
-  override def path: JsPath = JsPath \ toString
+  override def path: JsPath = JsPath \ "answers" \ toString
 
   override def toString: String = "lowerRateCalculationCheck"
 }
