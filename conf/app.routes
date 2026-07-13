@@ -75,3 +75,8 @@ GET        /net-takings-standard-rate                 controllers.NetTakingsStan
 POST       /net-takings-standard-rate                 controllers.NetTakingsStandardRateController.onSubmit(mode: Mode = NormalMode)
 GET        /change-net-takings-standard-rate          controllers.NetTakingsStandardRateController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-net-takings-standard-rate          controllers.NetTakingsStandardRateController.onSubmit(mode: Mode = CheckMode)
+
+GET        /net-takings-higher-rate                 controllers.NetTakingsHigherRateController.onPageLoad(mode: Mode = NormalMode)
+POST       /net-takings-higher-rate                 controllers.NetTakingsHigherRateController.onSubmit(mode: Mode = NormalMode)
+GET        /change-net-takings-higher-rate          controllers.NetTakingsHigherRateController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-net-takings-higher-rate          controllers.NetTakingsHigherRateController.onSubmit(mode: Mode = CheckMode)

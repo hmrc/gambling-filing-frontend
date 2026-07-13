@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package pages
+package forms
 
-import play.api.libs.json.JsPath
+import forms.mappings.Mappings
+import play.api.data.Form
 
-case object MachinesAvailablePage extends QuestionPage[Long] {
+import javax.inject.Inject
 
-  override def path: JsPath = JsPath \ toString
+class NetTakingsHigherRateFormProvider @Inject() extends Mappings {
 
-  override def toString: String = "machinesAvailable"
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("netTakingsHigherRate.error.required")
+    )
 }

@@ -22,16 +22,16 @@ import play.api.data.Form
 
 class MachinesAvailableFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[Int] =
+  def apply(): Form[Long] =
     Form(
-      "value" -> int(
+      "value" -> long(
         "machinesAvailable.error.required",
         "machinesAvailable.error.wholeNumber",
         "machinesAvailable.error.nonNumeric"
       ).verifying(
         firstError(
-          minimumValue(0, "machinesAvailable.error.negative"),
-          maximumValue(9999999, "machinesAvailable.error.maximum")
+          minimumValue(0L, "machinesAvailable.error.negative"),
+          maximumValue(9999999L, "machinesAvailable.error.maximum")
         )
       )
     )

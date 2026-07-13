@@ -207,3 +207,10 @@ netTakingsStandardRate.bullet1 = machine must not qualify for the lower rate of 
 netTakingsStandardRate.bullet2 = cost to play every dutiable game on the machine once is no more than £5
 netTakingsStandardRate.question = Do you have any net takings liable to the standard rate of duty?
 netTakingsStandardRate.error.required = Select yes if you have net takings liable to the standard rate of duty
+
+netTakingsHigherRate.title = Net takings for the higher rate of duty
+netTakingsHigherRate.heading = Net takings for the higher rate of duty
+netTakingsHigherRate.caption = File a return for {0} to {1}
+netTakingsHigherRate.p1 = Any machines that do not qualify for the lower or standard rates of duty are subject to the higher rate of duty.
+netTakingsHigherRate.question = Do you have any net takings liable to the higher rate of duty?
+netTakingsHigherRate.error.required = Select yes if you have net takings liable to the higher rate of duty
