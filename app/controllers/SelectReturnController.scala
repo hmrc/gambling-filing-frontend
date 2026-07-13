@@ -19,6 +19,7 @@ package controllers
 import controllers.SelectReturnController.SortBy
 import controllers.actions.{AuthorisedAction, DataRetrievalAction}
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
+import pages.OpenReturnPeriodsPage
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.Results.Redirect
@@ -54,7 +55,13 @@ class SelectReturnController @Inject() (
         case Regime.MGD =>
           gamblingService
             .getOpenReturnPeriods(request.regime.code, regNum, SortBy.DueDate, OrderBy.Ascending)
-            .map(openReturns => Ok(openReturnsView(regNum, openReturns)))
+            .flatMap { openReturnPeriods =>
+              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+              Future
+                .fromTry(userAnswers.set(OpenReturnPeriodsPage, openReturnPeriods))
+                .flatMap(sessionRepository.set)
+                .map(_ => Ok(openReturnsView(regNum, openReturnPeriods)))
+            }
             .recover { case ex =>
               logger.error(s"$logTxt CALL to gamblingService.getOpenReturnPeriods FAILED", ex)
               Redirect(controllers.routes.SystemErrorController.onPageLoad())
@@ -65,20 +72,27 @@ class SelectReturnController @Inject() (
       }
     }
 
-  def onSubmit(): Action[AnyContent] =
+  def selectOpenPeriod(consecNo: Int): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
-      val period = request.body.asFormUrlEncoded.flatMap(_.get("period").flatMap(_.headOption))
+      val regNum = request.regNum
+      val logTxt = s"[onPageLoad] for regNum=$regNum"
 
-      period.flatMap(DateTimeFormats.parseMgdPeriod) match {
-        case Some((periodStart, periodEnd)) =>
-          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-          for {
-            updatedAnswers <- Future.fromTry(userAnswers.selectPeriod(SelectedReturn(periodStart, periodEnd)))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(routes.MachinesAvailableController.onPageLoad(NormalMode))
-        case None =>
-          logger.warn(s"[onSubmit] unable to parse period=$period")
-          Future.successful(Redirect(routes.SelectReturnController.onPageLoad()))
+      request.regime match {
+        case Regime.MGD =>
+          request.userAnswers
+            .flatMap(_.get(OpenReturnPeriodsPage))
+            .flatMap(_.openPeriods.find(_.consecNo == consecNo))
+            .flatMap(openPeriod => DateTimeFormats.parseMgdPeriod(openPeriod.period))
+            .fold(Future.successful(Redirect(routes.SelectReturnController.onPageLoad()))) { (periodStart, periodEnd) =>
+              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+              Future
+                .fromTry(userAnswers.selectPeriod(SelectedReturn(periodStart, periodEnd)))
+                .flatMap(sessionRepository.set)
+                .map(_ => Redirect(routes.MachinesAvailableController.onPageLoad(NormalMode)))
+            }
+        case _ =>
+          logger.info(s"$logTxt regime ${request.regime} is not Authorised")
+          Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
       }
     }
 }

@@ -26,17 +26,13 @@
     h2: H2,
     p: Paragraph,
     link: Link,
-    formHelper: FormWithCSRF,
     govukSummaryList: GovukSummaryList
 )
 
 @(regNumber: String, model: OpenReturnPeriods)(implicit request: Request[_], messages: Messages)
 
-@periodForm(period: String, label: String) = {
-    @formHelper(action = routes.SelectReturnController.onSubmit()) {
-        <input type="hidden" name="period" value="@period" />
-        <button type="submit" class="govuk-link button-as-link" >@label</button>
-    }
+@periodLink(consecNo: Int, label: String) = {
+    <a href="@routes.SelectReturnController.selectOpenPeriod(consecNo)" class="govuk-link">@label</a>
 }
 
 @dateRange(mgdPeriod: String) = @{
@@ -55,7 +51,7 @@
 @tableRows = @{
 model.openPeriods.zipWithIndex.map { case (item, i) =>
         Seq(
-            TableRow(content = HtmlContent(periodForm(item.period, dateRange(item.period))), attributes = Map("data-testid" -> s"open-returns-mgd_period-$i")),
+            TableRow(content = HtmlContent(periodLink(item.consecNo, dateRange(item.period))), attributes = Map("data-testid" -> s"open-returns-mgd_period-$i")),
             TableRow(content = Text(DateTimeFormats.formatDateMMM(Some(item.dueDate))), attributes = Map("data-testid" -> s"open-returns-due_date-$i")),
             TableRow(content = statusTag(item.status), attributes = Map("data-testid" -> s"open-returns-status-$i"))
         )

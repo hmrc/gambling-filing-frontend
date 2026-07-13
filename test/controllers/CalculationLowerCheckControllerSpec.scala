@@ -18,12 +18,12 @@ package controllers
 
 import base.SpecBase
 import forms.CalculationLowerCheckFormProvider
-import models.{NormalMode, Regime, UserAnswers}
+import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CalculationLowerCheckPage, NetTakingsLowerPage}
+import pages.{CalculationLowerCheckPage, NetTakingsLowerPage, SelectReturnPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -31,6 +31,7 @@ import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.CalculationLowerCheckView
 
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
@@ -46,8 +47,13 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
 
   val percentage = 5
 
+  val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+
   val userAnswersWithNetTakings =
     emptyUserAnswers
+      .set(SelectReturnPage, selectedReturn)
+      .success
+      .value
       .set(NetTakingsLowerPage, netTakings)
       .success
       .value
@@ -76,7 +82,9 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[CalculationLowerCheckView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, netTakings, duty, percentage, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, netTakings, duty, percentage, NormalMode, selectedReturn)(request,
+                                                                                                               messages(application)
+                                                                                                              ).toString
       }
     }
 
@@ -92,9 +100,10 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), netTakings, duty, percentage, NormalMode)(request,
-                                                                                                                 messages(application)
-                                                                                                                ).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), netTakings, duty, percentage, NormalMode, selectedReturn)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
@@ -140,7 +149,26 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, netTakings, duty, percentage, NormalMode)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, netTakings, duty, percentage, NormalMode, selectedReturn)(
+          request,
+          messages(application)
+        ).toString
+      }
+    }
+
+    "must redirect to JourneyRecoveryController on a GET when no SelectedReturn is found in the session" in {
+
+      val userAnswersWithoutSelectedReturn = emptyUserAnswers.set(NetTakingsLowerPage, netTakings).success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithoutSelectedReturn)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, calculationLowerCheckRoute)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
       }
     }
 

@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.NetTakingsHigherFormProvider
 import models.{Mode, UserAnswers}
 import navigation.Navigator
-import pages.NetTakingsHigherPage
+import pages.{NetTakingsHigherPage, SelectReturnPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -46,26 +46,30 @@ class NetTakingsHigherController @Inject() (
   val form = formProvider()
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData) { implicit request =>
-    val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsHigherPage)) match {
-      case None        => form
-      case Some(value) => form.fill(value)
-    }
-
-    Ok(view(preparedForm, mode))
+    request.userAnswers
+      .flatMap(_.get(SelectReturnPage))
+      .fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
+        val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsHigherPage)).fold(form)(form.fill)
+        Ok(view(preparedForm, mode, selectedReturn))
+      }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
-    form
-      .bindFromRequest()
-      .fold(
-        formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-        value => {
-          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-          for {
-            updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsHigherPage, value))
-            _              <- sessionRepository.set(updatedAnswers)
-          } yield Redirect(navigator.nextPage(NetTakingsHigherPage, mode, updatedAnswers))
-        }
-      )
+    request.userAnswers
+      .flatMap(_.get(SelectReturnPage))
+      .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+            value => {
+              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+              for {
+                updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsHigherPage, value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(NetTakingsHigherPage, mode, updatedAnswers))
+            }
+          )
+      }
   }
 }
