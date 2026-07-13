@@ -70,7 +70,7 @@
     ),
     isWelshTranslationAvailable = appConfig.languageTranslationEnabled,
     backLink = if (showBackLink) backLink match {
-                    case Some(backL) => Some(BackLink.withDefaultText(href = backL))
+                    case Some(url) => Some(BackLink.withDefaultText(href = url))
                     case None => Some(BackLink.mimicsBrowserBackButtonViaJavaScript)
                 } else None
 ))(content)
