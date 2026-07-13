@@ -72,6 +72,33 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NetTakingsStandardController.onPageLoad(NormalMode)
       }
 
+      "must go from NetTakingsHigherRatePage to NetTakingsHigherPage when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsHigherRatePage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          NetTakingsHigherRatePage,
+          NormalMode,
+          answers
+        ) mustBe routes.NetTakingsHigherController.onPageLoad(NormalMode)
+      }
+
+      "must go from NetTakingsHigherRatePage to under-declared-duty page when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsHigherRatePage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          NetTakingsHigherRatePage,
+          NormalMode,
+          answers
+        ) mustBe routes.PageNotFoundController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
+      }
     }
 
     "in Check mode" - {
@@ -117,6 +144,34 @@ class NavigatorSpec extends SpecBase {
           CheckMode,
           answers
         ) mustBe routes.NetTakingsStandardController.onPageLoad(CheckMode)
+      }
+
+      "must go from NetTakingsHigherRatePage to NetTakingsHigherPage when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsHigherRatePage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          NetTakingsHigherRatePage,
+          CheckMode,
+          answers
+        ) mustBe routes.NetTakingsHigherController.onPageLoad(CheckMode)
+      }
+
+      "must go from NetTakingsHigherRatePage to under-declared-duty page when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsHigherRatePage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          NetTakingsHigherRatePage,
+          CheckMode,
+          answers
+        ) mustBe routes.PageNotFoundController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
       }
     }
   }
