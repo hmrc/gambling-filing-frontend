@@ -22,7 +22,6 @@ import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import play.twirl.api.HtmlFormat
 import views.html.NetTakingsStandardRateView
 
 class NetTakingsStandardRateViewSpec extends SpecBase {

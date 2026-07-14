@@ -159,7 +159,7 @@ object ValidationAction extends Logging {
     validateRegime(regime, regNum) && validateRegNum(regNum)
   }
 
-  private def validateRegime(regime: Regime, regNum: String): Boolean = {
+  def validateRegime(regime: Regime, regNum: String): Boolean = {
     if (!regime.equals(Regime.MGD)) {
       val ref = regNum.takeRight(REF_NO_LENGTH).toLong
       val regimeFromRegNo = {
@@ -186,7 +186,7 @@ object ValidationAction extends Logging {
     }
   }
 
-  private def validateRegNum(regNum: String): Boolean = {
+  def validateRegNum(regNum: String): Boolean = {
     if (!regNum.isBlank && regNum.length == 14) {
       if (regNum.toUpperCase.matches(regEx)) {
         val char3 = (regNum.toUpperCase.substring(2, 3).toCharArray.head.toInt - 32) * WEIGHT_9

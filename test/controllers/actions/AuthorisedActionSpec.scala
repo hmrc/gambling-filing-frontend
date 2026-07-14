@@ -53,7 +53,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Organisation),
               Enrolments(
-                Set(Enrolment("HMRC-MGD-ORG", Seq(EnrolmentIdentifier("HMRCMGDRN", "1234567890")), "Activated"))
+                Set(Enrolment("HMRC-MGD-ORG", Seq(EnrolmentIdentifier("HMRCMGDRN", "XGM00003122200")), "Activated"))
               )
             )
           )
@@ -64,7 +64,7 @@ class AuthorisedActionSpec extends SpecBase {
       val controller = new Harness(authorisedAction)
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe OK
-      contentAsString(result) mustBe "1234567890"
+      contentAsString(result) mustBe "XGM00003122200"
     }
 
     "create AuthorisedRequest when user has an Agent affinity group" in {
@@ -110,7 +110,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Organisation),
               Enrolments(
-                Set(Enrolment("HMRC-GTS-GBD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "GBD123")), "Activated"))
+                Set(Enrolment("HMRC-GTS-GBD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "XWA00003000000")), "Activated"))
               )
             )
           )
@@ -121,7 +121,7 @@ class AuthorisedActionSpec extends SpecBase {
       val controller = new Harness(authorisedAction)
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe OK
-      contentAsString(result) mustBe "GBD123"
+      contentAsString(result) mustBe "XWA00003000000"
     }
 
     "create AuthorisedRequest when Organisation has HMRC-GTS-PBD enrolment" in {
@@ -138,7 +138,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Organisation),
               Enrolments(
-                Set(Enrolment("HMRC-GTS-PBD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "PBD123")), "Activated"))
+                Set(Enrolment("HMRC-GTS-PBD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "XNA00003200000")), "Activated"))
               )
             )
           )
@@ -149,7 +149,7 @@ class AuthorisedActionSpec extends SpecBase {
       val controller = new Harness(authorisedAction)
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe OK
-      contentAsString(result) mustBe "PBD123"
+      contentAsString(result) mustBe "XNA00003200000"
     }
 
     "create AuthorisedRequest when Organisation has HMRC-GTS-RGD enrolment" in {
@@ -166,7 +166,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Organisation),
               Enrolments(
-                Set(Enrolment("HMRC-GTS-RGD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "RGD123")), "Activated"))
+                Set(Enrolment("HMRC-GTS-RGD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "XEA00003400000")), "Activated"))
               )
             )
           )
@@ -177,7 +177,7 @@ class AuthorisedActionSpec extends SpecBase {
       val controller = new Harness(authorisedAction)
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe OK
-      contentAsString(result) mustBe "RGD123"
+      contentAsString(result) mustBe "XEA00003400000"
     }
 
     "create AuthorisedRequest when Agent has HMRC-GTS-AGNT enrolment" in {
