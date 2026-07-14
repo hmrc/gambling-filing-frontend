@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.NetTakingsStandardRateFormProvider
 import models.{Mode, Regime, UserAnswers}
-import navigation.Navigator
+import navigation.{BackNavigator, Navigator}
 import pages.NetTakingsStandardRatePage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -32,16 +32,17 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class NetTakingsStandardRateController @Inject() (
-                                                override val messagesApi: MessagesApi,
-                                                sessionRepository: SessionRepository,
-                                                navigator: Navigator,
-                                                authorise: AuthorisedAction,
-                                                getData: DataRetrievalAction,
-                                                formProvider: NetTakingsStandardRateFormProvider,
-                                                val controllerComponents: MessagesControllerComponents,
-                                                view: NetTakingsStandardRateView
-                                              )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
+  override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: Navigator,
+  backNavigator: BackNavigator,
+  authorise: AuthorisedAction,
+  getData: DataRetrievalAction,
+  formProvider: NetTakingsStandardRateFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: NetTakingsStandardRateView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport
     with Logging {
 
@@ -54,7 +55,8 @@ class NetTakingsStandardRateController @Inject() (
           case Some(value) => form.fill(value)
           case None        => form
         }
-        Future.successful(Ok(view(preparedForm, mode)))
+
+        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request))))
 
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
@@ -68,7 +70,8 @@ class NetTakingsStandardRateController @Inject() (
         form
           .bindFromRequest()
           .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+            formWithErrors =>
+              Future.successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request)))),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 

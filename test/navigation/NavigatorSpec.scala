@@ -58,7 +58,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NetTakingsLowerController.onPageLoad(NormalMode)
       }
 
-      "must go from NetTakingsLowerRatePage to NetTakingsStandardPage when answer is No" in {
+      "must go from NetTakingsLowerRatePage to NetTakingsStandardRatePage when answer is No" in {
         val answers =
           emptyUserAnswers
             .set(NetTakingsLowerRatePage, false)
@@ -69,7 +69,43 @@ class NavigatorSpec extends SpecBase {
           NetTakingsLowerRatePage,
           NormalMode,
           answers
+        ) mustBe routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
+      }
+
+      "must go from Mgd LowerRatePage to NetTakingsStandardRatePage" in {
+        navigator.nextPage(
+          MgdLowerRatePage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
+      }
+
+      "must go from NetTakingsStandardRatePage to NetTakingsStandardPage when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsStandardRatePage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          NetTakingsStandardRatePage,
+          NormalMode,
+          answers
         ) mustBe routes.NetTakingsStandardController.onPageLoad(NormalMode)
+      }
+
+      "must go from NetTakingsStandardRatePage to NetTakingsHigherRatePage when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsStandardRatePage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          NetTakingsStandardRatePage,
+          NormalMode,
+          answers
+        ) mustBe routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
       }
 
       "must go from NetTakingsHigherRatePage to NetTakingsHigherPage when answer is Yes" in {
@@ -144,6 +180,42 @@ class NavigatorSpec extends SpecBase {
           CheckMode,
           answers
         ) mustBe routes.NetTakingsStandardController.onPageLoad(CheckMode)
+      }
+
+      "must go from Mgd LowerRatePage to NetTakingsStandardRatePage" in {
+        navigator.nextPage(
+          MgdLowerRatePage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
+      }
+
+      "must go from NetTakingsStandardRatePage to NetTakingsStandardPage when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsStandardRatePage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          NetTakingsStandardRatePage,
+          CheckMode,
+          answers
+        ) mustBe routes.NetTakingsStandardController.onPageLoad(CheckMode)
+      }
+
+      "must go from NetTakingsStandardRatePage to NetTakingsHigherRatePage when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsStandardRatePage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          NetTakingsStandardRatePage,
+          CheckMode,
+          answers
+        ) mustBe routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
       }
 
       "must go from NetTakingsHigherRatePage to NetTakingsHigherPage when answer is Yes" in {

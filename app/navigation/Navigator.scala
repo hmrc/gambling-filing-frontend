@@ -70,7 +70,7 @@ class Navigator @Inject() () {
             routes.NetTakingsStandardController.onPageLoad(NormalMode)
 
           case Some(false) =>
-            routes.NetTakingsStandardController.onPageLoad(NormalMode)
+            routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
 
           case None =>
             routes.IndexController.onPageLoad()
@@ -114,6 +114,22 @@ class Navigator @Inject() () {
 
     case NetTakingsLowerPage =>
       _ => routes.CalculationLowerCheckController.onPageLoad(CheckMode)
+
+    case MgdLowerRatePage =>
+      _ => routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
+
+    case NetTakingsStandardRatePage =>
+      userAnswers =>
+        userAnswers.get(NetTakingsStandardRatePage) match {
+          case Some(true) =>
+            routes.NetTakingsStandardController.onPageLoad(CheckMode)
+
+          case Some(false) =>
+            routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
+
+          case None =>
+            routes.CheckYourAnswersController.onPageLoad()
+        }
 
     case NetTakingsHigherRatePage =>
       userAnswers =>
