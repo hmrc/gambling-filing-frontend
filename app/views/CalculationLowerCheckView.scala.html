@@ -15,6 +15,8 @@
  *@
 
 @import config.CurrencyFormatter
+@import models.SelectedReturn
+@import utils.DateTimeFormats
 
 @this(
     layout: templates.Layout,
@@ -24,7 +26,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_],netTakings: BigDecimal,duty: BigDecimal, percentage: Double, mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_],netTakings: BigDecimal,duty: BigDecimal, percentage: Double, mode: Mode, selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("calculationLowerCheck.title", CurrencyFormatter.currencyFormat(duty)))) {
 
@@ -35,7 +37,11 @@
         }
 
             <span class="govuk-caption-l">
-                @messages("calculationLowerCheck.caption", "1 Jan 2014", "31 Dec 2014")
+                @messages(
+                    "calculationLowerCheck.caption",
+                    DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
+                    DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
+                )
             </span>
 
             <h1 class="govuk-heading-l">

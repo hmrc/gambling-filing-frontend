@@ -16,6 +16,8 @@
 
 @import viewmodels.InputWidth._
 @import viewmodels.LabelSize
+@import models.SelectedReturn
+@import utils.DateTimeFormats
 
 @this(
     layout: templates.Layout,
@@ -25,7 +27,7 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("netTakingsStandard.title"))) {
 
@@ -35,7 +37,11 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <span class="govuk-caption-l">@messages("netTakingsStandard.caption", "1 Jan 2014", "31 Dec 2014")</span>
+        <span class="govuk-caption-l">@messages(
+            "netTakingsStandard.caption",
+            DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
+            DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
+        )</span>
 
         @govukInput(
             InputViewModel(

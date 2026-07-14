@@ -51,10 +51,7 @@ class NetTakingsHigherRateController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsHigherRatePage)) match {
-          case Some(value) => form.fill(value)
-          case None        => form
-        }
+        val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsHigherRatePage)).fold(form)(value => form.fill(value))
 
         Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsHigherRatePage, mode, request))))
 

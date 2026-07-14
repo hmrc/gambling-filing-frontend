@@ -16,6 +16,8 @@
 
 @import viewmodels.LegendSize.Medium
 @import views.html.components._
+@import models.SelectedReturn
+@import utils.DateTimeFormats
 
 
 @this(
@@ -30,7 +32,7 @@
     caption: components.Caption
 )
 
-@(form: Form[_], mode: Mode)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("netTakingsLowerRate.title"))) {
     @formHelper(action = routes.NetTakingsLowerRateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
@@ -40,7 +42,11 @@
         }
 
         @caption(
-            messages("netTakingsLowerRate.caption", "1 Jan 2014", "31 Dec 2014")
+            messages(
+                "netTakingsLowerRate.caption",
+                DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
+                DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
+            )
         )
 
 

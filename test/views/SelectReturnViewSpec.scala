@@ -59,13 +59,13 @@ class SelectReturnViewSpec extends SpecBase {
       overdueTag.attr("class") mustEqual "govuk-tag govuk-tag--red"
       overdueTag.text() mustEqual "Overdue"
 
-      val forms = doc.select(".govuk-table__cell form")
-      forms.size() mustBe validResponseOpenReturns.openPeriods.size
+      val links = doc.select(".govuk-table__cell a.govuk-link")
+      links.size() mustBe validResponseOpenReturns.openPeriods.size
 
-      forms.get(0).attr("action") mustEqual controllers.routes.SelectReturnController.onSubmit().url
-      forms.get(0).attr("method").toUpperCase mustEqual "POST"
-      forms.get(0).select("""input[name=period]""").attr("value") mustEqual validResponseOpenReturns.openPeriods.head.period
-      forms.get(0).select("button[type=submit]").text() mustEqual "1 Jul 2025 to 30 Sep 2025"
+      links.get(0).attr("href") mustEqual controllers.routes.SelectReturnController
+        .selectOpenPeriod(validResponseOpenReturns.openPeriods.head.consecNo)
+        .url
+      links.get(0).text() mustEqual "1 Jul 2025 to 30 Sep 2025"
     }
 
     "must render view with correct title, heading and body when no data" in {

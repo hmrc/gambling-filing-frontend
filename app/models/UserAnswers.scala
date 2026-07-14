@@ -16,6 +16,7 @@
 
 package models
 
+import pages.SelectReturnPage
 import play.api.libs.json.*
 import queries.{Gettable, Settable}
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
@@ -60,6 +61,12 @@ final case class UserAnswers(
       val updatedAnswers = copy(data = d)
       page.cleanup(None, updatedAnswers)
     }
+  }
+
+  def selectPeriod(newPeriod: SelectedReturn): Try[UserAnswers] = {
+    val periodChanged = get(SelectReturnPage).exists(_ != newPeriod)
+    val base = if (periodChanged) copy(data = Json.obj()) else this
+    base.set(SelectReturnPage, newPeriod)
   }
 }
 

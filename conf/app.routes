@@ -64,7 +64,7 @@ GET        /select-filed-return               controllers.SubmittedReturnsContro
 GET        /view-filed-return/:consecNo       controllers.SubmittedReturnsController.viewFiledReturn(consecNo: Int)
 
 GET        /select-return                      controllers.SelectReturnController.onPageLoad()
-POST       /select-return                      controllers.SelectReturnController.onSubmit()
+GET        /select-return/:consecNo            controllers.SelectReturnController.selectOpenPeriod(consecNo: Int)
 
 GET        /net-takings-lower-rate                 controllers.NetTakingsLowerRateController.onPageLoad(mode: Mode = NormalMode)
 POST       /net-takings-lower-rate                 controllers.NetTakingsLowerRateController.onSubmit(mode: Mode = NormalMode)

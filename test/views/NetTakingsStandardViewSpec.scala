@@ -18,7 +18,7 @@ package views
 
 import base.SpecBase
 import forms.NetTakingsStandardFormProvider
-import models.NormalMode
+import models.{NormalMode, SelectedReturn}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.Application
@@ -28,18 +28,21 @@ import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 import views.html.NetTakingsStandardView
 
+import java.time.LocalDate
+
 class NetTakingsStandardViewSpec extends SpecBase {
 
   "NetTakingsStandardView" - {
 
     "must render the page with correct heading, caption and input" in new Setup {
 
-      val html: HtmlFormat.Appendable = view(form, NormalMode)
+      val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+      val html: HtmlFormat.Appendable = view(form, NormalMode, selectedReturn)
       val doc: Document = Jsoup.parse(html.body)
 
       doc.title must include(messages("netTakingsStandard.title"))
       doc.select("h1").text mustBe messages("netTakingsStandard.heading")
-      doc.select(".govuk-caption-l").text mustBe messages("netTakingsStandard.caption", "1 Jan 2014", "31 Dec 2014")
+      doc.select(".govuk-caption-l").text mustBe messages("netTakingsStandard.caption", "1 Jan 2025", "31 Mar 2025")
       doc.select(".govuk-input__prefix").text mustBe "£"
       doc.select("input.govuk-input").hasClass("govuk-input--width-20") mustBe true
       doc.select("button").text mustBe messages("site.continue")
@@ -48,7 +51,7 @@ class NetTakingsStandardViewSpec extends SpecBase {
     "must render error summary when form has errors" in new Setup {
 
       val boundForm: Form[BigDecimal] = form.bind(Map("value" -> ""))
-      val html: HtmlFormat.Appendable = view(boundForm, NormalMode)
+      val html: HtmlFormat.Appendable = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
       val doc: Document = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
@@ -58,7 +61,7 @@ class NetTakingsStandardViewSpec extends SpecBase {
     "must populate the input when form has a value" in new Setup {
 
       val boundForm: Form[BigDecimal] = form.fill(BigDecimal("123.45"))
-      val html: HtmlFormat.Appendable = view(boundForm, NormalMode)
+      val html: HtmlFormat.Appendable = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
       val doc: Document = Jsoup.parse(html.body)
 
       doc.select("#value").`val` mustBe "123.45"
