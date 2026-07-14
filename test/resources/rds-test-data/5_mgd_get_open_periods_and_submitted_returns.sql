@@ -3,7 +3,7 @@
 -- Registration: XWM00003001200
 -- Database: mgd-filing-db  |  Schema: MGD_DATA/MGD_DATA
 --
--- GET_OPEN_PERIODS returns rows from MGD_RETURN_DETAILS where:
+-- GET_OPEN_PERIODS returns rows from mgd_data.mgd_return_details where:
 --   1. mgd_reg_number matches
 --   2. period_end_date < SYSDATE  (period has ended)
 --   3. submitted_date IS NULL     (not yet submitted)
@@ -11,7 +11,7 @@
 --   5. No blocking row in MGD_PERIOD_STATUS with status=1
 --      and record_updated > mrd.record_updated
 --
--- Also needs MGD_OPERATOR_DETAILS row (other sprocs in the package need it,
+-- Also needs mgd_data.mgd_operator_details row (other sprocs in the package need it,
 -- and GET_MGD_CERTIFICATE uses it with return_details).
 --
 -- Safe to run multiple times — deletes existing data first, then inserts.
@@ -23,15 +23,16 @@ SET DEFINE OFF;
 -- ============================================================================
 -- 0. CLEAN SLATE — Delete existing data for XWM00003001200
 -- ============================================================================
-DELETE FROM mgd_period_status WHERE mgd_reg_number = 'XWM00003001200';
-DELETE FROM mgd_return_details WHERE mgd_reg_number = 'XWM00003001200';
-DELETE FROM mgd_operator_details WHERE mgd_reg_number = 'XWM00003001200';
+DELETE FROM MGD_DATA.MGD_RETURN_CONTENTS_V2   WHERE MGD_REG_NUMBER = 'XWM00003001200';
+DELETE FROM mgd_data.mgd_period_status WHERE mgd_reg_number = 'XWM00003001200';
+DELETE FROM mgd_data.mgd_return_details WHERE mgd_reg_number = 'XWM00003001200';
+DELETE FROM mgd_data.mgd_operator_details WHERE mgd_reg_number = 'XWM00003001200';
 COMMIT;
 
 -- ============================================================================
--- 1. MGD_OPERATOR_DETAILS — needed by other sprocs in the package
+-- 1. mgd_data.mgd_operator_details — needed by other sprocs in the package
 -- ============================================================================
-INSERT INTO mgd_operator_details (
+INSERT INTO mgd_data.mgd_operator_details (
     MGD_REG_NUMBER, BUSINESS_PARTNER_NUMBER, SOLE_PROP_TITLE,
     SOLE_PROP_FIRST_NAME, SOLE_PROP_MIDDLE_NAME, SOLE_PROP_LAST_NAME,
     BUSINESS_NAME, BUS_ADDRESS_1, BUS_ADDRESS_2, BUS_ADDRESS_3, BUS_ADDRESS_4,
@@ -78,13 +79,13 @@ INSERT INTO mgd_operator_details (
 );
 
 -- ============================================================================
--- 2. MGD_RETURN_DETAILS — Open periods (submitted_date IS NULL, icr_status != FULFILLED)
+-- 2. mgd_data.mgd_return_details — Open periods (submitted_date IS NULL, icr_status != FULFILLED)
 --    All period_end_date values must be in the past (< SYSDATE)
 --    Mix of overdue (due_date < SYSDATE) and due (due_date >= SYSDATE)
 -- ============================================================================
 
 -- Period 1: Overdue — due_date already passed
-INSERT INTO mgd_return_details (
+INSERT INTO mgd_data.mgd_return_details (
     MGD_REG_NUMBER, CONSEC_NO, FORM_BUNDLE_ID,
     PERIOD_START_DATE, PERIOD_END_DATE, DUE_DATE,
     SUBMITTED_DATE, ACK_REF, ICR_STATUS, RECORD_UPDATED, REMINDER_EMAIL_SENT
@@ -95,7 +96,7 @@ INSERT INTO mgd_return_details (
 );
 
 -- Period 2: Overdue — due_date already passed
-INSERT INTO mgd_return_details (
+INSERT INTO mgd_data.mgd_return_details (
     MGD_REG_NUMBER, CONSEC_NO, FORM_BUNDLE_ID,
     PERIOD_START_DATE, PERIOD_END_DATE, DUE_DATE,
     SUBMITTED_DATE, ACK_REF, ICR_STATUS, RECORD_UPDATED, REMINDER_EMAIL_SENT
@@ -106,7 +107,7 @@ INSERT INTO mgd_return_details (
 );
 
 -- Period 3: Overdue — due_date already passed
-INSERT INTO mgd_return_details (
+INSERT INTO mgd_data.mgd_return_details (
     MGD_REG_NUMBER, CONSEC_NO, FORM_BUNDLE_ID,
     PERIOD_START_DATE, PERIOD_END_DATE, DUE_DATE,
     SUBMITTED_DATE, ACK_REF, ICR_STATUS, RECORD_UPDATED, REMINDER_EMAIL_SENT
@@ -117,7 +118,7 @@ INSERT INTO mgd_return_details (
 );
 
 -- Period 4: Due but not yet overdue — due_date in the future
-INSERT INTO mgd_return_details (
+INSERT INTO mgd_data.mgd_return_details (
     MGD_REG_NUMBER, CONSEC_NO, FORM_BUNDLE_ID,
     PERIOD_START_DATE, PERIOD_END_DATE, DUE_DATE,
     SUBMITTED_DATE, ACK_REF, ICR_STATUS, RECORD_UPDATED, REMINDER_EMAIL_SENT
@@ -128,7 +129,7 @@ INSERT INTO mgd_return_details (
 );
 
 -- Period 5: Most recent open period — due_date in the future
-INSERT INTO mgd_return_details (
+INSERT INTO mgd_data.mgd_return_details (
     MGD_REG_NUMBER, CONSEC_NO, FORM_BUNDLE_ID,
     PERIOD_START_DATE, PERIOD_END_DATE, DUE_DATE,
     SUBMITTED_DATE, ACK_REF, ICR_STATUS, RECORD_UPDATED, REMINDER_EMAIL_SENT
@@ -139,22 +140,77 @@ INSERT INTO mgd_return_details (
 );
 
 -- Period 6: Submitted period — should NOT appear (submitted_date is set)
-INSERT INTO mgd_return_details (
-    MGD_REG_NUMBER, CONSEC_NO, FORM_BUNDLE_ID,
-    PERIOD_START_DATE, PERIOD_END_DATE, DUE_DATE,
-    SUBMITTED_DATE, ACK_REF, ICR_STATUS, RECORD_UPDATED, REMINDER_EMAIL_SENT
-) VALUES (
-    'XWM00003001200', 6, 2001,
-    TO_DATE('01-JAN-2025','DD-MON-YYYY'), TO_DATE('31-MAR-2025','DD-MON-YYYY'), TO_DATE('30-APR-2025','DD-MON-YYYY'),
-    TO_DATE('15-APR-2025','DD-MON-YYYY'), 'ACK00601', 'RECEIVED', TO_DATE('15-APR-2025','DD-MON-YYYY'), null
-);
+
+insert into mgd_data.MGD_RETURN_DETAILS(
+    MGD_REG_NUMBER,
+    CONSEC_NO,
+    FORM_BUNDLE_ID,
+    PERIOD_START_DATE,
+    PERIOD_END_DATE,
+    DUE_DATE,
+    SUBMITTED_DATE,
+    ACK_REF,
+    ICR_STATUS,
+    RECORD_UPDATED,
+    REMINDER_EMAIL_SENT)
+VALUES(
+          'XWM00003001200',
+          6,
+          001,
+          DATE '2026-03-01',
+          DATE '2026-06-30',
+          DATE '2026-07-15',
+          DATE '2026-07-15',
+          'ACK001',
+          'FULFILLED',
+          DATE '2026-07-15',
+          'Y'
+      );
+
+insert into mgd_data.mgd_return_contents_v2(
+    MGD_REG_NUMBER,
+    CONSEC_NO,
+    PERIOD_START_DATE,
+    PERIOD_END_DATE,
+    NO_OF_MACHINES_AVAIL,
+    NET_TAKINGS_STD_RATE,
+    NET_TAKINGS_LOWER_RATE,
+    TOTAL_DUE_STD_RATE,
+    TOTAL_DUE_LOWER_RATE,
+    DUTY_PAYABLE,
+    UNDER_DECLARED_DUTY,
+    PREVIOUS_RETURN_AMOUNT,
+    NEG_AMT_CARRY_FORWARD,
+    TOTAL_NET_DUTY_PAYABLE,
+    NET_TAKINGS_HIGHER_RATE,
+    TOTAL_DUE_HIGHER_RATE,
+    RECORD_UPDATED)
+VALUES (
+           'XWM00003001200',
+           6,
+           DATE '2026-03-01',
+           DATE '2026-06-30',
+           5,
+           100.00,
+           100.00,
+           10.00,
+           5.00,
+           35.00,
+           0.00,
+           1000.00,
+           5.00,
+           30.00,
+           100.00,
+           20.00,
+           DATE '2026-06-25'
+       );
 
 COMMIT;
 
 -- ============================================================================
--- No MGD_PERIOD_STATUS rows inserted — ensures no periods are blocked.
+-- No mgd_data.mgd_period_status rows inserted — ensures no periods are blocked.
 -- If you need to test the blocking behaviour, insert a row like:
---   INSERT INTO mgd_period_status (MGD_REG_NUMBER, CONSEC_NO, RECORD_UPDATED, STATUS)
+--   INSERT INTO mgd_data.mgd_period_status (MGD_REG_NUMBER, CONSEC_NO, RECORD_UPDATED, STATUS)
 --   VALUES ('XWM00003001200', 1, TO_DATE('02-APR-2025','DD-MON-YYYY'), 1);
 -- That would hide consec_no=1 from the results.
 -- ============================================================================
