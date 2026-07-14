@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.CalculationLowerCheckFormProvider
 import models.{Mode, Regime, UserAnswers}
 import navigation.Navigator
-import pages.{CalculationLowerCheckPage, DutyLowerRatePage, NetTakingsLowerPage}
+import pages.{CalculationLowerCheckPage, DutyLowerRatePage, NetTakingsLowerPage, SelectReturnPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -57,15 +57,15 @@ class CalculationLowerCheckController @Inject() (
           case Some(value) => form.fill(value)
         }
 
-        request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
-          case Some(netTakings) =>
+        (request.userAnswers.flatMap(_.get(NetTakingsLowerPage)), request.userAnswers.flatMap(_.get(SelectReturnPage))) match {
+          case (Some(netTakings), Some(selectedReturn)) =>
             val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
 
             val percentage = if (netTakings == 0) 0 else frontendAppConfig.lowerRateDutyPercentage * 100
 
-            Future.successful(Ok(view(radioAnswer, netTakings, duty, percentage, mode)))
+            Future.successful(Ok(view(radioAnswer, netTakings, duty, percentage, mode, selectedReturn)))
 
-          case None =>
+          case _ =>
             Future.successful(
               Redirect(routes.JourneyRecoveryController.onPageLoad())
             )
@@ -80,8 +80,8 @@ class CalculationLowerCheckController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
-          case Some(netTakings) =>
+        (request.userAnswers.flatMap(_.get(NetTakingsLowerPage)), request.userAnswers.flatMap(_.get(SelectReturnPage))) match {
+          case (Some(netTakings), Some(selectedReturn)) =>
             val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
 
             val percentage = if (netTakings == 0) 0 else frontendAppConfig.lowerRateDutyPercentage * 100
@@ -89,7 +89,7 @@ class CalculationLowerCheckController @Inject() (
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, netTakings, duty, percentage, mode))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, netTakings, duty, percentage, mode, selectedReturn))),
                 value => {
                   val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
                   for {
@@ -106,7 +106,7 @@ class CalculationLowerCheckController @Inject() (
                 }
               )
 
-          case None =>
+          case _ =>
             Future.successful(
               Redirect(routes.JourneyRecoveryController.onPageLoad())
             )

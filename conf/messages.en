@@ -199,6 +199,15 @@ netTakingsLowerRate.bullet2 = have a maximum cash prize of £10
 netTakingsLowerRate.question = Do you have any net takings liable to the lower rate of duty?
 netTakingsLowerRate.error.required = Select yes if you have net takings liable to the lower rate of duty
 
+netTakingsStandardRate.title = Net takings for the standard rate of duty
+netTakingsStandardRate.heading = Net takings for the standard rate of duty
+netTakingsStandardRate.caption = File a return for {0} to {1}
+netTakingsStandardRate.p1 = To qualify for the standard rate of duty the:
+netTakingsStandardRate.bullet1 = machine must not qualify for the lower rate of duty
+netTakingsStandardRate.bullet2 = cost to play every dutiable game on the machine once is no more than £5
+netTakingsStandardRate.question = Do you have any net takings liable to the standard rate of duty?
+netTakingsStandardRate.error.required = Select yes if you have net takings liable to the standard rate of duty
+
 netTakingsHigherRate.title = Net takings for the higher rate of duty
 netTakingsHigherRate.heading = Net takings for the higher rate of duty
 netTakingsHigherRate.caption = File a return for {0} to {1}

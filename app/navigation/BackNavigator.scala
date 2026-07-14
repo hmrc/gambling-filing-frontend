@@ -31,14 +31,27 @@ class BackNavigator @Inject() () {
 
     case NetTakingsHigherRatePage =>
       userAnswers =>
-        userAnswers.get(NetTakingsLowerRatePage) match { // TODO NetTakingsStandardRatePage
+        userAnswers.get(NetTakingsStandardRatePage) match {
           case Some(true) =>
             userAnswers.get(CalculationLowerCheckPage) match { // TODO StandardRateCalculationCheckPage
               case Some(true)  => routes.PageNotFoundController.onPageLoad() // TODO StandardRateCalculationCheckController
               case Some(false) => routes.MgdStandardRateController.onPageLoad(NormalMode)
               case None        => routes.IndexController.onPageLoad()
             }
-          case Some(false) => routes.PageNotFoundController.onPageLoad() // TODO: NetTakingsStandardRateController
+          case Some(false) => routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
+          case None        => routes.IndexController.onPageLoad()
+        }
+
+    case NetTakingsStandardRatePage =>
+      userAnswers =>
+        userAnswers.get(NetTakingsLowerRatePage) match {
+          case Some(true) =>
+            userAnswers.get(CalculationLowerCheckPage) match {
+              case Some(true)  => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
+              case Some(false) => routes.MgdLowerRateController.onPageLoad(NormalMode)
+              case None        => routes.IndexController.onPageLoad()
+            }
+          case Some(false) => routes.NetTakingsLowerRateController.onPageLoad(NormalMode)
           case None        => routes.IndexController.onPageLoad()
         }
 
@@ -50,15 +63,28 @@ class BackNavigator @Inject() () {
 
     case NetTakingsHigherRatePage =>
       userAnswers =>
-        userAnswers.get(NetTakingsLowerRatePage) match { // TODO NetTakingsStandardRatePage
+        userAnswers.get(NetTakingsStandardRatePage) match {
           case Some(true) =>
             userAnswers.get(NetTakingsLowerRatePage) match { // TODO StandardRateCalculationCheckPage
               case Some(true)  => routes.PageNotFoundController.onPageLoad() // TODO StandardRateCalculationCheckController
               case Some(false) => routes.MgdStandardRateController.onPageLoad(NormalMode)
               case None        => routes.CheckYourAnswersController.onPageLoad()
             }
-          case Some(false) => routes.PageNotFoundController.onPageLoad() // TODO: NetTakingsStandardRateController
+          case Some(false) => routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
           case None        => routes.CheckYourAnswersController.onPageLoad()
+        }
+
+    case NetTakingsStandardRatePage =>
+      userAnswers =>
+        userAnswers.get(NetTakingsLowerRatePage) match {
+          case Some(true) =>
+            userAnswers.get(CalculationLowerCheckPage) match {
+              case Some(true)  => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
+              case Some(false) => routes.MgdLowerRateController.onPageLoad(NormalMode)
+              case None        => routes.IndexController.onPageLoad()
+            }
+          case Some(false) => routes.NetTakingsLowerRateController.onPageLoad(NormalMode)
+          case None        => routes.IndexController.onPageLoad()
         }
 
     case _ =>

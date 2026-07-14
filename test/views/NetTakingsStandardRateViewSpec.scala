@@ -17,38 +17,37 @@
 package views
 
 import base.SpecBase
-import forms.NetTakingsLowerRateFormProvider
-import models.{NormalMode, SelectedReturn}
+import forms.NetTakingsStandardRateFormProvider
+import models.NormalMode
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import views.html.NetTakingsLowerRateView
+import play.twirl.api.HtmlFormat
+import views.html.NetTakingsStandardRateView
 
-import java.time.LocalDate
+class NetTakingsStandardRateViewSpec extends SpecBase {
 
-class NetTakingsLowerRateViewSpec extends SpecBase {
-
-  "NetTakingsLowerRateView" - {
+  "NetTakingsStandardRateView" - {
 
     "must render the page with the correct content" in new Setup {
 
-      val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
-      val html = view(form, NormalMode, selectedReturn)
+      val html = view(form, NormalMode, None)
+//      val html: HtmlFormat.Appendable = view(form, NormalMode, None)
       val doc = Jsoup.parse(html.body)
 
-      doc.title must include(messages("netTakingsLowerRate.title"))
-      doc.select("h1").text mustBe messages("netTakingsLowerRate.heading")
+      doc.title must include(messages("netTakingsStandardRate.title"))
+      doc.select("h1").text mustBe messages("netTakingsStandardRate.heading")
       doc.select(".govuk-caption-l").text mustBe
-        messages("netTakingsLowerRate.caption", "1 Jan 2025", "31 Mar 2025")
+        messages("netTakingsStandardRate.caption", "1 Jan 2014", "31 Dec 2014")
 
       doc.select("p.govuk-body").text mustBe
-        messages("netTakingsLowerRate.p1")
+        messages("netTakingsStandardRate.p1")
 
       val bullets = doc.select("ul.govuk-list--bullet li")
-      bullets.get(0).text mustBe messages("netTakingsLowerRate.bullet1")
-      bullets.get(1).text mustBe messages("netTakingsLowerRate.bullet2")
+      bullets.get(0).text mustBe messages("netTakingsStandardRate.bullet1")
+      bullets.get(1).text mustBe messages("netTakingsStandardRate.bullet2")
 
-      doc.select("legend").text must include(messages("netTakingsLowerRate.question"))
+      doc.select("legend").text must include(messages("netTakingsStandardRate.question"))
 
       doc.select("input[value=true]").isEmpty mustBe false
       doc.select("input[value=false]").isEmpty mustBe false
@@ -59,19 +58,19 @@ class NetTakingsLowerRateViewSpec extends SpecBase {
     "must render an error summary when the form has errors" in new Setup {
 
       val boundForm = form.bind(Map("value" -> ""))
-      val html = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, None)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
       doc.select(".govuk-error-summary__list a").text must include(
-        messages("netTakingsLowerRate.error.required")
+        messages("netTakingsStandardRate.error.required")
       )
     }
 
     "must select Yes when the form value is true" in new Setup {
 
       val boundForm = form.fill(true)
-      val html = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, None)
       val doc = Jsoup.parse(html.body)
 
       doc.select("input[value=true]").first().hasAttr("checked") mustBe true
@@ -80,7 +79,7 @@ class NetTakingsLowerRateViewSpec extends SpecBase {
     "must select No when the form value is false" in new Setup {
 
       val boundForm = form.fill(false)
-      val html = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, None)
       val doc = Jsoup.parse(html.body)
 
       doc.select("input[value=false]").first().hasAttr("checked") mustBe true
@@ -90,8 +89,8 @@ class NetTakingsLowerRateViewSpec extends SpecBase {
   trait Setup {
     val app = applicationBuilder().build()
 
-    val view = app.injector.instanceOf[NetTakingsLowerRateView]
-    val form = new NetTakingsLowerRateFormProvider()()
+    val view = app.injector.instanceOf[NetTakingsStandardRateView]
+    val form = new NetTakingsStandardRateFormProvider()()
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 

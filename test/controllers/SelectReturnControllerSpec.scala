@@ -20,9 +20,9 @@ import base.SpecBase
 import models.SelectReturnTestData.{validResponseOpenReturns, zeroResponseOpenReturns}
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.{verify, when}
+import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.SelectReturnPage
+import pages.{OpenReturnPeriodsPage, SelectReturnPage}
 import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -40,16 +40,28 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
 
   lazy val OpenReturnsRoute: String = routes.SelectReturnController.onPageLoad().url
 
+  def userAnswersWithCachedPeriods: UserAnswers =
+    UserAnswers(userAnswersId).set(OpenReturnPeriodsPage, validResponseOpenReturns).success.value
+
   "OpenReturnsController" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET, caching the open periods in session" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
 
       val mockService = mock[GamblingService]
       when(
         mockService.getOpenReturnPeriods(any[String], any[String], any[Int], any[String])(any[HeaderCarrier])
       ).thenReturn(scala.concurrent.Future.successful(validResponseOpenReturns))
 
-      val application = applicationBuilder().overrides(bind[GamblingService].toInstance(mockService)).build()
+      val application =
+        applicationBuilder()
+          .overrides(
+            bind[GamblingService].toInstance(mockService),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
 
       running(application) {
         val request = FakeRequest(GET, OpenReturnsRoute).withSession("regNum" -> regNumber)
@@ -60,6 +72,11 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(regNumber, validResponseOpenReturns)(request, messages(application)).toString
+
+        val captor = org.mockito.ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository).set(captor.capture())
+
+        captor.getValue.get(OpenReturnPeriodsPage).value mustEqual validResponseOpenReturns
       }
     }
 
@@ -87,12 +104,21 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET when no existing data is found" in {
 
+      val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+
       val mockService = mock[GamblingService]
       when(
         mockService.getOpenReturnPeriods(any[String], any[String], any[Int], any[String])(any[HeaderCarrier])
       ).thenReturn(scala.concurrent.Future.successful(zeroResponseOpenReturns))
 
-      val application = applicationBuilder().overrides(bind[GamblingService].toInstance(mockService)).build()
+      val application =
+        applicationBuilder()
+          .overrides(
+            bind[GamblingService].toInstance(mockService),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
 
       running(application) {
         val request = FakeRequest(GET, OpenReturnsRoute).withSession("regNum" -> regNumber)
@@ -126,22 +152,21 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
     }
   }
 
-  "onSubmit" - {
+  "selectOpenPeriod" - {
 
-    "must parse the period, store it under fileReturn and redirect to MachinesAvailableController.onPageLoad" in {
+    "must resolve the consecNo to a cached period, store it under fileReturn and redirect to MachinesAvailableController.onPageLoad" in {
 
       val mockSessionRepository = mock[SessionRepository]
       when(mockSessionRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(userAnswersWithCachedPeriods))
           .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
           .build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.SelectReturnController.onSubmit().url)
+        val request = FakeRequest(GET, routes.SelectReturnController.selectOpenPeriod(12345).url)
           .withSession("regNum" -> regNumber)
-          .withFormUrlEncodedBody("period" -> "01/07/2025 - 30/09/2025")
 
         val result = route(application, request).value
 
@@ -155,26 +180,54 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect back to onPageLoad without updating session when the period cannot be parsed" in {
+    "must redirect back to onPageLoad without updating session when consecNo does not match any cached open period" in {
 
       val mockSessionRepository = mock[SessionRepository]
 
       val application =
-        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+        applicationBuilder(userAnswers = Some(userAnswersWithCachedPeriods))
           .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
           .build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.SelectReturnController.onSubmit().url)
+        val request = FakeRequest(GET, routes.SelectReturnController.selectOpenPeriod(99999).url)
           .withSession("regNum" -> regNumber)
-          .withFormUrlEncodedBody("period" -> "not-a-valid-period")
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
 
-        verify(mockSessionRepository, org.mockito.Mockito.never()).set(any[UserAnswers])
+        verify(mockSessionRepository, never()).set(any[UserAnswers])
+      }
+    }
+
+    "must redirect back to onPageLoad without updating session or calling the backend when no periods are cached" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      val mockService = mock[GamblingService]
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers))
+          .overrides(
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[GamblingService].toInstance(mockService)
+          )
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.SelectReturnController.selectOpenPeriod(12345).url)
+          .withSession("regNum" -> regNumber)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
+
+        verify(mockSessionRepository, never()).set(any[UserAnswers])
+        verify(mockService, never())
+          .getOpenReturnPeriods(any[String], any[String], any[Int], any[String])(any[HeaderCarrier])
       }
     }
   }

@@ -64,12 +64,17 @@ GET        /select-filed-return               controllers.SubmittedReturnsContro
 GET        /view-filed-return/:consecNo       controllers.SubmittedReturnsController.viewFiledReturn(consecNo: Int)
 
 GET        /select-return                      controllers.SelectReturnController.onPageLoad()
-POST       /select-return                      controllers.SelectReturnController.onSubmit()
+GET        /select-return/:consecNo            controllers.SelectReturnController.selectOpenPeriod(consecNo: Int)
 
 GET        /net-takings-lower-rate                 controllers.NetTakingsLowerRateController.onPageLoad(mode: Mode = NormalMode)
 POST       /net-takings-lower-rate                 controllers.NetTakingsLowerRateController.onSubmit(mode: Mode = NormalMode)
 GET        /change-net-takings-lower-rate          controllers.NetTakingsLowerRateController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-net-takings-lower-rate          controllers.NetTakingsLowerRateController.onSubmit(mode: Mode = CheckMode)
+
+GET        /net-takings-standard-rate                 controllers.NetTakingsStandardRateController.onPageLoad(mode: Mode = NormalMode)
+POST       /net-takings-standard-rate                 controllers.NetTakingsStandardRateController.onSubmit(mode: Mode = NormalMode)
+GET        /change-net-takings-standard-rate          controllers.NetTakingsStandardRateController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-net-takings-standard-rate          controllers.NetTakingsStandardRateController.onSubmit(mode: Mode = CheckMode)
 
 GET        /net-takings-higher-rate                 controllers.NetTakingsHigherRateController.onPageLoad(mode: Mode = NormalMode)
 POST       /net-takings-higher-rate                 controllers.NetTakingsHigherRateController.onSubmit(mode: Mode = NormalMode)

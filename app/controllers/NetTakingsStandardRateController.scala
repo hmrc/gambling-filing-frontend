@@ -17,30 +17,30 @@
 package controllers
 
 import controllers.actions.*
-import forms.NetTakingsHigherRateFormProvider
+import forms.NetTakingsStandardRateFormProvider
 import models.{Mode, Regime, UserAnswers}
 import navigation.{BackNavigator, Navigator}
-import pages.NetTakingsHigherRatePage
+import pages.NetTakingsStandardRatePage
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.NetTakingsHigherRateView
+import views.html.NetTakingsStandardRateView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class NetTakingsHigherRateController @Inject() (
+class NetTakingsStandardRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
   backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
-  formProvider: NetTakingsHigherRateFormProvider,
+  formProvider: NetTakingsStandardRateFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: NetTakingsHigherRateView
+  view: NetTakingsStandardRateView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -51,9 +51,12 @@ class NetTakingsHigherRateController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsHigherRatePage)).fold(form)(value => form.fill(value))
+        val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsStandardRatePage)) match {
+          case Some(value) => form.fill(value)
+          case None        => form
+        }
 
-        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsHigherRatePage, mode, request))))
+        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request))))
 
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
@@ -68,14 +71,14 @@ class NetTakingsHigherRateController @Inject() (
           .bindFromRequest()
           .fold(
             formWithErrors =>
-              Future.successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(NetTakingsHigherRatePage, mode, request)))),
+              Future.successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request)))),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 
               for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsHigherRatePage, value))
+                updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsStandardRatePage, value))
                 _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(NetTakingsHigherRatePage, mode, updatedAnswers))
+              } yield Redirect(navigator.nextPage(NetTakingsStandardRatePage, mode, updatedAnswers))
             }
           )
 
