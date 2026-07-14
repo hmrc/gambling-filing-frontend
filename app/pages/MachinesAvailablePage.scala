@@ -20,7 +20,7 @@ import play.api.libs.json.JsPath
 
 case object MachinesAvailablePage extends QuestionPage[Long] {
 
-  override def path: JsPath = JsPath \ "answers" \ toString
+  override def path: JsPath = JsPath \ toString
 
   override def toString: String = "machinesAvailable"
 }
