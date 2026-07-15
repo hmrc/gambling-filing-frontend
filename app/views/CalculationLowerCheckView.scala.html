@@ -45,22 +45,21 @@
             </span>
 
             <h1 class="govuk-heading-l">
-                @messages("calculationLowerCheck.title")
+                @messages("calculationLowerCheck.heading")
                     <span style="white-space: nowrap;">
                         @CurrencyFormatter.formatAmountHtml(duty)
                     </span>
             </h1>
 
             <p class="govuk-body">
-                @messages("calculationLowerCheck.body.prefix", percentage)
-                @CurrencyFormatter.formatAmountHtml(netTakings)
+                @Html(messages("calculationLowerCheck.body", percentage, CurrencyFormatter.formatAmountHtml(netTakings)))
             </p>
 
         @govukRadios(
                     RadiosViewModel.yesNo(
                         field = form("value"),
                         legend = Legend(
-                            content = Text(messages("calculationLowerCheck.heading")),
+                            content = Text(messages("calculationLowerCheck.subheading")),
                             isPageHeading = false,
                             classes = "govuk-fieldset__legend--m"
                         )
