@@ -17,82 +17,90 @@
 package controllers
 
 import base.SpecBase
-import forms.MgdStandardRateFormProvider
+import forms.StandardRateCalculationCheckFormProvider
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{MgdStandardRatePage, SelectReturnPage}
+import pages.{NetTakingsStandardPage, SelectReturnPage, StandardRateCalculationCheckPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.MgdStandardRateView
+import views.html.StandardRateCalculationCheckView
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
+class StandardRateCalculationCheckControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider = new MgdStandardRateFormProvider()
-  val form = formProvider()
+  private val formProvider = new StandardRateCalculationCheckFormProvider()
+  private val form = formProvider()
+  private val validAnswer: Boolean = true
+  private val netTakings = BigDecimal(1000)
+  private val duty = netTakings * BigDecimal(0.2)
+  private val ratePercentage: BigDecimal = BigDecimal(0.2) * 100
+  private val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+
+  private val userAnswersWithNetTakings =
+    emptyUserAnswers
+      .set(SelectReturnPage, selectedReturn)
+      .success
+      .value
+      .set(NetTakingsStandardPage, netTakings)
+      .success
+      .value
+
+  private val userAnswers =
+    userAnswersWithNetTakings
+      .set(StandardRateCalculationCheckPage, validAnswer)
+      .success
+      .value
 
   def onwardRoute = Call("GET", "/foo")
 
-  val validAnswer: BigDecimal = BigDecimal(100)
+  lazy val standardRateCalculationCheckRoute = routes.StandardRateCalculationCheckController.onPageLoad(NormalMode).url
 
-  val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
-
-  def userAnswersWithSelectedReturn: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
-
-  lazy val mgdStandardRateRoute = routes.MgdStandardRateController.onPageLoad(NormalMode).url
-
-  "MgdStandardRate Controller" - {
+  "StandardRateCalculationCheck Controller" - {
 
     "must return OK and the correct view for a GET" in {
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
 
       running(application) {
-        val request = FakeRequest(GET, mgdStandardRateRoute)
-
+        val request = FakeRequest(GET, standardRateCalculationCheckRoute)
         val result = route(application, request).value
-
-        val view = application.injector.instanceOf[MgdStandardRateView]
+        val view = application.injector.instanceOf[StandardRateCalculationCheckView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual
+          view(form, netTakings, duty, ratePercentage, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers = userAnswersWithSelectedReturn.set(MgdStandardRatePage, validAnswer).success.value
-
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, mgdStandardRateRoute)
-
-        val view = application.injector.instanceOf[MgdStandardRateView]
-
+        val request = FakeRequest(GET, standardRateCalculationCheckRoute)
+        val view = application.injector.instanceOf[StandardRateCalculationCheckView]
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), netTakings, duty, ratePercentage, NormalMode, selectedReturn)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 
     "must redirect to the next page when valid data is submitted" in {
-
       val mockSessionRepository = mock[SessionRepository]
-
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
-        applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn))
+        applicationBuilder(userAnswers = Some(userAnswersWithNetTakings))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
             bind[SessionRepository].toInstance(mockSessionRepository)
@@ -101,7 +109,7 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, mgdStandardRateRoute)
+          FakeRequest(POST, standardRateCalculationCheckRoute)
             .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
@@ -112,34 +120,31 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
 
       running(application) {
         val request =
-          FakeRequest(POST, mgdStandardRateRoute)
+          FakeRequest(POST, standardRateCalculationCheckRoute)
             .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
-
-        val view = application.injector.instanceOf[MgdStandardRateView]
-
+        val view = application.injector.instanceOf[StandardRateCalculationCheckView]
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, netTakings, duty, ratePercentage, NormalMode, selectedReturn)(request,
+                                                                                                                        messages(application)
+                                                                                                                       ).toString
       }
     }
 
     "must redirect to AccessDeniedController on GET when regime is not MGD" in {
-
       val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
       regimesExcludingMGD.foreach { code =>
         val application = applicationBuilder(regime = Regime.fromString(code).get).build()
 
         running(application) {
-          val request = FakeRequest(GET, mgdStandardRateRoute)
-
+          val request = FakeRequest(GET, standardRateCalculationCheckRoute)
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
@@ -149,14 +154,13 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to AccessDeniedController on POST when regime is not MGD" in {
-
       val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
       regimesExcludingMGD.foreach { code =>
         val application = applicationBuilder(regime = Regime.fromString(code).get).build()
 
         running(application) {
           val request =
-            FakeRequest(POST, mgdStandardRateRoute)
+            FakeRequest(POST, standardRateCalculationCheckRoute)
               .withFormUrlEncodedBody(("value", validAnswer.toString))
 
           val result = route(application, request).value
@@ -168,12 +172,10 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
-
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, mgdStandardRateRoute)
-
+        val request = FakeRequest(GET, standardRateCalculationCheckRoute)
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -182,12 +184,10 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must redirect to SelectReturnController on a POST when no SelectedReturn is found in the session" in {
-
       val application = applicationBuilder(userAnswers = None).build()
-
       running(application) {
         val request =
-          FakeRequest(POST, mgdStandardRateRoute)
+          FakeRequest(POST, standardRateCalculationCheckRoute)
             .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value

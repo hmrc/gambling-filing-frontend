@@ -94,6 +94,50 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NetTakingsStandardController.onPageLoad(NormalMode)
       }
 
+      "must go from NetTakingsStandardPage to StandardRateCalculationCheckPage" in {
+        navigator.nextPage(
+          NetTakingsStandardPage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe routes.StandardRateCalculationCheckController.onPageLoad(NormalMode)
+      }
+
+      "must go from StandardRateCalculationCheckPage to NetTakingsHigherPage when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(StandardRateCalculationCheckPage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          StandardRateCalculationCheckPage,
+          NormalMode,
+          answers
+        ) mustBe routes.NetTakingsHigherController.onPageLoad(NormalMode)
+      }
+
+      "must go from StandardRateCalculationCheckPage to MgdStandardRatePage when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(StandardRateCalculationCheckPage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          StandardRateCalculationCheckPage,
+          NormalMode,
+          answers
+        ) mustBe routes.MgdStandardRateController.onPageLoad(NormalMode)
+      }
+
+      "must go from StandardRateCalculationCheckPage to Index when no answer exists" in {
+        navigator.nextPage(
+          StandardRateCalculationCheckPage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe routes.IndexController.onPageLoad()
+      }
+
       "must go from NetTakingsStandardRatePage to NetTakingsHigherRatePage when answer is No" in {
         val answers =
           emptyUserAnswers
@@ -180,6 +224,14 @@ class NavigatorSpec extends SpecBase {
           CheckMode,
           answers
         ) mustBe routes.NetTakingsStandardController.onPageLoad(CheckMode)
+      }
+
+      "must go from NetTakingsStandardPage to StandardRateCalculationCheckPage" in {
+        navigator.nextPage(
+          NetTakingsStandardPage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.StandardRateCalculationCheckController.onPageLoad(CheckMode)
       }
 
       "must go from Mgd LowerRatePage to NetTakingsStandardRatePage" in {

@@ -17,57 +17,57 @@
 package views
 
 import base.SpecBase
-import forms.MgdStandardRateFormProvider
+import config.CurrencyFormatter
+import forms.StandardRateCalculationCheckFormProvider
 import models.{NormalMode, SelectedReturn}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import views.html.MgdStandardRateView
+import views.html.StandardRateCalculationCheckView
 
 import java.time.LocalDate
 
-class MgdStandardRateViewSpec extends SpecBase {
+class StandardRateCalculationCheckViewSpec extends SpecBase {
 
-  "MgdStandardRateView" - {
+  "StandardRateCalculationCheckView" - {
 
     "must render the page with correct heading, caption and input" in new Setup {
-
-      val html = view(form, NormalMode, selectedReturn)
+      val html = view(form, netTakings, BigDecimal(200), percentage, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
-      doc.title must include("How much MGD at the standard rate do you owe?")
-      doc.select("h1").text mustBe "How much MGD at the standard rate do you owe?"
+      doc.title must include("MGD for the standard rate of duty")
+      doc.select("h1").text mustBe "We have worked out your MGD at the standard rate to be £200"
+
       doc.select(".govuk-caption-l").text mustBe "File a return for 1 Jan 2025 to 31 Mar 2025"
-      doc.select(".govuk-input__prefix").text mustBe "£"
-      doc.select("input.govuk-input").hasClass("govuk-input--width-20") mustBe true
+      doc.select("p.govuk-body").text mustBe "This is based on 20% of your declared net takings of £1,000"
       doc.select("button").text mustBe "Continue"
     }
 
     "must render error summary when form has errors" in new Setup {
-
       val boundForm = form.bind(Map("value" -> ""))
-      val html = view(boundForm, NormalMode, selectedReturn)
+      val html = view(boundForm, netTakings, BigDecimal(200), percentage, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
-      doc.select(".govuk-error-summary__list a").text must include("Enter how much MGD at the standard rate you owe")
+      doc.select(".govuk-error-summary__list a").text must include("Select yes if this calculation is correct")
     }
 
     "must populate the input when form has a value" in new Setup {
-
-      val boundForm = form.fill(BigDecimal("123.45"))
-      val html = view(boundForm, NormalMode, selectedReturn)
+      val boundForm = form.fill(true)
+      val html = view(boundForm, netTakings, BigDecimal(200), percentage, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
-      doc.select("#value").`val` mustBe "123.45"
+      doc.select("input[value=true]").hasAttr("checked") mustBe true
     }
   }
 
   trait Setup {
     val app = applicationBuilder().build()
-    val view = app.injector.instanceOf[MgdStandardRateView]
-    val form = new MgdStandardRateFormProvider()()
+    val view = app.injector.instanceOf[StandardRateCalculationCheckView]
+    val form = new StandardRateCalculationCheckFormProvider()()
     val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+    val percentage: BigDecimal = 20
+    val netTakings: BigDecimal = BigDecimal(1000)
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 
