@@ -52,8 +52,7 @@
             </h1>
 
             <p class="govuk-body">
-                @messages("calculationLowerCheck.body", percentage)
-                @CurrencyFormatter.formatAmountHtml(netTakings)
+                @Html(messages("calculationLowerCheck.body", percentage, CurrencyFormatter.formatAmountHtml(netTakings)))
             </p>
 
         @govukRadios(
