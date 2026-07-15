@@ -107,10 +107,11 @@ netTakingsHigher.error.required = Enter your net takings
 netTakingsHigher.error.invalid = Enter your net takings in pounds and pence, like 1,510.72
 netTakingsHigher.error.range = Your net takings must be between -£1 billion and £1 billion
 
-calculationLowerCheck.title = We’ve worked out your MGD at the lower rate to be
-calculationLowerCheck.heading = Is this correct?
+calculationLowerCheck.title = MGD for the lower rate of duty
+calculationLowerCheck.heading = We have worked out your MGD at the lower rate to be
+calculationLowerCheck.subheading = Is this correct?
 calculationLowerCheck.caption = File a return for {0} to {1}
-calculationLowerCheck.body.prefix = This is based on {0}% of your declared net takings of
+calculationLowerCheck.body = This is based on {0}% of your declared net takings of
 calculationLowerCheck.error.required = Select yes if this calculation is correct
 
 selectFiledReturn.title = Which period do you want to view?
