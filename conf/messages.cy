@@ -111,7 +111,7 @@ calculationLowerCheck.title = MGD for the lower rate of duty
 calculationLowerCheck.heading = We have worked out your MGD at the lower rate to be
 calculationLowerCheck.subheading = Is this correct?
 calculationLowerCheck.caption = File a return for {0} to {1}
-calculationLowerCheck.body = This is based on {0}% of your declared net takings of
+calculationLowerCheck.body = This is based on {0}% of your declared net takings of {1}
 calculationLowerCheck.error.required = Select yes if this calculation is correct
 
 selectFiledReturn.title = Which period do you want to view?
