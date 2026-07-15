@@ -59,6 +59,12 @@ class ValidationActionSpec extends SpecBase {
       ValidationAction.validateRegime(Regime.MGD, "XBA00000400000") mustBe true
       ValidationAction.validateRegime(Regime.MGD, "XBA00003500000") mustBe true
     }
+
+    "validateRegime returns FALSE for short RegNums" in {
+      ValidationAction.validateRegime(Regime.GBD, "XBA0002999999") mustBe false
+      ValidationAction.validateRegime(Regime.GBD, "XBA123") mustBe false
+      ValidationAction.validateRegime(Regime.PBD, "XBA") mustBe false
+    }
   }
 
   "ValidationAction validateRegNum" - {
@@ -77,6 +83,10 @@ class ValidationActionSpec extends SpecBase {
 
     "validateRegNum returns FALSE for too short" in {
       ValidationAction.validateRegNum("XWA0003000000") mustBe false
+    }
+
+    "validateRegNum returns FALSE for very short" in {
+      ValidationAction.validateRegNum("XWA001") mustBe false
     }
 
     "validateRegNum returns FALSE for too long" in {

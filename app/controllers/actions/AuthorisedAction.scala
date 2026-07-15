@@ -156,46 +156,22 @@ object ValidationAction extends Logging {
   private val checkChars = List("A", "B", "C", "D", "E", "F", "G", "H", "X", "J", "K", "L", "M", "N", "Y", "P", "Q", "R", "S", "T", "Z", "V", "W")
 
   def validateRegimeRegNo(regime: Regime, regNum: String): Boolean = {
-    validateRegime(regime, regNum) && validateRegNum(regNum)
+    validateRegNum(regNum) && validateRegime(regime, regNum)
   }
 
-  def validateRegime(regime: Regime, regNum: String): Boolean = {
-    if (!regime.equals(Regime.MGD)) {
-      val ref = regNum.takeRight(REF_NO_LENGTH).toLong
-      val regimeFromRegNo = {
-        if (ref >= 3000000 && ref <= 3199999) {
-          "GBD"
-        } else if (ref >= 3200000 && ref <= 3399999) {
-          "PBD"
-        } else if (ref >= 3400000 && ref <= 3599999) {
-          "RGD"
-        } else {
-          ""
-        }
-      }
-
-      if (!regimeFromRegNo.trim.equals(regime.code.toUpperCase.trim)) {
-        logger.info(s"validateRegime Regime does not match RegNum '$regime':'$regimeFromRegNo' '$regNum' '$ref'")
-        false
-      } else {
-        logger.info(s"validateRegime Regime matches RegNum '$regime':'$regimeFromRegNo' '$regNum' '$ref'")
-        true
-      }
-    } else {
-      true
-    }
-  }
-
-  def validateRegNum(regNum: String): Boolean = {
+  def validateRegNum(regNumber: String): Boolean = {
+    val regNum = regNumber.toUpperCase().trim
     if (!regNum.isBlank && regNum.length == 14) {
-      if (regNum.toUpperCase.matches(regEx)) {
-        val char3 = (regNum.toUpperCase.substring(2, 3).toCharArray.head.toInt - 32) * WEIGHT_9
+      if (regNum.matches(regEx)) {
+        val char3 = (regNum.substring(2, 3).toCharArray.head.toInt - 32) * WEIGHT_9
         val sum = List.range(1, 11).map(x => weights(x) * regNum.substring(x + 2, x + 3).toInt).sum + char3
         val checkChar = checkChars(sum % 23)
-        if (regNum.toUpperCase().substring(1, 2).equals(checkChar)) {
+        if (regNum.substring(1, 2).equals(checkChar)) {
           true
         } else {
-          logger.info(s"validateRegNum '$regNum' has invalid check character actual=${regNum.toUpperCase().substring(1, 2)} calculated=$checkChar")
+          logger.info(
+            s"validateRegNum '$regNum' has invalid check character actual=${regNum.substring(1, 2)} calculated=$checkChar"
+          )
           false
         }
       } else {
@@ -205,6 +181,38 @@ object ValidationAction extends Logging {
     } else {
       logger.info(s"validateRegNum '$regNum' is blank or not 14 chars")
       false
+    }
+  }
+
+  def validateRegime(regime: Regime, regNumber: String): Boolean =
+    val regNum = regNumber.toUpperCase().trim
+    if (!regime.equals(Regime.MGD)) {
+      if (!regNum.isBlank && regNum.length == 14 && regNum.matches(regEx)) {
+        val calculatedRegime = regimeFromRegNo(regNum.takeRight(REF_NO_LENGTH).toLong)
+        if (!calculatedRegime.equals(regime.code)) {
+          logger.info(s"validateRegime Regime does not match RegNum provided='$regime' calculated='$calculatedRegime' '$regNum'")
+          false
+        } else {
+          logger.info(s"validateRegime Regime matches RegNum '$regime':'$calculatedRegime' '$regNum'")
+          true
+        }
+      } else {
+        logger.info(s"validateRegime RegNum is invalid '$regNum'")
+        false
+      }
+    } else {
+      true
+    }
+
+  private def regimeFromRegNo(ref: Long) = {
+    if (ref >= 3000000 && ref <= 3199999) {
+      "gbd"
+    } else if (ref >= 3200000 && ref <= 3399999) {
+      "pbd"
+    } else if (ref >= 3400000 && ref <= 3599999) {
+      "rgd"
+    } else {
+      ""
     }
   }
 }
