@@ -81,7 +81,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Agent),
               Enrolments(
-                Set(Enrolment("HMRC-MGD-AGNT", Seq(EnrolmentIdentifier("HMRCMGDAGENTREF", "1234567890")), "Activated"))
+                Set(Enrolment("HMRC-MGD-AGNT", Seq(EnrolmentIdentifier("HMRCMGDAGENTREF", "XWA00003000000")), "Activated"))
               )
             )
           )
@@ -93,7 +93,7 @@ class AuthorisedActionSpec extends SpecBase {
       val controller = new Harness(authorisedAction)
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe OK
-      contentAsString(result) mustBe "1234567890"
+      contentAsString(result) mustBe "XWA00003000000"
     }
 
     "create AuthorisedRequest when Organisation has HMRC-GTS-GBD enrolment" in {
@@ -194,7 +194,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Agent),
               Enrolments(
-                Set(Enrolment("HMRC-GTS-AGNT", Seq(EnrolmentIdentifier("HMRCGTSAGENTREF", "AGENT789")), "Activated"))
+                Set(Enrolment("HMRC-GTS-AGNT", Seq(EnrolmentIdentifier("HMRCGTSAGENTREF", "XWA00003000000")), "Activated"))
               )
             )
           )
@@ -206,7 +206,7 @@ class AuthorisedActionSpec extends SpecBase {
       val controller = new Harness(authorisedAction)
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe OK
-      contentAsString(result) mustBe "AGENT789"
+      contentAsString(result) mustBe "XWA00003000000"
     }
 
     "redirect to access denied page when user has no affinity group" in {

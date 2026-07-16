@@ -55,7 +55,11 @@ class DefaultAuthorisedAction @Inject() (
               regNum,
               regime
             ) =>
-          block(AuthorisedRequest(request, affinityGroup, regNum, regime))
+          if (GRNValidator.validateRegNoRegime(regime, regNum)) {
+            block(AuthorisedRequest(request, affinityGroup, regNum, regime))
+          } else {
+            Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
+          }
         case Some(AffinityGroup.Agent) ~ _ =>
           logger.warn(s"Agent auth failed: enrolment missing or not activated for ${request.path}")
           Future.failed(InsufficientEnrolments("Agent enrolment missing or not activated"))
@@ -64,7 +68,7 @@ class DefaultAuthorisedAction @Inject() (
               regNum,
               regime
             ) =>
-          if (ValidationAction.validateRegimeRegNo(regime, regNum)) {
+          if (GRNValidator.validateRegNoRegime(regime, regNum)) {
             block(AuthorisedRequest(request, affinityGroup, regNum, regime))
           } else {
             Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
@@ -134,7 +138,7 @@ object AuthorisedAction {
 
 }
 
-object ValidationAction extends Logging {
+object GRNValidator extends Logging {
   private val REF_NO_LENGTH = 7
   private val regEx = "X[A-Z]{1}[A-Z]{1}[0-9]{11}"
 
@@ -155,7 +159,7 @@ object ValidationAction extends Logging {
     List(WEIGHT_9, WEIGHT_10, WEIGHT_11, WEIGHT_12, WEIGHT_13, WEIGHT_8, WEIGHT_7, WEIGHT_6, WEIGHT_5, WEIGHT_4, WEIGHT_3, WEIGHT_2)
   private val checkChars = List("A", "B", "C", "D", "E", "F", "G", "H", "X", "J", "K", "L", "M", "N", "Y", "P", "Q", "R", "S", "T", "Z", "V", "W")
 
-  def validateRegimeRegNo(regime: Regime, regNum: String): Boolean = {
+  def validateRegNoRegime(regime: Regime, regNum: String): Boolean = {
     validateRegNum(regNum) && validateRegime(regime, regNum)
   }
 
@@ -169,17 +173,15 @@ object ValidationAction extends Logging {
         if (regNum.substring(1, 2).equals(checkChar)) {
           true
         } else {
-          logger.info(
-            s"validateRegNum '$regNum' has invalid check character ${regNum.substring(1, 2)}, should be=$checkChar"
-          )
+          logger.warn(s"validateRegNum '$regNum' has invalid check char ${regNum.substring(1, 2)}, should be=$checkChar")
           false
         }
       } else {
-        logger.info(s"validateRegNum '$regNum' does not match regEx")
+        logger.warn(s"validateRegNum '$regNum' does not match regEx")
         false
       }
     } else {
-      logger.info(s"validateRegNum '$regNum' is not 14 chars")
+      logger.warn(s"validateRegNum '$regNum' is not 14 chars")
       false
     }
   }
@@ -190,14 +192,14 @@ object ValidationAction extends Logging {
       if (regNum.matches(regEx)) {
         val calculatedRegime = regimeFromRegNo(regNum.takeRight(REF_NO_LENGTH).toLong)
         if (!calculatedRegime.equals(regime.code)) {
-          logger.info(s"validateRegime Regime does not match RegNum $regime calc=$calculatedRegime $regNum")
+          logger.warn(s"validateRegime Regime does not match RegNum $regime calc=$calculatedRegime $regNum")
           false
         } else {
           logger.info(s"validateRegime Regime matches RegNum '$regime':'$calculatedRegime' '$regNum'")
           true
         }
       } else {
-        logger.info(s"validateRegime RegNum is invalid '$regNum'")
+        logger.warn(s"validateRegime RegNum is invalid '$regNum'")
         false
       }
     } else {
