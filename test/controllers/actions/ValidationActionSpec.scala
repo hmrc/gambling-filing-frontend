@@ -65,6 +65,14 @@ class ValidationActionSpec extends SpecBase {
       ValidationAction.validateRegime(Regime.GBD, "XBA123") mustBe false
       ValidationAction.validateRegime(Regime.PBD, "XBA") mustBe false
     }
+
+    "validateRegime returns FALSE for Reg Nums with spaces" in {
+      ValidationAction.validateRegime(Regime.GBD, " WA00003000000") mustBe false
+      ValidationAction.validateRegime(Regime.GBD, "X A00003199999") mustBe false
+      ValidationAction.validateRegime(Regime.GBD, "XNA0000 200000") mustBe false
+      ValidationAction.validateRegime(Regime.GBD, "XEA000034000 0") mustBe false
+      ValidationAction.validateRegime(Regime.GBD, "XGM0000312220 ") mustBe false
+    }
   }
 
   "ValidationAction validateRegNum" - {
@@ -97,6 +105,14 @@ class ValidationActionSpec extends SpecBase {
       ValidationAction.validateRegNum("XWA0000300000Z") mustBe false
       ValidationAction.validateRegNum("1WA00003000000") mustBe false
       ValidationAction.validateRegNum("XW000003000000") mustBe false
+    }
+
+    "validateRegNum returns FALSE for Reg Nums with spaces" in {
+      ValidationAction.validateRegNum(" WA00003000000") mustBe false
+      ValidationAction.validateRegNum("X A00003199999") mustBe false
+      ValidationAction.validateRegNum("XNA0000 200000") mustBe false
+      ValidationAction.validateRegNum("XEA000034000 0") mustBe false
+      ValidationAction.validateRegNum("XGM0000312220 ") mustBe false
     }
   }
 }

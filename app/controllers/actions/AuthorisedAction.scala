@@ -161,7 +161,7 @@ object ValidationAction extends Logging {
 
   def validateRegNum(regNumber: String): Boolean = {
     val regNum = regNumber.toUpperCase().trim
-    if (!regNum.isBlank && regNum.length == 14) {
+    if (regNum.length == 14) {
       if (regNum.matches(regEx)) {
         val char3 = (regNum.substring(2, 3).toCharArray.head.toInt - 32) * WEIGHT_9
         val sum = List.range(1, 11).map(x => weights(x) * regNum.substring(x + 2, x + 3).toInt).sum + char3
@@ -170,7 +170,7 @@ object ValidationAction extends Logging {
           true
         } else {
           logger.info(
-            s"validateRegNum '$regNum' has invalid check character actual=${regNum.substring(1, 2)} calculated=$checkChar"
+            s"validateRegNum '$regNum' has invalid check character ${regNum.substring(1, 2)}, should be=$checkChar"
           )
           false
         }
@@ -179,7 +179,7 @@ object ValidationAction extends Logging {
         false
       }
     } else {
-      logger.info(s"validateRegNum '$regNum' is blank or not 14 chars")
+      logger.info(s"validateRegNum '$regNum' is not 14 chars")
       false
     }
   }
@@ -187,10 +187,10 @@ object ValidationAction extends Logging {
   def validateRegime(regime: Regime, regNumber: String): Boolean =
     val regNum = regNumber.toUpperCase().trim
     if (!regime.equals(Regime.MGD)) {
-      if (!regNum.isBlank && regNum.length == 14 && regNum.matches(regEx)) {
+      if (regNum.matches(regEx)) {
         val calculatedRegime = regimeFromRegNo(regNum.takeRight(REF_NO_LENGTH).toLong)
         if (!calculatedRegime.equals(regime.code)) {
-          logger.info(s"validateRegime Regime does not match RegNum provided='$regime' calculated='$calculatedRegime' '$regNum'")
+          logger.info(s"validateRegime Regime does not match RegNum $regime calc=$calculatedRegime $regNum")
           false
         } else {
           logger.info(s"validateRegime Regime matches RegNum '$regime':'$calculatedRegime' '$regNum'")
