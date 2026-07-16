@@ -63,7 +63,9 @@ class CalculationLowerCheckController @Inject() (
 
             val percentage = if (netTakings == 0) 0 else frontendAppConfig.lowerRateDutyPercentage * 100
 
-            Future.successful(Ok(view(radioAnswer, netTakings, duty, percentage, mode, selectedReturn)))
+            val backLink = Some(routes.NetTakingsLowerRateController.onPageLoad(mode).url)
+
+            Future.successful(Ok(view(radioAnswer, netTakings, duty, percentage, mode, selectedReturn, backLink)))
 
           case _ =>
             Future.successful(
@@ -86,10 +88,12 @@ class CalculationLowerCheckController @Inject() (
 
             val percentage = if (netTakings == 0) 0 else frontendAppConfig.lowerRateDutyPercentage * 100
 
+            val backLink = Some(routes.NetTakingsLowerRateController.onPageLoad(mode).url)
+
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, netTakings, duty, percentage, mode, selectedReturn))),
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, netTakings, duty, percentage, mode, selectedReturn, backLink))),
                 value => {
                   val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
                   for {

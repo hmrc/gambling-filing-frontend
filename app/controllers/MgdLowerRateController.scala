@@ -54,7 +54,10 @@ class MgdLowerRateController @Inject() (
           case None        => form
           case Some(value) => form.fill(value)
         }
-        Future.successful(Ok(view(preparedForm, mode)))
+
+        val backLink = Some(routes.CalculationLowerCheckController.onPageLoad(mode).url)
+
+        Future.successful(Ok(view(preparedForm, mode, backLink)))
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
@@ -64,10 +67,12 @@ class MgdLowerRateController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
+        val backLink = Some(routes.CalculationLowerCheckController.onPageLoad(mode).url)
+
         form
           .bindFromRequest()
           .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, backLink))),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
               for {
