@@ -36,6 +36,7 @@ class MgdStandardRateController @Inject() (
   sessionRepository: SessionRepository,
   navigator: Navigator,
   authorise: AuthorisedAction,
+  validate: ValidateAction,
   getData: DataRetrievalAction,
   formProvider: MgdStandardRateFormProvider,
   val controllerComponents: MessagesControllerComponents,
@@ -47,7 +48,7 @@ class MgdStandardRateController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
         val preparedForm = request.userAnswers.flatMap(_.get(MgdStandardRatePage)) match {
@@ -61,7 +62,7 @@ class MgdStandardRateController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
         form

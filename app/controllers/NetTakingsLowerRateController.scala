@@ -36,6 +36,7 @@ class NetTakingsLowerRateController @Inject() (
   sessionRepository: SessionRepository,
   navigator: Navigator,
   authorise: AuthorisedAction,
+  validate: ValidateAction,
   getData: DataRetrievalAction,
   formProvider: NetTakingsLowerRateFormProvider,
   val controllerComponents: MessagesControllerComponents,
@@ -47,7 +48,7 @@ class NetTakingsLowerRateController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
         request.userAnswers
@@ -62,7 +63,7 @@ class NetTakingsLowerRateController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
         request.userAnswers.flatMap(_.get(SelectReturnPage)) match {

@@ -36,6 +36,7 @@ class MgdLowerRateController @Inject() (
   sessionRepository: SessionRepository,
   navigator: Navigator,
   authorise: AuthorisedAction,
+  validate: ValidateAction,
   getData: DataRetrievalAction,
   formProvider: MgdLowerRateFormProvider,
   val controllerComponents: MessagesControllerComponents,
@@ -47,7 +48,7 @@ class MgdLowerRateController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
         val preparedForm = request.userAnswers.flatMap(_.get(MgdLowerRatePage)) match {
@@ -61,7 +62,7 @@ class MgdLowerRateController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
         form

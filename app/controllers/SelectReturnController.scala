@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.SelectReturnController.SortBy
-import controllers.actions.{AuthorisedAction, DataRetrievalAction}
+import controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidateAction}
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import pages.OpenReturnPeriodsPage
 import play.api.Logging
@@ -37,6 +37,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SelectReturnController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
+  validate: ValidateAction,
   getData: DataRetrievalAction,
   sessionRepository: SessionRepository,
   gamblingService: GamblingService,
@@ -47,7 +48,7 @@ class SelectReturnController @Inject() (
     with Logging {
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen getData).async { implicit request =>
+    (authorise andThen validate andThen getData).async { implicit request =>
       val regNum = request.regNum
       val logTxt = s"[onPageLoad] for regNum=$regNum"
 
@@ -73,7 +74,7 @@ class SelectReturnController @Inject() (
     }
 
   def selectOpenPeriod(consecNo: Int): Action[AnyContent] =
-    (authorise andThen getData).async { implicit request =>
+    (authorise andThen validate andThen getData).async { implicit request =>
       val regNum = request.regNum
       val logTxt = s"[onPageLoad] for regNum=$regNum"
 

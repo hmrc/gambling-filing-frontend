@@ -35,6 +35,7 @@ class NetTakingsLowerController @Inject() (
   sessionRepository: SessionRepository,
   navigator: Navigator,
   authorise: AuthorisedAction,
+  validate: ValidateAction,
   getData: DataRetrievalAction,
   formProvider: NetTakingsLowerFormProvider,
   val controllerComponents: MessagesControllerComponents,
@@ -45,7 +46,7 @@ class NetTakingsLowerController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData) { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData) { implicit request =>
     request.userAnswers
       .flatMap(_.get(SelectReturnPage))
       .fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
@@ -54,7 +55,7 @@ class NetTakingsLowerController @Inject() (
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.userAnswers
       .flatMap(_.get(SelectReturnPage))
       .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>

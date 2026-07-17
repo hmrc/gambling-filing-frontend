@@ -37,6 +37,7 @@ class NetTakingsHigherRateController @Inject() (
   navigator: Navigator,
   backNavigator: BackNavigator,
   authorise: AuthorisedAction,
+  validate: ValidateAction,
   getData: DataRetrievalAction,
   formProvider: NetTakingsHigherRateFormProvider,
   val controllerComponents: MessagesControllerComponents,
@@ -48,7 +49,7 @@ class NetTakingsHigherRateController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
         val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsHigherRatePage)).fold(form)(value => form.fill(value))
@@ -61,7 +62,7 @@ class NetTakingsHigherRateController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
         form

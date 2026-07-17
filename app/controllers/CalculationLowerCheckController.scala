@@ -37,6 +37,7 @@ class CalculationLowerCheckController @Inject() (
   sessionRepository: SessionRepository,
   navigator: Navigator,
   authorise: AuthorisedAction,
+  validate: ValidateAction,
   getData: DataRetrievalAction,
   formProvider: CalculationLowerCheckFormProvider,
   frontendAppConfig: FrontendAppConfig,
@@ -49,7 +50,7 @@ class CalculationLowerCheckController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
         val radioAnswer = request.userAnswers.flatMap(_.get(CalculationLowerCheckPage)) match {
@@ -77,7 +78,7 @@ class CalculationLowerCheckController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
         (request.userAnswers.flatMap(_.get(NetTakingsLowerPage)), request.userAnswers.flatMap(_.get(SelectReturnPage))) match {

@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions.AuthorisedAction
+import controllers.actions.{AuthorisedAction, ValidateAction}
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -30,6 +30,7 @@ import javax.inject.Inject
 class JourneyRecoveryController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
+  validate: ValidateAction,
   continueView: JourneyRecoveryContinueView,
   startAgainView: JourneyRecoveryStartAgainView
 ) extends FrontendBaseController
