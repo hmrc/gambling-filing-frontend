@@ -18,18 +18,18 @@ package views
 
 import base.SpecBase
 import config.CurrencyFormatter
-import forms.StandardRateCalculationCheckFormProvider
+import forms.CalculatedMGDStandardRateFormProvider
 import models.{NormalMode, SelectedReturn}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import views.html.StandardRateCalculationCheckView
+import views.html.CalculatedMGDStandardRateView
 
 import java.time.LocalDate
 
-class StandardRateCalculationCheckViewSpec extends SpecBase {
+class CalculatedMGDStandardRateViewSpec extends SpecBase {
 
-  "StandardRateCalculationCheckView" - {
+  "CalculatedMGDStandardRateView" - {
 
     "must render the page with correct heading, caption and input" in new Setup {
       val html = view(form, netTakings, BigDecimal(200), percentage, NormalMode, selectedReturn)
@@ -63,8 +63,8 @@ class StandardRateCalculationCheckViewSpec extends SpecBase {
 
   trait Setup {
     val app = applicationBuilder().build()
-    val view = app.injector.instanceOf[StandardRateCalculationCheckView]
-    val form = new StandardRateCalculationCheckFormProvider()()
+    val view = app.injector.instanceOf[CalculatedMGDStandardRateView]
+    val form = new CalculatedMGDStandardRateFormProvider()()
     val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
     val percentage: BigDecimal = 20
     val netTakings: BigDecimal = BigDecimal(1000)

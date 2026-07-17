@@ -18,30 +18,30 @@ package controllers
 
 import config.FrontendAppConfig
 import controllers.actions.*
-import forms.StandardRateCalculationCheckFormProvider
+import forms.CalculatedMGDStandardRateFormProvider
 import models.{Mode, Regime, SelectedReturn, UserAnswers}
 import navigation.Navigator
-import pages.{MgdStandardRatePage, NetTakingsStandardPage, SelectReturnPage, StandardRateCalculationCheckPage}
+import pages.{CalculatedMGDStandardRatePage, MgdStandardRatePage, NetTakingsStandardPage, SelectReturnPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
-import views.html.StandardRateCalculationCheckView
+import views.html.CalculatedMGDStandardRateView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class StandardRateCalculationCheckController @Inject() (
+class CalculatedMGDStandardRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
-  formProvider: StandardRateCalculationCheckFormProvider,
+  formProvider: CalculatedMGDStandardRateFormProvider,
   frontendAppConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
-  view: StandardRateCalculationCheckView
+  view: CalculatedMGDStandardRateView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport
@@ -53,7 +53,7 @@ class StandardRateCalculationCheckController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        val radioAnswer = request.userAnswers.flatMap(_.get(StandardRateCalculationCheckPage)).fold(form)(form.fill)
+        val radioAnswer = request.userAnswers.flatMap(_.get(CalculatedMGDStandardRatePage)).fold(form)(form.fill)
 
         request.userAnswers
           .flatMap(_.get(SelectReturnPage))
@@ -89,12 +89,12 @@ class StandardRateCalculationCheckController @Inject() (
                     value => {
                       val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
                       for {
-                        updatedAnswers <- Future.fromTry(userAnswers.set(StandardRateCalculationCheckPage, value))
+                        updatedAnswers <- Future.fromTry(userAnswers.set(CalculatedMGDStandardRatePage, value))
                         finalAnswers <-
                           if (value) Future.fromTry(updatedAnswers.set(MgdStandardRatePage, duty))
                           else Future.successful(updatedAnswers)
                         _ <- sessionRepository.set(finalAnswers)
-                      } yield Redirect(navigator.nextPage(StandardRateCalculationCheckPage, mode, finalAnswers))
+                      } yield Redirect(navigator.nextPage(CalculatedMGDStandardRatePage, mode, finalAnswers))
                     }
                   )
               }

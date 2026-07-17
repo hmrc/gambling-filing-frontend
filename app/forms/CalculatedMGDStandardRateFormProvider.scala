@@ -21,12 +21,12 @@ import play.api.data.Form
 
 import javax.inject.Inject
 
-class StandardRateCalculationCheckFormProvider @Inject() extends Mappings {
+class CalculatedMGDStandardRateFormProvider @Inject() extends Mappings {
 
   def apply(): Form[Boolean] =
     Form(
       "value" -> boolean(
-        "standardRateCalculationCheck.error.required"
+        "calculatedMGDStandardRate.error.required"
       )
     )
 }

@@ -94,45 +94,45 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NetTakingsStandardController.onPageLoad(NormalMode)
       }
 
-      "must go from NetTakingsStandardPage to StandardRateCalculationCheckPage" in {
+      "must go from NetTakingsStandardPage to CalculatedMGDStandardRatePage" in {
         navigator.nextPage(
           NetTakingsStandardPage,
           NormalMode,
           emptyUserAnswers
-        ) mustBe routes.StandardRateCalculationCheckController.onPageLoad(NormalMode)
+        ) mustBe routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
       }
 
-      "must go from StandardRateCalculationCheckPage to NetTakingsHigherPage when answer is Yes" in {
+      "must go from CalculatedMGDStandardRatePage to NetTakingsHigherPage when answer is Yes" in {
         val answers =
           emptyUserAnswers
-            .set(StandardRateCalculationCheckPage, true)
+            .set(CalculatedMGDStandardRatePage, true)
             .success
             .value
 
         navigator.nextPage(
-          StandardRateCalculationCheckPage,
+          CalculatedMGDStandardRatePage,
           NormalMode,
           answers
         ) mustBe routes.NetTakingsHigherController.onPageLoad(NormalMode)
       }
 
-      "must go from StandardRateCalculationCheckPage to MgdStandardRatePage when answer is No" in {
+      "must go from CalculatedMGDStandardRatePage to MgdStandardRatePage when answer is No" in {
         val answers =
           emptyUserAnswers
-            .set(StandardRateCalculationCheckPage, false)
+            .set(CalculatedMGDStandardRatePage, false)
             .success
             .value
 
         navigator.nextPage(
-          StandardRateCalculationCheckPage,
+          CalculatedMGDStandardRatePage,
           NormalMode,
           answers
         ) mustBe routes.MgdStandardRateController.onPageLoad(NormalMode)
       }
 
-      "must go from StandardRateCalculationCheckPage to Index when no answer exists" in {
+      "must go from CalculatedMGDStandardRatePage to Index when no answer exists" in {
         navigator.nextPage(
-          StandardRateCalculationCheckPage,
+          CalculatedMGDStandardRatePage,
           NormalMode,
           emptyUserAnswers
         ) mustBe routes.IndexController.onPageLoad()
@@ -226,12 +226,12 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NetTakingsStandardController.onPageLoad(CheckMode)
       }
 
-      "must go from NetTakingsStandardPage to StandardRateCalculationCheckPage" in {
+      "must go from NetTakingsStandardPage to CalculatedMGDStandardRatePage" in {
         navigator.nextPage(
           NetTakingsStandardPage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.StandardRateCalculationCheckController.onPageLoad(CheckMode)
+        ) mustBe routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
       }
 
       "must go from Mgd LowerRatePage to NetTakingsStandardRatePage" in {

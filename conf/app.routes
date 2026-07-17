@@ -55,10 +55,10 @@ POST       /total-net-takings-standard-rate              controllers.NetTakingsS
 GET        /change-total-net-takings-standard-rate       controllers.NetTakingsStandardController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-total-net-takings-standard-rate       controllers.NetTakingsStandardController.onSubmit(mode: Mode = CheckMode)
 
-GET        /calculated-mgd-standard-rate                 controllers.StandardRateCalculationCheckController.onPageLoad(mode: Mode = NormalMode)
-POST       /calculated-mgd-standard-rate                 controllers.StandardRateCalculationCheckController.onSubmit(mode: Mode = NormalMode)
-GET        /change-calculated-mgd-standard-rate          controllers.StandardRateCalculationCheckController.onPageLoad(mode: Mode = CheckMode)
-POST       /change-calculated-mgd-standard-rate          controllers.StandardRateCalculationCheckController.onSubmit(mode: Mode = CheckMode)
+GET        /calculated-mgd-standard-rate                 controllers.CalculatedMGDStandardRateController.onPageLoad(mode: Mode = NormalMode)
+POST       /calculated-mgd-standard-rate                 controllers.CalculatedMGDStandardRateController.onSubmit(mode: Mode = NormalMode)
+GET        /change-calculated-mgd-standard-rate          controllers.CalculatedMGDStandardRateController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-calculated-mgd-standard-rate          controllers.CalculatedMGDStandardRateController.onSubmit(mode: Mode = CheckMode)
 
 GET        /total-net-takings-higher-rate                controllers.NetTakingsHigherController.onPageLoad(mode: Mode = NormalMode)
 POST       /total-net-takings-higher-rate                controllers.NetTakingsHigherController.onSubmit(mode: Mode = NormalMode)

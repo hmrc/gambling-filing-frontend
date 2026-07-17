@@ -114,12 +114,12 @@ calculationLowerCheck.caption = File a return for {0} to {1}
 calculationLowerCheck.body = This is based on {0}% of your declared net takings of {1}
 calculationLowerCheck.error.required = Select yes if this calculation is correct
 
-standardRateCalculationCheck.title = MGD for the standard rate of duty
-standardRateCalculationCheck.heading = We have worked out your MGD at the standard rate to be
-standardRateCalculationCheck.body.prefix = This is based on {0}% of your declared net takings of
-standardRateCalculationCheck.caption = File a return for {0} to {1}
-standardRateCalculationCheck.question = Is this correct?
-standardRateCalculationCheck.error.required = Select yes if this calculation is correct
+calculatedMGDStandardRate.title = MGD for the standard rate of duty
+calculatedMGDStandardRate.heading = We have worked out your MGD at the standard rate to be
+calculatedMGDStandardRate.body.prefix = This is based on {0}% of your declared net takings of
+calculatedMGDStandardRate.caption = File a return for {0} to {1}
+calculatedMGDStandardRate.question = Is this correct?
+calculatedMGDStandardRate.error.required = Select yes if this calculation is correct
 
 selectFiledReturn.title = Which period do you want to view?
 selectFiledReturn.caption = View filed return

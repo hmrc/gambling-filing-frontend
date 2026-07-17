@@ -17,26 +17,26 @@
 package controllers
 
 import base.SpecBase
-import forms.StandardRateCalculationCheckFormProvider
+import forms.CalculatedMGDStandardRateFormProvider
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{NetTakingsStandardPage, SelectReturnPage, StandardRateCalculationCheckPage}
+import pages.{CalculatedMGDStandardRatePage, NetTakingsStandardPage, SelectReturnPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.StandardRateCalculationCheckView
+import views.html.CalculatedMGDStandardRateView
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class StandardRateCalculationCheckControllerSpec extends SpecBase with MockitoSugar {
+class CalculatedMGDStandardRateControllerSpec extends SpecBase with MockitoSugar {
 
-  private val formProvider = new StandardRateCalculationCheckFormProvider()
+  private val formProvider = new CalculatedMGDStandardRateFormProvider()
   private val form = formProvider()
   private val validAnswer: Boolean = true
   private val netTakings = BigDecimal(1000)
@@ -55,23 +55,23 @@ class StandardRateCalculationCheckControllerSpec extends SpecBase with MockitoSu
 
   private val userAnswers =
     userAnswersWithNetTakings
-      .set(StandardRateCalculationCheckPage, validAnswer)
+      .set(CalculatedMGDStandardRatePage, validAnswer)
       .success
       .value
 
   def onwardRoute = Call("GET", "/foo")
 
-  lazy val standardRateCalculationCheckRoute = routes.StandardRateCalculationCheckController.onPageLoad(NormalMode).url
+  lazy val calculatedMGDStandardRateRoute = routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode).url
 
-  "StandardRateCalculationCheck Controller" - {
+  "CalculatedMGDStandardRateController" - {
 
     "must return OK and the correct view for a GET" in {
       val application = applicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
 
       running(application) {
-        val request = FakeRequest(GET, standardRateCalculationCheckRoute)
+        val request = FakeRequest(GET, calculatedMGDStandardRateRoute)
         val result = route(application, request).value
-        val view = application.injector.instanceOf[StandardRateCalculationCheckView]
+        val view = application.injector.instanceOf[CalculatedMGDStandardRateView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
@@ -83,8 +83,8 @@ class StandardRateCalculationCheckControllerSpec extends SpecBase with MockitoSu
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, standardRateCalculationCheckRoute)
-        val view = application.injector.instanceOf[StandardRateCalculationCheckView]
+        val request = FakeRequest(GET, calculatedMGDStandardRateRoute)
+        val view = application.injector.instanceOf[CalculatedMGDStandardRateView]
         val result = route(application, request).value
 
         status(result) mustEqual OK
@@ -109,7 +109,7 @@ class StandardRateCalculationCheckControllerSpec extends SpecBase with MockitoSu
 
       running(application) {
         val request =
-          FakeRequest(POST, standardRateCalculationCheckRoute)
+          FakeRequest(POST, calculatedMGDStandardRateRoute)
             .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
@@ -124,11 +124,11 @@ class StandardRateCalculationCheckControllerSpec extends SpecBase with MockitoSu
 
       running(application) {
         val request =
-          FakeRequest(POST, standardRateCalculationCheckRoute)
+          FakeRequest(POST, calculatedMGDStandardRateRoute)
             .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
-        val view = application.injector.instanceOf[StandardRateCalculationCheckView]
+        val view = application.injector.instanceOf[CalculatedMGDStandardRateView]
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
@@ -144,7 +144,7 @@ class StandardRateCalculationCheckControllerSpec extends SpecBase with MockitoSu
         val application = applicationBuilder(regime = Regime.fromString(code).get).build()
 
         running(application) {
-          val request = FakeRequest(GET, standardRateCalculationCheckRoute)
+          val request = FakeRequest(GET, calculatedMGDStandardRateRoute)
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
@@ -160,7 +160,7 @@ class StandardRateCalculationCheckControllerSpec extends SpecBase with MockitoSu
 
         running(application) {
           val request =
-            FakeRequest(POST, standardRateCalculationCheckRoute)
+            FakeRequest(POST, calculatedMGDStandardRateRoute)
               .withFormUrlEncodedBody(("value", validAnswer.toString))
 
           val result = route(application, request).value
@@ -175,7 +175,7 @@ class StandardRateCalculationCheckControllerSpec extends SpecBase with MockitoSu
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, standardRateCalculationCheckRoute)
+        val request = FakeRequest(GET, calculatedMGDStandardRateRoute)
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -187,7 +187,7 @@ class StandardRateCalculationCheckControllerSpec extends SpecBase with MockitoSu
       val application = applicationBuilder(userAnswers = None).build()
       running(application) {
         val request =
-          FakeRequest(POST, standardRateCalculationCheckRoute)
+          FakeRequest(POST, calculatedMGDStandardRateRoute)
             .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
