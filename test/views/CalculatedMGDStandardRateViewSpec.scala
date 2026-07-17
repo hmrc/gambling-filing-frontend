@@ -17,7 +17,6 @@
 package views
 
 import base.SpecBase
-import config.CurrencyFormatter
 import forms.CalculatedMGDStandardRateFormProvider
 import models.{NormalMode, SelectedReturn}
 import org.jsoup.Jsoup
@@ -58,6 +57,34 @@ class CalculatedMGDStandardRateViewSpec extends SpecBase {
       val doc = Jsoup.parse(html.body)
 
       doc.select("input[value=true]").hasAttr("checked") mustBe true
+    }
+
+    "must display a positive duty amount correctly in the heading" in new Setup {
+      val html = view(form, netTakings, BigDecimal(200), percentage, NormalMode, selectedReturn)
+      val doc = Jsoup.parse(html.body)
+
+      doc.select("h1").text mustBe "We have worked out your MGD at the standard rate to be £200"
+    }
+
+    "must display a negative duty amount correctly in the heading" in new Setup {
+      val html = view(form, netTakings, BigDecimal(-200), percentage, NormalMode, selectedReturn)
+      val doc = Jsoup.parse(html.body)
+
+      doc.select("h1").text mustBe "We have worked out your MGD at the standard rate to be −£200"
+    }
+
+    "must display a positive net takings amount correctly in the body" in new Setup {
+      val html = view(form, BigDecimal(1000), BigDecimal(200), percentage, NormalMode, selectedReturn)
+      val doc = Jsoup.parse(html.body)
+
+      doc.select("p.govuk-body").text mustBe "This is based on 20% of your declared net takings of £1,000"
+    }
+
+    "must display a negative net takings amount correctly in the body" in new Setup {
+      val html = view(form, BigDecimal(-1000), BigDecimal(200), percentage, NormalMode, selectedReturn)
+      val doc = Jsoup.parse(html.body)
+
+      doc.select("p.govuk-body").text mustBe "This is based on 20% of your declared net takings of −£1,000"
     }
   }
 
