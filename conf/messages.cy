@@ -115,8 +115,8 @@ calculationLowerCheck.body = This is based on {0}% of your declared net takings 
 calculationLowerCheck.error.required = Select yes if this calculation is correct
 
 calculatedMGDStandardRate.title = MGD for the standard rate of duty
-calculatedMGDStandardRate.heading = We have worked out your MGD at the standard rate to be
-calculatedMGDStandardRate.body = This is based on {0}% of your declared net takings of
+calculatedMGDStandardRate.heading = We have worked out your MGD at the standard rate to be {0}
+calculatedMGDStandardRate.body = This is based on {0}% of your declared net takings of {1}
 calculatedMGDStandardRate.caption = File a return for {0} to {1}
 calculatedMGDStandardRate.question = Is this correct?
 calculatedMGDStandardRate.error.required = Select yes if this calculation is correct
