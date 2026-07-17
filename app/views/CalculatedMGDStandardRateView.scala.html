@@ -45,15 +45,11 @@
         </span>
 
         <h1 class="govuk-heading-l">
-            @messages("calculatedMGDStandardRate.heading")
-            <span style="white-space: nowrap;">
-                @CurrencyFormatter.formatAmountHtml(duty)
-            </span>
+            @messages("calculatedMGDStandardRate.heading", CurrencyFormatter.formatAmountHtml(duty))
         </h1>
 
         <p class="govuk-body">
-            @messages("calculatedMGDStandardRate.body.prefix", percentage)
-            @CurrencyFormatter.formatAmountHtml(netTakings)
+            @messages("calculatedMGDStandardRate.body", percentage, CurrencyFormatter.formatAmountHtml(netTakings))
         </p>
 
         @govukRadios(
