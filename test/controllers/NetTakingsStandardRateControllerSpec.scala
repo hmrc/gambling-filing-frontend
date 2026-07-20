@@ -22,7 +22,6 @@ import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
-import org.scalactic.Prettifier.default
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{NetTakingsStandardRatePage, SelectReturnPage}
 import play.api.inject.bind
@@ -47,10 +46,10 @@ class NetTakingsStandardRateControllerSpec extends SpecBase with MockitoSugar {
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
+  def userAnswersWithSelectedReturn: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
+
   lazy val netTakingsStandardRateRoute: String =
     routes.NetTakingsStandardRateController.onPageLoad(NormalMode).url
-
-  def userAnswersWithSelectedReturn: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
 
   "NetTakingsStandardRate Controller" - {
 
@@ -174,34 +173,23 @@ class NetTakingsStandardRateControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return OK and the correct view for a GET when no existing data is found" in {
+    "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
 
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn), regime = Regime.MGD).build()
+      val application = applicationBuilder(userAnswers = None, regime = Regime.MGD).build()
 
       running(application) {
         val request = FakeRequest(GET, netTakingsStandardRateRoute)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[NetTakingsStandardRateView]
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
 
-    "must redirect to the next page when valid data is submitted and no existing data is found" in {
+    "must redirect to SelectReturnController on a POST when no SelectedReturn is found in the session" in {
 
-      val mockSessionRepository = mock[SessionRepository]
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn), regime = Regime.MGD)
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
+      val application = applicationBuilder(userAnswers = None, regime = Regime.MGD).build()
 
       running(application) {
         val request =
@@ -211,7 +199,7 @@ class NetTakingsStandardRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
   }
