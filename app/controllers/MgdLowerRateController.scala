@@ -50,10 +50,7 @@ class MgdLowerRateController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        val preparedForm = request.userAnswers.flatMap(_.get(MgdLowerRatePage)) match {
-          case None        => form
-          case Some(value) => form.fill(value)
-        }
+        val preparedForm = request.userAnswers.flatMap(_.get(MgdLowerRatePage)).fold(form)(form.fill)
         Future.successful(Ok(view(preparedForm, mode)))
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
