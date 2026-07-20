@@ -18,11 +18,13 @@ package views
 
 import base.SpecBase
 import forms.MgdStandardRateFormProvider
-import models.NormalMode
+import models.{NormalMode, SelectedReturn}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import views.html.MgdStandardRateView
+
+import java.time.LocalDate
 
 class MgdStandardRateViewSpec extends SpecBase {
 
@@ -30,31 +32,31 @@ class MgdStandardRateViewSpec extends SpecBase {
 
     "must render the page with correct heading, caption and input" in new Setup {
 
-      val html = view(form, NormalMode)
+      val html = view(form, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
-      doc.title must include(messages("mgdStandardRate.title"))
-      doc.select("h1").text mustBe messages("mgdStandardRate.heading")
-      doc.select(".govuk-caption-l").text mustBe messages("mgdStandardRate.caption", "1 Jan 2014", "31 Dec 2014")
+      doc.title must include("How much MGD at the standard rate do you owe?")
+      doc.select("h1").text mustBe "How much MGD at the standard rate do you owe?"
+      doc.select(".govuk-caption-l").text mustBe "File a return for 1 Jan 2025 to 31 Mar 2025"
       doc.select(".govuk-input__prefix").text mustBe "£"
       doc.select("input.govuk-input").hasClass("govuk-input--width-20") mustBe true
-      doc.select("button").text mustBe messages("site.continue")
+      doc.select("button").text mustBe "Continue"
     }
 
     "must render error summary when form has errors" in new Setup {
 
       val boundForm = form.bind(Map("value" -> ""))
-      val html = view(boundForm, NormalMode)
+      val html = view(boundForm, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
-      doc.select(".govuk-error-summary__list a").text must include(messages("mgdStandardRate.error.required"))
+      doc.select(".govuk-error-summary__list a").text must include("Enter how much MGD at the standard rate you owe")
     }
 
     "must populate the input when form has a value" in new Setup {
 
       val boundForm = form.fill(BigDecimal("123.45"))
-      val html = view(boundForm, NormalMode)
+      val html = view(boundForm, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select("#value").`val` mustBe "123.45"
@@ -65,6 +67,7 @@ class MgdStandardRateViewSpec extends SpecBase {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[MgdStandardRateView]
     val form = new MgdStandardRateFormProvider()()
+    val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 

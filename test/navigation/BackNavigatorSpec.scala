@@ -40,25 +40,25 @@ class BackNavigatorSpec extends SpecBase {
           Some(routes.IndexController.onPageLoad().url)
       }
 
-      "must go from NetTakingsHigherRatePage to StandardRateCalculationCheckController when answer is Yes" in {
+      "must go from NetTakingsHigherRatePage to CalculatedMGDStandardRateController when answer is Yes" in {
         val answers =
           emptyUserAnswers
             .set(NetTakingsStandardRatePage, true)
-            .flatMap(_.set(CalculationLowerCheckPage, true)) // TODO StandardRateCalculationCheckPage
+            .flatMap(_.set(CalculationLowerCheckPage, true)) // TODO CalculatedMGDStandardRatePage
             .success
             .value
 
         val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(answers))
 
         navigator.backPage(NetTakingsHigherRatePage, NormalMode, request) mustBe
-          Some(routes.PageNotFoundController.onPageLoad().url) // TODO StandardRateCalculationCheckController
+          Some(routes.PageNotFoundController.onPageLoad().url) // TODO CalculatedMGDStandardRateController
       }
 
       "must go from NetTakingsHigherRatePage to Mgd StandardRateController when answer is No" in {
         val answers =
           emptyUserAnswers
             .set(NetTakingsStandardRatePage, true)
-            .flatMap(_.set(CalculationLowerCheckPage, false)) // TODO StandardRateCalculationCheckPage
+            .flatMap(_.set(CalculationLowerCheckPage, false)) // TODO CalculatedMGDStandardRatePage
             .success
             .value
 

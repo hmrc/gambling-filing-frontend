@@ -59,9 +59,9 @@ class CalculationLowerCheckController @Inject() (
 
         (request.userAnswers.flatMap(_.get(NetTakingsLowerPage)), request.userAnswers.flatMap(_.get(SelectReturnPage))) match {
           case (Some(netTakings), Some(selectedReturn)) =>
-            val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
+            val duty = netTakings * frontendAppConfig.lowerRateDutyPercentage
 
-            val percentage = if (netTakings == 0) 0 else frontendAppConfig.lowerRateDutyPercentage * 100
+            val percentage = if (netTakings == 0) BigDecimal(0) else frontendAppConfig.lowerRateDutyPercentage * 100
 
             Future.successful(Ok(view(radioAnswer, netTakings, duty, percentage, mode, selectedReturn)))
 
@@ -82,9 +82,9 @@ class CalculationLowerCheckController @Inject() (
       case Regime.MGD =>
         (request.userAnswers.flatMap(_.get(NetTakingsLowerPage)), request.userAnswers.flatMap(_.get(SelectReturnPage))) match {
           case (Some(netTakings), Some(selectedReturn)) =>
-            val duty = netTakings * BigDecimal(frontendAppConfig.lowerRateDutyPercentage)
+            val duty = netTakings * frontendAppConfig.lowerRateDutyPercentage
 
-            val percentage = if (netTakings == 0) 0 else frontendAppConfig.lowerRateDutyPercentage * 100
+            val percentage = if (netTakings == 0) BigDecimal(0) else frontendAppConfig.lowerRateDutyPercentage * 100
 
             form
               .bindFromRequest()

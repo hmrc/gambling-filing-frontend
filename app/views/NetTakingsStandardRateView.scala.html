@@ -16,6 +16,8 @@
 
 @import viewmodels.LegendSize.Medium
 @import views.html.components._
+@import models.SelectedReturn
+@import utils.DateTimeFormats
 
 
 @this(
@@ -30,7 +32,7 @@ govukButton: GovukButton,
 caption: components.Caption
 )
 
-@(form: Form[_], mode: Mode, backLink: Option[String])(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, backLink: Option[String], selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = title(form, messages("netTakingsStandardRate.title")), backLink = backLink) {
     @formHelper(action = routes.NetTakingsStandardRateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
@@ -40,7 +42,11 @@ caption: components.Caption
         }
 
         @caption(
-            messages("netTakingsStandardRate.caption", "1 Jan 2014", "31 Dec 2014")
+            messages(
+                "netTakingsStandardRate.caption",
+                DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
+                DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
+            )
         )
 
 
