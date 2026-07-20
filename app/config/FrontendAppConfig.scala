@@ -56,4 +56,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
 
   val lowerRateDutyPercentage: Double = configuration.get[Double]("mgd.lower-rate-duty-percentage")
 
+  val higherRateDutyPercentage: Double = configuration.get[Double]("mgd.higher-rate-duty-percentage")
+
+
 }
