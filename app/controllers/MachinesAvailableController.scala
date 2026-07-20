@@ -56,10 +56,7 @@ class MachinesAvailableController @Inject() (
             logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
             Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
           case Some(selectedReturn) =>
-            val preparedForm = request.userAnswers.flatMap(_.get(MachinesAvailablePage)) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
+            val preparedForm = request.userAnswers.flatMap(_.get(MachinesAvailablePage)).fold(form)(form.fill)
             Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(MachinesAvailablePage, mode, request), selectedReturn)))
         }
       case _ =>

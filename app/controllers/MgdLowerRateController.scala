@@ -54,12 +54,9 @@ class MgdLowerRateController @Inject() (
         request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
           case None =>
             logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
-            Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
+            Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
           case Some(selectedReturn) =>
-            val preparedForm = request.userAnswers.flatMap(_.get(MgdLowerRatePage)) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
+            val preparedForm = request.userAnswers.flatMap(_.get(MgdLowerRatePage)).fold(form)(form.fill)
             Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(MgdLowerRatePage, mode, request), selectedReturn)))
         }
       case _ =>
@@ -74,7 +71,7 @@ class MgdLowerRateController @Inject() (
         request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
           case None =>
             logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
-            Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
+            Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
           case Some(selectedReturn) =>
             form
               .bindFromRequest()
