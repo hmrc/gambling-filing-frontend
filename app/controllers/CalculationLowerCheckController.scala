@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import controllers.actions.*
 import forms.CalculationLowerCheckFormProvider
 import models.{Mode, Regime, UserAnswers}
-import navigation.Navigator
+import navigation.{BackNavigator, Navigator}
 import pages.{CalculationLowerCheckPage, DutyLowerRatePage, NetTakingsLowerPage, SelectReturnPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -36,6 +36,7 @@ class CalculationLowerCheckController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
+  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: CalculationLowerCheckFormProvider,
@@ -63,7 +64,18 @@ class CalculationLowerCheckController @Inject() (
 
             val percentage = if (netTakings == 0) 0 else frontendAppConfig.lowerRateDutyPercentage * 100
 
-            Future.successful(Ok(view(radioAnswer, netTakings, duty, percentage, mode, selectedReturn)))
+            Future.successful(
+              Ok(
+                view(radioAnswer,
+                     netTakings,
+                     duty,
+                     percentage,
+                     mode,
+                     backNavigator.backPage(CalculationLowerCheckPage, mode, request),
+                     selectedReturn
+                    )
+              )
+            )
 
           case _ =>
             Future.successful(
@@ -89,7 +101,19 @@ class CalculationLowerCheckController @Inject() (
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, netTakings, duty, percentage, mode, selectedReturn))),
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(
+                      view(formWithErrors,
+                           netTakings,
+                           duty,
+                           percentage,
+                           mode,
+                           backNavigator.backPage(CalculationLowerCheckPage, mode, request),
+                           selectedReturn
+                          )
+                    )
+                  ),
                 value => {
                   val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
                   for {

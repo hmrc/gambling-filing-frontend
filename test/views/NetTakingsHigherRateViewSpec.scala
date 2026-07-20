@@ -18,7 +18,7 @@ package views
 
 import base.SpecBase
 import forms.NetTakingsHigherRateFormProvider
-import models.NormalMode
+import models.{NormalMode, SelectedReturn}
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import play.api.i18n.Messages
@@ -26,19 +26,21 @@ import play.api.test.FakeRequest
 import play.twirl.api.HtmlFormat
 import views.html.NetTakingsHigherRateView
 
+import java.time.LocalDate
+
 class NetTakingsHigherRateViewSpec extends SpecBase {
 
   "NetTakingsHigherRateView" - {
 
     "must render the page with the correct content" in new Setup {
-
-      val html: HtmlFormat.Appendable = view(form, NormalMode, None)
+      val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+      val html: HtmlFormat.Appendable = view(form, NormalMode, None, selectedReturn)
       val doc: Document = Jsoup.parse(html.body)
 
       doc.title must include(messages("netTakingsHigherRate.title"))
       doc.select("h1").text mustBe messages("netTakingsHigherRate.heading")
       doc.select(".govuk-caption-l").text mustBe
-        messages("netTakingsHigherRate.caption", "1 Jan 2014", "31 Dec 2014")
+        messages("netTakingsHigherRate.caption", "1 Jan 2025", "31 Mar 2025")
 
       doc.select("p.govuk-body").text mustBe
         messages("netTakingsHigherRate.p1")
@@ -54,7 +56,7 @@ class NetTakingsHigherRateViewSpec extends SpecBase {
     "must render an error summary when the form has errors" in new Setup {
 
       val boundForm = form.bind(Map("value" -> ""))
-      val html = view(boundForm, NormalMode, None)
+      val html = view(boundForm, NormalMode, None, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
@@ -66,7 +68,7 @@ class NetTakingsHigherRateViewSpec extends SpecBase {
     "must select Yes when the form value is true" in new Setup {
 
       val boundForm = form.fill(true)
-      val html = view(boundForm, NormalMode, None)
+      val html = view(boundForm, NormalMode, None, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
       val doc = Jsoup.parse(html.body)
 
       doc.select("input[value=true]").first().hasAttr("checked") mustBe true
@@ -75,7 +77,7 @@ class NetTakingsHigherRateViewSpec extends SpecBase {
     "must select No when the form value is false" in new Setup {
 
       val boundForm = form.fill(false)
-      val html = view(boundForm, NormalMode, None)
+      val html = view(boundForm, NormalMode, None, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
       val doc = Jsoup.parse(html.body)
 
       doc.select("input[value=false]").first().hasAttr("checked") mustBe true
