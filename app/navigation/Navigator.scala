@@ -97,7 +97,7 @@ class Navigator @Inject() () {
         userAnswers
           .get(CalculatedMGDStandardRatePage)
           .map {
-            case true => routes.NetTakingsHigherController.onPageLoad(NormalMode)
+            case true => routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
             case _    => routes.MgdStandardRateController.onPageLoad(NormalMode)
           }
           .getOrElse(routes.IndexController.onPageLoad())
