@@ -43,7 +43,7 @@ class CalculatedMGDStandardRateControllerSpec extends SpecBase with MockitoSugar
   private val duty = netTakings * BigDecimal(0.2)
   private val ratePercentage: BigDecimal = BigDecimal(0.2) * 100
   private val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
-  private val backUrl = Some("/manage-gambling-tax/returns/")
+  private val backUrl = Option("/manage-gambling-tax/returns" + routes.NetTakingsStandardController.onPageLoad(NormalMode).url)
 
   private val userAnswersWithNetTakings =
     emptyUserAnswers
