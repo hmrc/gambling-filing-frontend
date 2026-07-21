@@ -75,7 +75,7 @@ class CalculatedMGDHigherRateControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(form, netTakings, duty, ratePercentage, NormalMode, selectedReturn)(request, messages(application)).toString
+          view(form, netTakings, duty, ratePercentage, NormalMode, None, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -88,7 +88,7 @@ class CalculatedMGDHigherRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), netTakings, duty, ratePercentage, NormalMode, selectedReturn)(
+        contentAsString(result) mustEqual view(form.fill(validAnswer), netTakings, duty, ratePercentage, NormalMode, None, selectedReturn)(
           request,
           messages(application)
         ).toString
@@ -132,7 +132,7 @@ class CalculatedMGDHigherRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, netTakings, duty, ratePercentage, NormalMode, selectedReturn)(request,
+        contentAsString(result) mustEqual view(boundForm, netTakings, duty, ratePercentage, NormalMode,None, selectedReturn)(request,
                                                                                                                         messages(application)
                                                                                                                        ).toString
       }

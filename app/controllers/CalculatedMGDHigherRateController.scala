@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import controllers.actions.*
 import forms.CalculatedMGDHigherRateFormProvider
 import models.{Mode, Regime, SelectedReturn, UserAnswers}
-import navigation.Navigator
+import navigation.{BackNavigator, Navigator}
 import pages.{CalculatedMGDHigherRatePage, MgdHigherRatePage, NetTakingsHigherPage, SelectReturnPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -36,6 +36,7 @@ class CalculatedMGDHigherRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
+  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: CalculatedMGDHigherRateFormProvider,
@@ -62,7 +63,18 @@ class CalculatedMGDHigherRateController @Inject() (
               .flatMap(_.get(NetTakingsHigherPage))
               .fold(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))) { netTakings =>
                 val duty = netTakings * frontendAppConfig.higherRateDutyPercentage
-                Future.successful(Ok(view(radioAnswer, netTakings, duty, ratePercentage, mode, selectedReturn)))
+                Future.successful(
+                  Ok(
+                    view(radioAnswer,
+                         netTakings,
+                         duty,
+                         ratePercentage,
+                         mode,
+                         backNavigator.backPage(CalculatedMGDHigherRatePage, mode, request),
+                         selectedReturn
+                        )
+                  )
+                )
               }
           }
       case _ =>
@@ -85,7 +97,19 @@ class CalculatedMGDHigherRateController @Inject() (
                 form
                   .bindFromRequest()
                   .fold(
-                    formWithErrors => Future.successful(BadRequest(view(formWithErrors, netTakings, duty, ratePercentage, mode, selectedReturn))),
+                    formWithErrors =>
+                      Future.successful(
+                        BadRequest(
+                          view(formWithErrors,
+                               netTakings,
+                               duty,
+                               ratePercentage,
+                               mode,
+                               backNavigator.backPage(CalculatedMGDHigherRatePage, mode, request),
+                               selectedReturn
+                              )
+                        )
+                      ),
                     value => {
                       val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
                       for {
