@@ -118,7 +118,7 @@ class Navigator @Inject() () {
             routes.NetTakingsLowerController.onPageLoad(CheckMode)
 
           case Some(false) =>
-            routes.NetTakingsStandardController.onPageLoad(CheckMode)
+            routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
 
           case None =>
             routes.CheckYourAnswersController.onPageLoad()

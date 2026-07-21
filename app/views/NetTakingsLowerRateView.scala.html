@@ -32,9 +32,9 @@
     caption: components.Caption
 )
 
-@(form: Form[_], mode: Mode, selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, backLink: Option[String], selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("netTakingsLowerRate.title"))) {
+@layout(pageTitle = title(form, messages("netTakingsLowerRate.title")), backLink = backLink) {
     @formHelper(action = routes.NetTakingsLowerRateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.hasErrors) {

@@ -223,7 +223,7 @@ class NavigatorSpec extends SpecBase {
           NetTakingsLowerRatePage,
           CheckMode,
           answers
-        ) mustBe routes.NetTakingsStandardController.onPageLoad(CheckMode)
+        ) mustBe routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
       }
 
       "must go from NetTakingsStandardPage to CalculatedMGDStandardRatePage" in {
