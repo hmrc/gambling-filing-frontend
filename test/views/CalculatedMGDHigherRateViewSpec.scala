@@ -38,7 +38,7 @@ class CalculatedMGDHigherRateViewSpec extends SpecBase {
       doc.select("h1").text mustBe "We have worked out your MGD at the higher rate to be £200"
 
       doc.select(".govuk-caption-l").text mustBe "File a return for 1 Jan 2025 to 31 Mar 2025"
-      doc.select("p.govuk-body").text mustBe "This is based on 20% of your declared net takings of £1,000"
+      doc.select("p.govuk-body").text mustBe "This is based on 25% of your declared net takings of £1,000"
       doc.select("button").text mustBe "Continue"
     }
 
@@ -77,14 +77,14 @@ class CalculatedMGDHigherRateViewSpec extends SpecBase {
       val html = view(form, BigDecimal(1000), BigDecimal(200), percentage, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
-      doc.select("p.govuk-body").text mustBe "This is based on 20% of your declared net takings of £1,000"
+      doc.select("p.govuk-body").text mustBe "This is based on 25% of your declared net takings of £1,000"
     }
 
     "must display a negative net takings amount correctly in the body" in new Setup {
       val html = view(form, BigDecimal(-1000), BigDecimal(200), percentage, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
-      doc.select("p.govuk-body").text mustBe "This is based on 20% of your declared net takings of −£1,000"
+      doc.select("p.govuk-body").text mustBe "This is based on 25% of your declared net takings of −£1,000"
     }
   }
 
@@ -93,7 +93,7 @@ class CalculatedMGDHigherRateViewSpec extends SpecBase {
     val view = app.injector.instanceOf[CalculatedMGDHigherRateView]
     val form = new CalculatedMGDHigherRateFormProvider()()
     val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
-    val percentage: BigDecimal = 20
+    val percentage: BigDecimal = 25
     val netTakings: BigDecimal = BigDecimal(1000)
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
