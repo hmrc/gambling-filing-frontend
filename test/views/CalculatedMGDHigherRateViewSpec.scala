@@ -44,7 +44,7 @@ class CalculatedMGDHigherRateViewSpec extends SpecBase {
 
     "must render error summary when form has errors" in new Setup {
       val boundForm = form.bind(Map("value" -> ""))
-      val html = view(boundForm, netTakings, BigDecimal(200), percentage, NormalMode, None,selectedReturn)
+      val html = view(boundForm, netTakings, BigDecimal(200), percentage, NormalMode, None, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
@@ -67,14 +67,14 @@ class CalculatedMGDHigherRateViewSpec extends SpecBase {
     }
 
     "must display a negative duty amount correctly in the heading" in new Setup {
-      val html = view(form, netTakings, BigDecimal(-200), percentage, NormalMode,None, selectedReturn)
+      val html = view(form, netTakings, BigDecimal(-200), percentage, NormalMode, None, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select("h1").text mustBe "We have worked out your MGD at the higher rate to be −£200"
     }
 
     "must display a positive net takings amount correctly in the body" in new Setup {
-      val html = view(form, BigDecimal(1000), BigDecimal(200), percentage, NormalMode,None, selectedReturn)
+      val html = view(form, BigDecimal(1000), BigDecimal(200), percentage, NormalMode, None, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select("p.govuk-body").text mustBe "This is based on 25% of your declared net takings of £1,000"
