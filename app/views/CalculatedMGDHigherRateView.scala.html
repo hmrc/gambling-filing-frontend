@@ -45,9 +45,8 @@
             </span>
 
             <h1 class="govuk-heading-l">
-                @messages("calculatedMGDHigherRate.heading")
+                @Html(messages("calculatedMGDStandardRate.heading", CurrencyFormatter.formatAmountHtml(duty)))
                     <span style="white-space: nowrap;">
-                        @CurrencyFormatter.formatAmountHtml(duty)
                     </span>
             </h1>
 

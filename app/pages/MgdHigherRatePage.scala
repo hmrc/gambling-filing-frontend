@@ -22,5 +22,5 @@ case object MgdHigherRatePage extends QuestionPage[BigDecimal] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "mgdStandardRate"
+  override def toString: String = "mgdHigherRate"
 }
