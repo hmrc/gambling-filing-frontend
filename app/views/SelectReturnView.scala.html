@@ -29,7 +29,7 @@
     govukSummaryList: GovukSummaryList
 )
 
-@(regNumber: String, model: OpenReturnPeriods)(implicit request: Request[_], messages: Messages)
+@(regNumber: String, model: OpenReturnPeriods, backLink: Option[String])(implicit request: Request[_], messages: Messages)
 
 @periodLink(consecNo: Int, label: String) = {
     <a href="@routes.SelectReturnController.selectOpenPeriod(consecNo)" class="govuk-link">@label</a>
@@ -60,7 +60,7 @@ model.openPeriods.zipWithIndex.map { case (item, i) =>
 
 @layout(
     pageTitle     = titleNoForm(messages(if(model.openPeriods.isEmpty) "selectReturn.empty.title" else "selectReturn.title")),
-    showBackLink  = true
+    backLink = backLink
 ) {
 
     <span class="govuk-caption-l" data-testid="open-returns-caption">

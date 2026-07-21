@@ -28,6 +28,14 @@ class BackNavigatorSpec extends SpecBase {
 
   val navigator = new BackNavigator()
 
+  private val optionalDataRequest: OptionalDataRequest[AnyContent] =
+    OptionalDataRequest(
+      FakeRequest(),
+      "reg123",
+      Regime.MGD,
+      None
+    )
+
   "BackNavigator" - {
 
     "in Normal mode" - {
@@ -38,6 +46,102 @@ class BackNavigatorSpec extends SpecBase {
         val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(UserAnswers("id")))
         navigator.backPage(UnknownPage, NormalMode, request) mustBe
           Some(routes.IndexController.onPageLoad().url)
+      }
+
+      "OpenReturnPeriodsPage" - {
+
+        "must go from OpenReturnPeriodsPage to IndexController" in {
+
+          navigator.backPage(
+            OpenReturnPeriodsPage,
+            NormalMode,
+            optionalDataRequest
+          ) mustBe Some(
+            routes.IndexController
+              .onPageLoad()
+              .url
+          )
+        }
+      }
+
+      "MachinesAvailablePage" - {
+
+        "must go from MachinesAvailablePage to SelectReturnPage" in {
+
+          navigator.backPage(
+            MachinesAvailablePage,
+            NormalMode,
+            optionalDataRequest
+          ) mustBe Some(
+            routes.SelectReturnController
+              .onPageLoad()
+              .url
+          )
+        }
+      }
+
+      "NetTakingsLowerRatePage" - {
+
+        "must go from NetTakingsLowerRatePage to MachinesAvailablePage" in {
+
+          navigator.backPage(
+            NetTakingsLowerRatePage,
+            NormalMode,
+            optionalDataRequest
+          ) mustBe Some(
+            routes.MachinesAvailableController
+              .onPageLoad(NormalMode)
+              .url
+          )
+        }
+      }
+
+      "NetTakingsLowerPage" - {
+
+        "must go from NetTakingsLowerPage to NetTakingsLowerRatePage" in {
+
+          navigator.backPage(
+            NetTakingsLowerPage,
+            NormalMode,
+            optionalDataRequest
+          ) mustBe Some(
+            routes.NetTakingsLowerRateController
+              .onPageLoad(NormalMode)
+              .url
+          )
+        }
+      }
+
+      "CalculationLowerCheckPage" - {
+
+        "must go from CalculationLowerCheckPage to NetTakingsLowerRateController" in {
+
+          navigator.backPage(
+            CalculationLowerCheckPage,
+            NormalMode,
+            optionalDataRequest
+          ) mustBe Some(
+            routes.NetTakingsLowerController
+              .onPageLoad(NormalMode)
+              .url
+          )
+        }
+      }
+
+      "MgdLowerRatePage" - {
+
+        "must go from MgdLowerRatePage to CalculationLowerCheckPage" in {
+
+          navigator.backPage(
+            MgdLowerRatePage,
+            NormalMode,
+            optionalDataRequest
+          ) mustBe Some(
+            routes.CalculationLowerCheckController
+              .onPageLoad(NormalMode)
+              .url
+          )
+        }
       }
 
       "must go from NetTakingsHigherRatePage to CalculatedMGDStandardRateController when answer is Yes" in {
@@ -134,17 +238,17 @@ class BackNavigatorSpec extends SpecBase {
         ) mustBe Some(routes.NetTakingsLowerRateController.onPageLoad(NormalMode).url)
       }
     }
+  }
 
-    "in Check mode" - {
+  "in Check mode" - {
 
-      "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
-        case object UnknownPage extends Page
+    "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
+      case object UnknownPage extends Page
 
-        val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(UserAnswers("id")))
-        navigator.backPage(UnknownPage, CheckMode, request) mustBe
-          Some(routes.CheckYourAnswersController.onPageLoad().url)
-      }
-
+      val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(UserAnswers("id")))
+      navigator.backPage(UnknownPage, CheckMode, request) mustBe
+        Some(routes.CheckYourAnswersController.onPageLoad().url)
     }
+
   }
 }

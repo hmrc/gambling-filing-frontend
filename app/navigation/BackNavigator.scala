@@ -29,6 +29,24 @@ class BackNavigator @Inject() () {
 
   private val normalBackRoutes: Page => UserAnswers => Call = {
 
+    case OpenReturnPeriodsPage =>
+      _ => routes.IndexController.onPageLoad()
+
+    case MachinesAvailablePage =>
+      _ => routes.SelectReturnController.onPageLoad()
+
+    case NetTakingsLowerRatePage =>
+      _ => routes.MachinesAvailableController.onPageLoad(NormalMode)
+
+    case NetTakingsLowerPage =>
+      _ => routes.NetTakingsLowerRateController.onPageLoad(NormalMode)
+
+    case CalculationLowerCheckPage =>
+      _ => routes.NetTakingsLowerController.onPageLoad(NormalMode)
+
+    case MgdLowerRatePage =>
+      _ => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
+
     case NetTakingsHigherRatePage =>
       userAnswers =>
         userAnswers.get(NetTakingsStandardRatePage) match {
@@ -60,6 +78,24 @@ class BackNavigator @Inject() () {
   }
 
   private val checkBackRouteMap: Page => UserAnswers => Call = {
+
+    case OpenReturnPeriodsPage =>
+      _ => routes.IndexController.onPageLoad()
+
+    case MachinesAvailablePage =>
+      _ => routes.SelectReturnController.onPageLoad()
+
+    case NetTakingsLowerRatePage =>
+      _ => routes.MachinesAvailableController.onPageLoad(NormalMode)
+
+    case NetTakingsLowerPage =>
+      _ => routes.NetTakingsLowerRateController.onPageLoad(NormalMode)
+
+    case CalculationLowerCheckPage =>
+      _ => routes.NetTakingsLowerController.onPageLoad(NormalMode)
+
+    case MgdLowerRatePage =>
+      _ => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
 
     case NetTakingsHigherRatePage =>
       userAnswers =>

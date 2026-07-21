@@ -102,7 +102,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
       }
 
-      "must go from CalculatedMGDStandardRatePage to NetTakingsHigherPage when answer is Yes" in {
+      "must go from CalculatedMGDStandardRatePage to NetTakingsHigherRatePage when answer is Yes" in {
         val answers =
           emptyUserAnswers
             .set(CalculatedMGDStandardRatePage, true)
@@ -113,7 +113,7 @@ class NavigatorSpec extends SpecBase {
           CalculatedMGDStandardRatePage,
           NormalMode,
           answers
-        ) mustBe routes.NetTakingsHigherController.onPageLoad(NormalMode)
+        ) mustBe routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
       }
 
       "must go from CalculatedMGDStandardRatePage to MgdStandardRatePage when answer is No" in {
@@ -223,7 +223,7 @@ class NavigatorSpec extends SpecBase {
           NetTakingsLowerRatePage,
           CheckMode,
           answers
-        ) mustBe routes.NetTakingsStandardController.onPageLoad(CheckMode)
+        ) mustBe routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
       }
 
       "must go from NetTakingsStandardPage to CalculatedMGDStandardRatePage" in {

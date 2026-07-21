@@ -35,7 +35,7 @@ class SelectReturnViewSpec extends SpecBase {
 
       val base = validResponseOpenReturns
 
-      val html = view(regNumber, base)(request, messages(app))
+      val html = view(regNumber, base, None)(request, messages(app))
       val doc = Jsoup.parse(html.body)
 
       doc.title() must include(messages(app)("selectReturn.title"))
@@ -76,7 +76,7 @@ class SelectReturnViewSpec extends SpecBase {
 
       val base = zeroResponseOpenReturns
 
-      val html = view(regNumber, base)(request, messages(app))
+      val html = view(regNumber, base, None)(request, messages(app))
       val doc = Jsoup.parse(html.body)
 
       doc.title() must include(messages(app)("selectReturn.empty.title"))
