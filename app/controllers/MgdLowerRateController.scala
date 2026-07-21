@@ -19,8 +19,8 @@ package controllers
 import controllers.actions.*
 import forms.MgdLowerRateFormProvider
 import models.{Mode, Regime, UserAnswers}
-import navigation.Navigator
-import pages.MgdLowerRatePage
+import navigation.{BackNavigator, Navigator}
+import pages.{MgdLowerRatePage, SelectReturnPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -35,6 +35,7 @@ class MgdLowerRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
+  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
@@ -51,11 +52,14 @@ class MgdLowerRateController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        val preparedForm = request.userAnswers.flatMap(_.get(MgdLowerRatePage)) match {
-          case None        => form
-          case Some(value) => form.fill(value)
+        request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+          case None =>
+            logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
+            Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+          case Some(selectedReturn) =>
+            val preparedForm = request.userAnswers.flatMap(_.get(MgdLowerRatePage)).fold(form)(form.fill)
+            Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(MgdLowerRatePage, mode, request), selectedReturn)))
         }
-        Future.successful(Ok(view(preparedForm, mode)))
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
@@ -65,18 +69,25 @@ class MgdLowerRateController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(MgdLowerRatePage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(MgdLowerRatePage, mode, updatedAnswers))
-            }
-          )
+        request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+          case None =>
+            logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
+            Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+          case Some(selectedReturn) =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(MgdLowerRatePage, mode, request), selectedReturn))),
+                value => {
+                  val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+                  for {
+                    updatedAnswers <- Future.fromTry(userAnswers.set(MgdLowerRatePage, value))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(MgdLowerRatePage, mode, updatedAnswers))
+                }
+              )
+        }
       case _ =>
         logger.info(s"[onSubmit] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))

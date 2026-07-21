@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.NetTakingsStandardRateFormProvider
 import models.{Mode, Regime, UserAnswers}
 import navigation.{BackNavigator, Navigator}
-import pages.NetTakingsStandardRatePage
+import pages.{NetTakingsStandardRatePage, SelectReturnPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -52,12 +52,15 @@ class NetTakingsStandardRateController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsStandardRatePage)) match {
-          case Some(value) => form.fill(value)
-          case None        => form
-        }
+        request.userAnswers
+          .flatMap(_.get(SelectReturnPage))
+          .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
+            val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsStandardRatePage)).fold(form)(form.fill)
 
-        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request))))
+            Future.successful(
+              Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request), selectedReturn))
+            )
+          }
 
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
@@ -68,20 +71,28 @@ class NetTakingsStandardRateController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future.successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request)))),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+        request.userAnswers
+          .flatMap(_.get(SelectReturnPage))
+          .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(
+                      view(formWithErrors, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request), selectedReturn)
+                    )
+                  ),
+                value => {
+                  val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsStandardRatePage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(NetTakingsStandardRatePage, mode, updatedAnswers))
-            }
-          )
+                  for {
+                    updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsStandardRatePage, value))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(NetTakingsStandardRatePage, mode, updatedAnswers))
+                }
+              )
+          }
 
       case _ =>
         logger.info(s"[onSubmit] regime ${request.regime} is not Authorised")

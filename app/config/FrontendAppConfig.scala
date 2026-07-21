@@ -17,12 +17,15 @@
 package config
 
 import com.google.inject.{Inject, Singleton}
-import play.api.Configuration
+import play.api.{ConfigLoader, Configuration}
 import play.api.i18n.Lang
 import play.api.mvc.RequestHeader
 
 @Singleton
 class FrontendAppConfig @Inject() (configuration: Configuration) {
+
+  implicit val bigDecimalConfigLoader: ConfigLoader[BigDecimal] =
+    ConfigLoader.numberLoader.map(number => BigDecimal(number.toString))
 
   val host: String = configuration.get[String]("host")
 
@@ -54,6 +57,6 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
 
   val cacheTtl: Long = configuration.get[Int]("mongodb.timeToLiveInSeconds")
 
-  val lowerRateDutyPercentage: Double = configuration.get[Double]("mgd.lower-rate-duty-percentage")
-
+  val lowerRateDutyPercentage: BigDecimal = configuration.get[BigDecimal]("mgd.lower-rate-duty-percentage")
+  val standardRateDutyPercentage: BigDecimal = configuration.get[BigDecimal]("mgd.standard-rate-duty-percentage")
 }

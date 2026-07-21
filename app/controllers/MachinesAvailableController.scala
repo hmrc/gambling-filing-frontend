@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.MachinesAvailableFormProvider
 import models.{Mode, Regime, UserAnswers}
-import navigation.Navigator
+import navigation.{BackNavigator, Navigator}
 import pages.{MachinesAvailablePage, SelectReturnPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -35,6 +35,7 @@ class MachinesAvailableController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
+  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
@@ -56,11 +57,8 @@ class MachinesAvailableController @Inject() (
             logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
             Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
           case Some(selectedReturn) =>
-            val preparedForm = request.userAnswers.flatMap(_.get(MachinesAvailablePage)) match {
-              case None        => form
-              case Some(value) => form.fill(value)
-            }
-            Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
+            val preparedForm = request.userAnswers.flatMap(_.get(MachinesAvailablePage)).fold(form)(form.fill)
+            Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(MachinesAvailablePage, mode, request), selectedReturn)))
         }
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
@@ -79,7 +77,9 @@ class MachinesAvailableController @Inject() (
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+                formWithErrors =>
+                  Future
+                    .successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(MachinesAvailablePage, mode, request), selectedReturn))),
                 value => {
                   val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
                   for {

@@ -19,6 +19,7 @@ package controllers
 import controllers.SelectReturnController.SortBy
 import controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidateAction}
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
+import navigation.BackNavigator
 import pages.OpenReturnPeriodsPage
 import play.api.Logging
 import play.api.i18n.I18nSupport
@@ -39,6 +40,7 @@ class SelectReturnController @Inject() (
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
+  backNavigator: BackNavigator,
   sessionRepository: SessionRepository,
   gamblingService: GamblingService,
   openReturnsView: SelectReturnView
@@ -61,7 +63,18 @@ class SelectReturnController @Inject() (
               Future
                 .fromTry(userAnswers.set(OpenReturnPeriodsPage, openReturnPeriods))
                 .flatMap(sessionRepository.set)
-                .map(_ => Ok(openReturnsView(regNum, openReturnPeriods)))
+                .map(_ =>
+                  Ok(
+                    openReturnsView(regNum,
+                                    openReturnPeriods,
+                                    backNavigator.backPage(
+                                      OpenReturnPeriodsPage,
+                                      NormalMode,
+                                      request
+                                    )
+                                   )
+                  )
+                )
             }
             .recover { case ex =>
               logger.error(s"$logTxt CALL to gamblingService.getOpenReturnPeriods FAILED", ex)

@@ -14,52 +14,48 @@
  * limitations under the License.
  *@
 
-@import viewmodels.LegendSize.Medium
-@import views.html.components._
+@import config.CurrencyFormatter
 @import models.SelectedReturn
 @import utils.DateTimeFormats
-
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
-    heading: H1,
-    paragraph: Paragraph,
-    bulletList: BulletList,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
-    govukButton: GovukButton,
-    caption: components.Caption
+    govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, backLink: Option[String], selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], netTakings: BigDecimal, duty: BigDecimal, percentage: BigDecimal, mode: Mode, selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("netTakingsHigherRate.title")), backLink = backLink) {
-    @formHelper(action = routes.NetTakingsHigherRateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+@layout(pageTitle = title(form, messages("calculatedMGDStandardRate.title", CurrencyFormatter.currencyFormat(duty)))) {
 
-        @if(form.hasErrors) {
+    @formHelper(action = routes.CalculatedMGDStandardRateController.onSubmit(mode)) {
+
+        @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        @caption(
-            messages("netTakingsHigherRate.caption",
+        <span class="govuk-caption-l">
+            @messages(
+                "calculatedMGDStandardRate.caption",
                 DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
                 DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
             )
-        )
+        </span>
 
+        <h1 class="govuk-heading-l">
+            @Html(messages("calculatedMGDStandardRate.heading", CurrencyFormatter.formatAmountHtml(duty)))
+        </h1>
 
-        @heading(
-            messages("netTakingsHigherRate.heading")
-        )
-
-        @paragraph(messages("netTakingsHigherRate.p1"))
-
+        <p class="govuk-body">
+            @Html(messages("calculatedMGDStandardRate.body", percentage, CurrencyFormatter.formatAmountHtml(netTakings)))
+        </p>
 
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("netTakingsHigherRate.question")).withCssClass("govuk-fieldset__legend--m")
+                legend = LegendViewModel(messages("calculatedMGDStandardRate.question")).withCssClass("govuk-fieldset__legend--m")
             )
         )
 

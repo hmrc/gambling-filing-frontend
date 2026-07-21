@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.MgdStandardRateFormProvider
 import models.{Mode, Regime, UserAnswers}
 import navigation.Navigator
-import pages.MgdStandardRatePage
+import pages.{MgdStandardRatePage, SelectReturnPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -51,11 +51,12 @@ class MgdStandardRateController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        val preparedForm = request.userAnswers.flatMap(_.get(MgdStandardRatePage)) match {
-          case None        => form
-          case Some(value) => form.fill(value)
-        }
-        Future.successful(Ok(view(preparedForm, mode)))
+        request.userAnswers
+          .flatMap(_.get(SelectReturnPage))
+          .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
+            val preparedForm = request.userAnswers.flatMap(_.get(MgdStandardRatePage)).fold(form)(form.fill)
+            Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
+          }
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
@@ -65,18 +66,22 @@ class MgdStandardRateController @Inject() (
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.regime match {
       case Regime.MGD =>
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode))),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(MgdStandardRatePage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(MgdStandardRatePage, mode, updatedAnswers))
-            }
-          )
+        request.userAnswers
+          .flatMap(_.get(SelectReturnPage))
+          .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+                value => {
+                  val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+                  for {
+                    updatedAnswers <- Future.fromTry(userAnswers.set(MgdStandardRatePage, value))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(navigator.nextPage(MgdStandardRatePage, mode, updatedAnswers))
+                }
+              )
+          }
       case _ =>
         logger.info(s"[onSubmit] regime ${request.regime} is not Authorised")
         Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))

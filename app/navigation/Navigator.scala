@@ -89,6 +89,18 @@ class Navigator @Inject() () {
             routes.IndexController.onPageLoad()
         }
 
+    case NetTakingsStandardPage =>
+      _ => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
+
+    case CalculatedMGDStandardRatePage =>
+      userAnswers =>
+        userAnswers
+          .get(CalculatedMGDStandardRatePage)
+          .map {
+            case true => routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
+            case _    => routes.MgdStandardRateController.onPageLoad(NormalMode)
+          }
+          .getOrElse(routes.IndexController.onPageLoad())
     case _ =>
       _ => routes.IndexController.onPageLoad()
 
@@ -106,7 +118,7 @@ class Navigator @Inject() () {
             routes.NetTakingsLowerController.onPageLoad(CheckMode)
 
           case Some(false) =>
-            routes.NetTakingsStandardController.onPageLoad(CheckMode)
+            routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
 
           case None =>
             routes.CheckYourAnswersController.onPageLoad()
@@ -114,6 +126,9 @@ class Navigator @Inject() () {
 
     case NetTakingsLowerPage =>
       _ => routes.CalculationLowerCheckController.onPageLoad(CheckMode)
+
+    case NetTakingsStandardPage =>
+      _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
 
     case MgdLowerRatePage =>
       _ => routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
