@@ -61,5 +61,4 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   val standardRateDutyPercentage: BigDecimal = configuration.get[BigDecimal]("mgd.standard-rate-duty-percentage")
   val higherRateDutyPercentage: BigDecimal = configuration.get[BigDecimal]("mgd.higher-rate-duty-percentage")
 
-
 }

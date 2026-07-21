@@ -65,6 +65,11 @@ POST       /total-net-takings-higher-rate                controllers.NetTakingsH
 GET        /change-total-net-takings-higher-rate         controllers.NetTakingsHigherController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-total-net-takings-higher-rate         controllers.NetTakingsHigherController.onSubmit(mode: Mode = CheckMode)
 
+GET        /calculated-mgd-higher-rate                 controllers.CalculatedMGDHigherRateController.onPageLoad(mode: Mode = NormalMode)
+POST       /calculated-mgd-higher-rate                 controllers.CalculatedMGDHigherRateController.onSubmit(mode: Mode = NormalMode)
+GET        /change-calculated-mgd-higher-rate          controllers.CalculatedMGDHigherRateController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-calculated-mgd-higher-rate          controllers.CalculatedMGDHigherRateController.onSubmit(mode: Mode = CheckMode)
+
 GET        /select-filed-return               controllers.SubmittedReturnsController.onPageLoad()
 GET        /view-filed-return/:consecNo       controllers.SubmittedReturnsController.viewFiledReturn(consecNo: Int)
 

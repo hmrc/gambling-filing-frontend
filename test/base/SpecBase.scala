@@ -96,6 +96,7 @@ trait SpecBase extends AnyFreeSpec with Matchers with TryValues with OptionValue
                                               |mgd {
                                               | lower-rate-duty-percentage = 0.05
                                               | standard-rate-duty-percentage = 0.2
+                                              | higher-rate-duty-percentage = 0.25
                                               |}
                                               |features {
                                               |  welsh-translation = false

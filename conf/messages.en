@@ -156,6 +156,13 @@ calculatedMGDStandardRate.caption = File a return for {0} to {1}
 calculatedMGDStandardRate.question = Is this correct?
 calculatedMGDStandardRate.error.required = Select yes if this calculation is correct
 
+calculatedMGDHigherRate.title = MGD for the higher rate of duty
+calculatedMGDHigherRate.heading = We have worked out your MGD at the higher rate to be
+calculatedMGDHigherRate.subheading = Is this correct?
+calculatedMGDHigherRate.caption = File a return for {0} to {1}
+calculatedMGDHigherRate.body = This is based on {0}% of your declared net takings of {1}
+calculatedMGDHigherRate.error.required = Select yes if this calculation is correct
+
 selectFiledReturn.title = Which period do you want to view?
 selectFiledReturn.caption = View filed return
 selectFiledReturn.heading = Which period do you want to view?
