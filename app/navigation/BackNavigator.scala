@@ -51,8 +51,8 @@ class BackNavigator @Inject() () {
       userAnswers =>
         userAnswers.get(NetTakingsStandardRatePage) match {
           case Some(true) =>
-            userAnswers.get(CalculationLowerCheckPage) match { // TODO CalculatedMGDStandardRatePage
-              case Some(true)  => routes.PageNotFoundController.onPageLoad() // TODO CalculatedMGDStandardRateController
+            userAnswers.get(CalculatedMGDStandardRatePage) match {
+              case Some(true)  => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
               case Some(false) => routes.MgdStandardRateController.onPageLoad(NormalMode)
               case None        => routes.IndexController.onPageLoad()
             }
@@ -72,6 +72,12 @@ class BackNavigator @Inject() () {
           case Some(false) => routes.NetTakingsLowerRateController.onPageLoad(NormalMode)
           case None        => routes.IndexController.onPageLoad()
         }
+
+    case CalculatedMGDStandardRatePage =>
+      _ => routes.NetTakingsStandardController.onPageLoad(NormalMode)
+
+    case MgdStandardRatePage =>
+      _ => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
 
     case CalculatedMGDHigherRatePage =>
       _ => routes.NetTakingsHigherController.onPageLoad(NormalMode)
@@ -103,12 +109,14 @@ class BackNavigator @Inject() () {
     case MgdLowerRatePage =>
       _ => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
 
+    case MgdStandardRatePage =>
+      _ => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
     case NetTakingsHigherRatePage =>
       userAnswers =>
         userAnswers.get(NetTakingsStandardRatePage) match {
           case Some(true) =>
-            userAnswers.get(NetTakingsLowerRatePage) match { // TODO CalculatedMGDStandardRatePage
-              case Some(true)  => routes.PageNotFoundController.onPageLoad() // TODO CalculatedMGDStandardRateController
+            userAnswers.get(CalculatedMGDStandardRatePage) match {
+              case Some(true)  => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
               case Some(false) => routes.MgdStandardRateController.onPageLoad(NormalMode)
               case None        => routes.CheckYourAnswersController.onPageLoad()
             }
@@ -134,6 +142,9 @@ class BackNavigator @Inject() () {
 
     case NetTakingsHigherPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case CalculatedMGDStandardRatePage =>
+      _ => routes.NetTakingsStandardController.onPageLoad(CheckMode)
 
     case _ =>
       _ => routes.CheckYourAnswersController.onPageLoad()

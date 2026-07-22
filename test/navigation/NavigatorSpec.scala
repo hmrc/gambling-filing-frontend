@@ -179,6 +179,17 @@ class NavigatorSpec extends SpecBase {
           answers
         ) mustBe routes.PageNotFoundController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
       }
+
+      "must go from MgdStandardRatePage to NetTakingsHigherRatePage when answer exists" in {
+        val answers = emptyUserAnswers.set(MgdStandardRatePage, BigDecimal(100)).success.value
+
+        val result = navigator.nextPage(MgdStandardRatePage, NormalMode, answers)
+        result mustBe routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
+      }
+
+      "must go from MgdStandardRatePage to Index when no answer exists" in {
+        navigator.nextPage(MgdStandardRatePage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad()
+      }
     }
 
     "in Check mode" - {
@@ -296,6 +307,18 @@ class NavigatorSpec extends SpecBase {
           CheckMode,
           answers
         ) mustBe routes.PageNotFoundController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
+      }
+
+      "must go from MgdStandardRatePage to NetTakingsHigherRatePage when answer exists" in {
+        val answers = emptyUserAnswers.set(MgdStandardRatePage, BigDecimal(100)).success.value
+
+        val result = navigator.nextPage(MgdStandardRatePage, CheckMode, answers)
+        result mustBe routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
+      }
+
+      "must go from MgdStandardRatePage to Index when no answer exists" in {
+        val result = navigator.nextPage(MgdStandardRatePage, CheckMode, emptyUserAnswers)
+        result mustBe routes.CheckYourAnswersController.onPageLoad()
       }
     }
   }

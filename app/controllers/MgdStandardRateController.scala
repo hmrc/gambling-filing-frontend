@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.MgdStandardRateFormProvider
 import models.{Mode, Regime, UserAnswers}
-import navigation.Navigator
+import navigation.{BackNavigator, Navigator}
 import pages.{MgdStandardRatePage, SelectReturnPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -35,6 +35,7 @@ class MgdStandardRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
+  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: MgdStandardRateFormProvider,
@@ -54,7 +55,7 @@ class MgdStandardRateController @Inject() (
           .flatMap(_.get(SelectReturnPage))
           .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
             val preparedForm = request.userAnswers.flatMap(_.get(MgdStandardRatePage)).fold(form)(form.fill)
-            Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
+            Future.successful(Ok(view(preparedForm, mode, selectedReturn, backNavigator.backPage(MgdStandardRatePage, mode, request))))
           }
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
@@ -71,7 +72,9 @@ class MgdStandardRateController @Inject() (
             form
               .bindFromRequest()
               .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+                formWithErrors =>
+                  Future
+                    .successful(BadRequest(view(formWithErrors, mode, selectedReturn, backNavigator.backPage(MgdStandardRatePage, mode, request)))),
                 value => {
                   val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
                   for {
