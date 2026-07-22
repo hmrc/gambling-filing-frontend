@@ -76,6 +76,9 @@ class BackNavigator @Inject() () {
     case CalculatedMGDHigherRatePage =>
       _ => routes.NetTakingsHigherController.onPageLoad(NormalMode)
 
+    case NetTakingsHigherPage =>
+      _ => routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }
@@ -127,6 +130,9 @@ class BackNavigator @Inject() () {
         }
 
     case CalculatedMGDHigherRatePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case NetTakingsHigherPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case _ =>

@@ -48,6 +48,7 @@ class NetTakingsHigherControllerSpec extends SpecBase with MockitoSugar {
   def userAnswersWithSelectedReturn: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
 
   lazy val netTakingsHigherRoute = routes.NetTakingsHigherController.onPageLoad(NormalMode).url
+  private val backUrl: Option[String] = Some(routes.NetTakingsHigherRateController.onPageLoad(NormalMode).url)
 
   "NetTakingsHigher Controller" - {
 
@@ -63,7 +64,7 @@ class NetTakingsHigherControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[NetTakingsHigherView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -81,7 +82,7 @@ class NetTakingsHigherControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -127,7 +128,7 @@ class NetTakingsHigherControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
       }
     }
 

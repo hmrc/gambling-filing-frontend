@@ -89,6 +89,9 @@ class Navigator @Inject() () {
             routes.IndexController.onPageLoad()
         }
 
+    case NetTakingsHigherPage =>
+      _ => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
+
     case NetTakingsStandardPage =>
       _ => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
 
@@ -101,6 +104,7 @@ class Navigator @Inject() () {
             case _    => routes.MgdStandardRateController.onPageLoad(NormalMode)
           }
           .getOrElse(routes.IndexController.onPageLoad())
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
 
