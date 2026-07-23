@@ -104,7 +104,6 @@ class Navigator @Inject() () {
         .map(_ => routes.NetTakingsHigherRateController.onPageLoad(NormalMode))
         .getOrElse(routes.IndexController.onPageLoad())
 
-
     case UnderDeclaredDutyPage =>
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyPage) match {
@@ -170,9 +169,6 @@ class Navigator @Inject() () {
 
     case NetTakingsStandardPage =>
       _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
-
-    case MgdLowerRatePage =>
-      _ => routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
 
     case CalculatedMGDStandardRatePage =>
       userAnswers =>
