@@ -55,7 +55,7 @@ class MgdStandardRateController @Inject() (
           .flatMap(_.get(SelectReturnPage))
           .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
             val preparedForm = request.userAnswers.flatMap(_.get(MgdStandardRatePage)).fold(form)(form.fill)
-            Future.successful(Ok(view(preparedForm, mode, selectedReturn, backNavigator.backPage(MgdStandardRatePage, mode, request))))
+            Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(MgdStandardRatePage, mode, request), selectedReturn)))
           }
       case _ =>
         logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
@@ -74,7 +74,7 @@ class MgdStandardRateController @Inject() (
               .fold(
                 formWithErrors =>
                   Future
-                    .successful(BadRequest(view(formWithErrors, mode, selectedReturn, backNavigator.backPage(MgdStandardRatePage, mode, request)))),
+                    .successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(MgdStandardRatePage, mode, request), selectedReturn))),
                 value => {
                   val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
                   for {

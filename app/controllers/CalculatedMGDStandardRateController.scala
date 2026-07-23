@@ -70,8 +70,8 @@ class CalculatedMGDStandardRateController @Inject() (
                          duty,
                          ratePercentage,
                          mode,
-                         selectedReturn,
-                         backNavigator.backPage(CalculatedMGDStandardRatePage, mode, request)
+                         backNavigator.backPage(CalculatedMGDStandardRatePage, mode, request),
+                         selectedReturn
                         )
                   )
                 )
@@ -105,8 +105,8 @@ class CalculatedMGDStandardRateController @Inject() (
                                duty,
                                ratePercentage,
                                mode,
-                               selectedReturn,
-                               backNavigator.backPage(CalculatedMGDStandardRatePage, mode, request)
+                               backNavigator.backPage(CalculatedMGDStandardRatePage, mode, request),
+                               selectedReturn
                               )
                         )
                       ),
