@@ -76,19 +76,6 @@ class Navigator @Inject() () {
             routes.IndexController.onPageLoad()
         }
 
-    case NetTakingsHigherRatePage =>
-      userAnswers =>
-        userAnswers.get(NetTakingsHigherRatePage) match {
-          case Some(true) =>
-            routes.NetTakingsHigherController.onPageLoad(NormalMode)
-
-          case Some(false) =>
-            routes.PageNotFoundController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
-
-          case None =>
-            routes.IndexController.onPageLoad()
-        }
-
     case NetTakingsStandardPage =>
       _ => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
 
@@ -101,9 +88,28 @@ class Navigator @Inject() () {
             case _    => routes.MgdStandardRateController.onPageLoad(NormalMode)
           }
           .getOrElse(routes.IndexController.onPageLoad())
+
+    case MgdStandardRatePage =>
+      _ => routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
+
+    case NetTakingsHigherRatePage =>
+      userAnswers =>
+        userAnswers.get(NetTakingsHigherRatePage) match {
+          case Some(true) =>
+            routes.NetTakingsHigherController.onPageLoad(NormalMode)
+
+          case Some(false) =>
+            routes.IndexController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
+
+          case None =>
+            routes.IndexController.onPageLoad()
+        }
+
+    case NetTakingsHigherPage =>
+      _ => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
-
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
@@ -127,8 +133,21 @@ class Navigator @Inject() () {
     case NetTakingsLowerPage =>
       _ => routes.CalculationLowerCheckController.onPageLoad(CheckMode)
 
-    case NetTakingsStandardPage =>
-      _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
+//    case NetTakingsStandardPage =>
+//      _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
+
+    case CalculationLowerCheckPage =>
+      userAnswers =>
+        userAnswers.get(CalculationLowerCheckPage) match {
+          case Some(true) =>
+            routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
+
+          case Some(false) =>
+            routes.MgdLowerRateController.onPageLoad(CheckMode)
+
+          case None =>
+            routes.IndexController.onPageLoad()
+        }
 
     case MgdLowerRatePage =>
       _ => routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
@@ -146,6 +165,22 @@ class Navigator @Inject() () {
             routes.CheckYourAnswersController.onPageLoad()
         }
 
+    case NetTakingsStandardPage =>
+      _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
+
+    case CalculatedMGDStandardRatePage =>
+      userAnswers =>
+        userAnswers
+          .get(CalculatedMGDStandardRatePage)
+          .map {
+            case true => routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
+            case _    => routes.MgdStandardRateController.onPageLoad(CheckMode)
+          }
+          .getOrElse(routes.IndexController.onPageLoad())
+
+    case MgdStandardRatePage =>
+      _ => routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
+
     case NetTakingsHigherRatePage =>
       userAnswers =>
         userAnswers.get(NetTakingsHigherRatePage) match {
@@ -153,11 +188,14 @@ class Navigator @Inject() () {
             routes.NetTakingsHigherController.onPageLoad(CheckMode)
 
           case Some(false) =>
-            routes.PageNotFoundController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
+            routes.IndexController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
 
           case None =>
             routes.CheckYourAnswersController.onPageLoad()
         }
+
+    case NetTakingsHigherPage =>
+      _ => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
 
     case _ =>
       _ => routes.CheckYourAnswersController.onPageLoad()

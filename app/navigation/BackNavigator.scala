@@ -47,12 +47,24 @@ class BackNavigator @Inject() () {
     case MgdLowerRatePage =>
       _ => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
 
+    case NetTakingsStandardPage =>
+      _ => routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
+
+    case CalculatedMGDStandardRatePage =>
+      _ => routes.NetTakingsStandardController.onPageLoad(NormalMode)
+
+    case NetTakingsHigherPage =>
+      _ => routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
+
+    case MgdStandardRatePage =>
+      _ => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
+
     case NetTakingsHigherRatePage =>
       userAnswers =>
         userAnswers.get(NetTakingsStandardRatePage) match {
           case Some(true) =>
-            userAnswers.get(CalculationLowerCheckPage) match { // TODO CalculatedMGDStandardRatePage
-              case Some(true)  => routes.PageNotFoundController.onPageLoad() // TODO CalculatedMGDStandardRateController
+            userAnswers.get(CalculatedMGDStandardRatePage) match {
+              case Some(true)  => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
               case Some(false) => routes.MgdStandardRateController.onPageLoad(NormalMode)
               case None        => routes.IndexController.onPageLoad()
             }
@@ -100,12 +112,15 @@ class BackNavigator @Inject() () {
     case MgdLowerRatePage =>
       _ => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
 
+    case CalculatedMGDStandardRatePage =>
+      _ => routes.NetTakingsStandardController.onPageLoad(NormalMode)
+
     case NetTakingsHigherRatePage =>
       userAnswers =>
         userAnswers.get(NetTakingsStandardRatePage) match {
           case Some(true) =>
-            userAnswers.get(NetTakingsLowerRatePage) match { // TODO CalculatedMGDStandardRatePage
-              case Some(true)  => routes.PageNotFoundController.onPageLoad() // TODO CalculatedMGDStandardRateController
+            userAnswers.get(CalculatedMGDStandardRatePage) match { // TODO CalculatedMGDStandardRatePage
+              case Some(true)  => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode) // TODO CalculatedMGDStandardRateController
               case Some(false) => routes.MgdStandardRateController.onPageLoad(NormalMode)
               case None        => routes.CheckYourAnswersController.onPageLoad()
             }
