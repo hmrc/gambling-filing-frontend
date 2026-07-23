@@ -133,9 +133,6 @@ class Navigator @Inject() () {
     case NetTakingsLowerPage =>
       _ => routes.CalculationLowerCheckController.onPageLoad(CheckMode)
 
-//    case NetTakingsStandardPage =>
-//      _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
-
     case CalculationLowerCheckPage =>
       userAnswers =>
         userAnswers.get(CalculationLowerCheckPage) match {

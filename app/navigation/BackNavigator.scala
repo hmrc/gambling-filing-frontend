@@ -144,6 +144,9 @@ class BackNavigator @Inject() () {
     case CalculatedMGDHigherRatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
+    case NetTakingsHigherPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
     case _ =>
       _ => routes.CheckYourAnswersController.onPageLoad()
   }

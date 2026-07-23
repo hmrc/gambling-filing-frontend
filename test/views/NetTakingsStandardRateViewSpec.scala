@@ -22,7 +22,6 @@ import models.{NormalMode, SelectedReturn}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import play.twirl.api.HtmlFormat
 import views.html.NetTakingsStandardRateView
 
 import java.time.LocalDate
