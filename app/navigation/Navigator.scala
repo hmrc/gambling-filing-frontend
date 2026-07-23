@@ -128,6 +128,13 @@ class Navigator @Inject() () {
     case MgdHigherRatePage =>
       _ => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
 
+    case UnderDeclaredDutyReasonableCarePage =>
+      _.get(UnderDeclaredDutyReasonableCarePage) match {
+        case Some(true)  => routes.SelectReturnController.onPageLoad() // TODO: next page FAR-UND-CON
+        case Some(false) => routes.SelectReturnController.onPageLoad() // TODO: next page FAR-UND-LIM
+        case None        => routes.SelectReturnController.onPageLoad()
+      }
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }
@@ -237,6 +244,9 @@ class Navigator @Inject() () {
         }
 
     case MgdHigherRatePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case UnderDeclaredDutyReasonableCarePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case _ =>
