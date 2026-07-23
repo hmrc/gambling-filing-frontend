@@ -51,8 +51,8 @@ class BackNavigator @Inject() () {
       userAnswers =>
         userAnswers.get(NetTakingsStandardRatePage) match {
           case Some(true) =>
-            userAnswers.get(CalculationLowerCheckPage) match { // TODO CalculatedMGDStandardRatePage
-              case Some(true)  => routes.PageNotFoundController.onPageLoad() // TODO CalculatedMGDStandardRateController
+            userAnswers.get(CalculatedMGDStandardRatePage) match {
+              case Some(true)  => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
               case Some(false) => routes.MgdStandardRateController.onPageLoad(NormalMode)
               case None        => routes.IndexController.onPageLoad()
             }
@@ -75,6 +75,21 @@ class BackNavigator @Inject() () {
 
     case CalculatedMGDHigherRatePage =>
       _ => routes.NetTakingsHigherController.onPageLoad(NormalMode)
+
+    case UnderDeclaredDutyPage =>
+      userAnswers =>
+        userAnswers.get(NetTakingsHigherRatePage) match {
+          case Some(true) =>
+            userAnswers.get(CalculatedMGDHigherRatePage) match {
+              case Some(true) => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
+              case Some(false) =>
+                routes.PageNotFoundController
+                  .onPageLoad() // TODO: /manage-gambling-tax/returns/mgd-higher-rate  (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
+              case None => routes.IndexController.onPageLoad()
+            }
+          case Some(false) => routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
+          case None        => routes.IndexController.onPageLoad()
+        }
 
     case _ =>
       _ => routes.IndexController.onPageLoad()
@@ -104,12 +119,12 @@ class BackNavigator @Inject() () {
       userAnswers =>
         userAnswers.get(NetTakingsStandardRatePage) match {
           case Some(true) =>
-            userAnswers.get(NetTakingsLowerRatePage) match { // TODO CalculatedMGDStandardRatePage
-              case Some(true)  => routes.PageNotFoundController.onPageLoad() // TODO CalculatedMGDStandardRateController
-              case Some(false) => routes.MgdStandardRateController.onPageLoad(NormalMode)
+            userAnswers.get(CalculatedMGDStandardRatePage) match {
+              case Some(true)  => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
+              case Some(false) => routes.MgdStandardRateController.onPageLoad(CheckMode)
               case None        => routes.CheckYourAnswersController.onPageLoad()
             }
-          case Some(false) => routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
+          case Some(false) => routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
           case None        => routes.CheckYourAnswersController.onPageLoad()
         }
 
@@ -118,16 +133,31 @@ class BackNavigator @Inject() () {
         userAnswers.get(NetTakingsLowerRatePage) match {
           case Some(true) =>
             userAnswers.get(CalculationLowerCheckPage) match {
-              case Some(true)  => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
-              case Some(false) => routes.MgdLowerRateController.onPageLoad(NormalMode)
-              case None        => routes.IndexController.onPageLoad()
+              case Some(true)  => routes.CalculationLowerCheckController.onPageLoad(CheckMode)
+              case Some(false) => routes.MgdLowerRateController.onPageLoad(CheckMode)
+              case None        => routes.CheckYourAnswersController.onPageLoad()
             }
-          case Some(false) => routes.NetTakingsLowerRateController.onPageLoad(NormalMode)
-          case None        => routes.IndexController.onPageLoad()
+          case Some(false) => routes.NetTakingsLowerRateController.onPageLoad(CheckMode)
+          case None        => routes.CheckYourAnswersController.onPageLoad()
         }
 
     case CalculatedMGDHigherRatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case UnderDeclaredDutyPage =>
+      userAnswers =>
+        userAnswers.get(NetTakingsHigherRatePage) match {
+          case Some(true) =>
+            userAnswers.get(CalculatedMGDHigherRatePage) match {
+              case Some(true) => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
+              case Some(false) =>
+                routes.PageNotFoundController
+                  .onPageLoad() // TODO: /manage-gambling-tax/returns/mgd-higher-rate  (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
+              case None => routes.CheckYourAnswersController.onPageLoad()
+            }
+          case Some(false) => routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
+          case None        => routes.CheckYourAnswersController.onPageLoad()
+        }
 
     case _ =>
       _ => routes.CheckYourAnswersController.onPageLoad()
