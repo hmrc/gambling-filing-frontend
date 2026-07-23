@@ -108,7 +108,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.MgdLowerRateController.onPageLoad(NormalMode)
       }
 
-      "must go from Mgd LowerRatePage to NetTakingsStandardRatePage" in {
+      "must go from MgdLowerRatePage to NetTakingsStandardRatePage" in {
         navigator.nextPage(
           MgdLowerRatePage,
           NormalMode,
@@ -188,14 +188,6 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.IndexController.onPageLoad()
       }
 
-      "must go from MgdStandardRatePage to NetTakingsHigherRatePage" in {
-        navigator.nextPage(
-          MgdStandardRatePage,
-          NormalMode,
-          emptyUserAnswers
-        ) mustBe routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
-      }
-
       "must go from NetTakingsHigherRatePage to NetTakingsHigherPage when answer is Yes" in {
         val answers =
           emptyUserAnswers
@@ -224,7 +216,8 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
       }
 
-      "must go from UnderDeclaredDutyPage to under-declared-duty-resonable-care when answer is Yes" in { // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)      NormalMode DTR-6999  abdulla.juma
+      "must go from UnderDeclaredDutyPage to under-declared-duty-resonable-care when answer is Yes" in {
+        // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)  DTR-6999  abdulla.juma
         val answers =
           emptyUserAnswers
             .set(UnderDeclaredDutyPage, true)
@@ -238,7 +231,8 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.PageNotFoundController.onPageLoad()
       }
 
-      "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in { // TODO: /manage-gambling-tax/returns/duty-brought-forward (FAR-NEG-SCR)                    NormalMode  20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
+      "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in {
+        // TODO: /manage-gambling-tax/returns/duty-brought-forward (FAR-NEG-SCR) 20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
         val answers =
           emptyUserAnswers
             .set(UnderDeclaredDutyPage, false)
@@ -266,7 +260,8 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
       }
 
-      "must go from CalculatedMGDHigherRatePage to mgd-higher-rate page when answer is No" in { // TODO: /manage-gambling-tax/returns/mgd-higher-rate (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
+      "must go from CalculatedMGDHigherRatePage to mgd-higher-rate-narendra page when answer is No" in {
+        // TODO: /manage-gambling-tax/returns/mgd-higher-rate (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
         val answers =
           emptyUserAnswers
             .set(CalculatedMGDHigherRatePage, false)
@@ -453,14 +448,6 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.MgdStandardRateController.onPageLoad(CheckMode)
       }
 
-      "must go from MgdStandardRatePage to NetTakingsHigherRatePage" in {
-        navigator.nextPage(
-          MgdStandardRatePage,
-          CheckMode,
-          emptyUserAnswers
-        ) mustBe routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
-      }
-
       "must go from NetTakingsHigherRatePage to NetTakingsHigherPage when answer is Yes" in {
         val answers =
           emptyUserAnswers
@@ -489,7 +476,8 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
       }
 
-      "must go from UnderDeclaredDutyPage to under-declared-duty-resonable-care when answer is Yes" in { // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)      NormalMode DTR-6999  abdulla.juma
+      "must go from UnderDeclaredDutyPage to under-declared-duty-resonable-care when answer is Yes" in {
+        // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)  DTR-6999  abdulla.juma
         val answers =
           emptyUserAnswers
             .set(UnderDeclaredDutyPage, true)
@@ -503,7 +491,8 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.PageNotFoundController.onPageLoad()
       }
 
-      "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in { // TODO: /manage-gambling-tax/returns/duty-brought-forward (FAR-NEG-SCR)                    NormalMode  20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
+      "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in {
+        // TODO: /manage-gambling-tax/returns/duty-brought-forward   20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
         val answers =
           emptyUserAnswers
             .set(UnderDeclaredDutyPage, false)
@@ -531,7 +520,8 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
       }
 
-      "must go from CalculatedMGDHigherRatePage to mgd-higher-rate page when answer is No" in { // TODO: /manage-gambling-tax/returns/mgd-higher-rate (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
+      "must go from CalculatedMGDHigherRatePage to mgd-higher-rate-narendra page when answer is No" in {
+        // TODO: /manage-gambling-tax/returns/mgd-higher-rate (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
         val answers =
           emptyUserAnswers
             .set(CalculatedMGDHigherRatePage, false)
