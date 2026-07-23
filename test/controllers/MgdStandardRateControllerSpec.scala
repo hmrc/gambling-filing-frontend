@@ -45,11 +45,15 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
+  val backUrl = Some(
+    routes.CalculatedMGDStandardRateController
+      .onPageLoad(NormalMode)
+      .url
+  )
+
   def userAnswersWithSelectedReturn: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
 
   lazy val mgdStandardRateRoute = routes.MgdStandardRateController.onPageLoad(NormalMode).url
-
-  val backUrl = Some(routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode).url)
 
   "MgdStandardRate Controller" - {
 
@@ -65,7 +69,7 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[MgdStandardRateView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, selectedReturn, backUrl)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -83,7 +87,7 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, selectedReturn, backUrl)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -129,7 +133,7 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn, backUrl)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
       }
     }
 
