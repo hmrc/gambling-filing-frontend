@@ -90,3 +90,8 @@ GET        /net-takings-higher-rate                 controllers.NetTakingsHigher
 POST       /net-takings-higher-rate                 controllers.NetTakingsHigherRateController.onSubmit(mode: Mode = NormalMode)
 GET        /change-net-takings-higher-rate          controllers.NetTakingsHigherRateController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-net-takings-higher-rate          controllers.NetTakingsHigherRateController.onSubmit(mode: Mode = CheckMode)
+
+GET        /mgd-higher-rate                 controllers.MgdHigherRateController.onPageLoad(mode: Mode = NormalMode)
+POST       /mgd-higher-rate                 controllers.MgdHigherRateController.onSubmit(mode: Mode = NormalMode)
+GET        /change-mgd-higher-rate          controllers.MgdHigherRateController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-mgd-higher-rate          controllers.MgdHigherRateController.onSubmit(mode: Mode = CheckMode)
