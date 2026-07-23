@@ -14,42 +14,43 @@
  * limitations under the License.
  *@
 
-@import viewmodels.InputWidth._
-@import viewmodels.LabelSize
+@import views.html.components._
 @import models.SelectedReturn
 @import utils.DateTimeFormats
+
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
+    bulletList: BulletList,
     govukErrorSummary: GovukErrorSummary,
-    govukInput: GovukInput,
-    govukButton: GovukButton
+    govukRadios: GovukRadios,
+    govukButton: GovukButton,
+    caption: components.Caption
 )
 
 @(form: Form[_], mode: Mode, backLink: Option[String], selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("mgdStandardRate.title")), backLink = backLink) {
+@layout(pageTitle = title(form, messages("underDeclaredDuty.title")), backLink = backLink) {
+    @formHelper(action = routes.UnderDeclaredDutyController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
-    @formHelper(action = routes.MgdStandardRateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
-
-        @if(form.errors.nonEmpty) {
+        @if(form.hasErrors) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
-        <span class="govuk-caption-l">@messages(
-            "mgdStandardRate.caption",
-            DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
-            DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
-        )</span>
-
-        @govukInput(
-            InputViewModel(
-                field = form("value"),
-                label = LabelViewModel(messages("mgdStandardRate.heading")).asPageHeading(LabelSize.Large)
+        @caption(
+            messages("underDeclaredDuty.caption",
+                DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
+                DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
             )
-            .withPrefix(PrefixOrSuffix(content = Text("£")))
-            .withWidth(Fixed20)
+        )
+
+
+        @govukRadios(
+            RadiosViewModel.yesNo(
+                field = form("value"),
+                legend = LegendViewModel(messages("underDeclaredDuty.heading")).withCssClass("govuk-fieldset__legend--l")
+            )
         )
 
         @govukButton(

@@ -36,8 +36,7 @@ class NetTakingsStandardViewSpec extends SpecBase {
 
     "must render the page with correct heading, caption and input" in new Setup {
 
-      val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
-      val html: HtmlFormat.Appendable = view(form, NormalMode, selectedReturn)
+      val html: HtmlFormat.Appendable = view(form, NormalMode, None, selectedReturn)
       val doc: Document = Jsoup.parse(html.body)
 
       doc.title must include(messages("netTakingsStandard.title"))
@@ -51,7 +50,7 @@ class NetTakingsStandardViewSpec extends SpecBase {
     "must render error summary when form has errors" in new Setup {
 
       val boundForm: Form[BigDecimal] = form.bind(Map("value" -> ""))
-      val html: HtmlFormat.Appendable = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html: HtmlFormat.Appendable = view(boundForm, NormalMode, None, selectedReturn)
       val doc: Document = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
@@ -61,7 +60,7 @@ class NetTakingsStandardViewSpec extends SpecBase {
     "must populate the input when form has a value" in new Setup {
 
       val boundForm: Form[BigDecimal] = form.fill(BigDecimal("123.45"))
-      val html: HtmlFormat.Appendable = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html: HtmlFormat.Appendable = view(boundForm, NormalMode, None, selectedReturn)
       val doc: Document = Jsoup.parse(html.body)
 
       doc.select("#value").`val` mustBe "123.45"
@@ -72,6 +71,7 @@ class NetTakingsStandardViewSpec extends SpecBase {
     val app: Application = applicationBuilder().build()
     val view: NetTakingsStandardView = app.injector.instanceOf[NetTakingsStandardView]
     val form = new NetTakingsStandardFormProvider()()
+    val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 

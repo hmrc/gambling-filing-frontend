@@ -230,6 +230,11 @@ netTakingsHigherRate.p1 = Any machines that do not qualify for the lower or stan
 netTakingsHigherRate.question = Do you have any net takings liable to the higher rate of duty?
 netTakingsHigherRate.error.required = Select yes if you have net takings liable to the higher rate of duty
 
+underDeclaredDuty.title = Do you have any under-declared duty from previous returns?
+underDeclaredDuty.heading = Do you have any under-declared duty from previous returns?
+underDeclaredDuty.caption = File a return for {0} to {1}
+underDeclaredDuty.error.required = Select yes if you have under-declared duty from a previous return
+
 mgdHigherRate.title = How much MGD at the higher rate do you owe?
 mgdHigherRate.heading = How much MGD at the higher rate do you owe?
 mgdHigherRate.caption = File a return for {0} to {1}

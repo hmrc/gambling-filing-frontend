@@ -91,6 +91,11 @@ POST       /net-takings-higher-rate                 controllers.NetTakingsHigher
 GET        /change-net-takings-higher-rate          controllers.NetTakingsHigherRateController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-net-takings-higher-rate          controllers.NetTakingsHigherRateController.onSubmit(mode: Mode = CheckMode)
 
+GET        /under-declared-duty                 controllers.UnderDeclaredDutyController.onPageLoad(mode: Mode = NormalMode)
+POST       /under-declared-duty                 controllers.UnderDeclaredDutyController.onSubmit(mode: Mode = NormalMode)
+GET        /change-under-declared-duty          controllers.UnderDeclaredDutyController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-under-declared-duty          controllers.UnderDeclaredDutyController.onSubmit(mode: Mode = CheckMode)
+
 GET        /mgd-higher-rate                 controllers.MgdHigherRateController.onPageLoad(mode: Mode = NormalMode)
 POST       /mgd-higher-rate                 controllers.MgdHigherRateController.onSubmit(mode: Mode = NormalMode)
 GET        /change-mgd-higher-rate          controllers.MgdHigherRateController.onPageLoad(mode: Mode = CheckMode)
