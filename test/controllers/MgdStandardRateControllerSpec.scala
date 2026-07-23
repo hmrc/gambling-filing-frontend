@@ -49,6 +49,8 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
 
   lazy val mgdStandardRateRoute = routes.MgdStandardRateController.onPageLoad(NormalMode).url
 
+  val backUrl = Some(routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode).url)
+
   "MgdStandardRate Controller" - {
 
     "must return OK and the correct view for a GET" in {
@@ -63,7 +65,7 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[MgdStandardRateView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, selectedReturn, backUrl)(request, messages(application)).toString
       }
     }
 
@@ -81,7 +83,7 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, selectedReturn, backUrl)(request, messages(application)).toString
       }
     }
 
@@ -127,7 +129,7 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn, backUrl)(request, messages(application)).toString
       }
     }
 

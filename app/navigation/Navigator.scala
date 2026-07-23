@@ -84,6 +84,9 @@ class Navigator @Inject() () {
           case None        => routes.IndexController.onPageLoad()
         }
 
+    case NetTakingsHigherPage =>
+      _ => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
+
     case NetTakingsStandardPage =>
       _ => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
 
@@ -96,6 +99,11 @@ class Navigator @Inject() () {
             case _    => routes.MgdStandardRateController.onPageLoad(NormalMode)
           }
           .getOrElse(routes.IndexController.onPageLoad())
+    case MgdStandardRatePage =>
+      _.get(MgdStandardRatePage)
+        .map(_ => routes.NetTakingsHigherRateController.onPageLoad(NormalMode))
+        .getOrElse(routes.IndexController.onPageLoad())
+
 
     case UnderDeclaredDutyPage =>
       userAnswers =>
@@ -163,6 +171,9 @@ class Navigator @Inject() () {
     case NetTakingsStandardPage =>
       _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
 
+    case MgdLowerRatePage =>
+      _ => routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
+
     case CalculatedMGDStandardRatePage =>
       userAnswers =>
         userAnswers
@@ -198,6 +209,10 @@ class Navigator @Inject() () {
           case None =>
             routes.CheckYourAnswersController.onPageLoad()
         }
+    case MgdStandardRatePage =>
+      _.get(MgdStandardRatePage)
+        .map(_ => routes.NetTakingsHigherRateController.onPageLoad(CheckMode))
+        .getOrElse(routes.CheckYourAnswersController.onPageLoad())
 
     case UnderDeclaredDutyPage =>
       userAnswers =>
