@@ -54,7 +54,6 @@ class NetTakingsHigherControllerSpec extends SpecBase with MockitoSugar {
   def userAnswersWithSelectedReturn: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
 
   lazy val netTakingsHigherRoute = routes.NetTakingsHigherController.onPageLoad(NormalMode).url
-  private val backUrl: Option[String] = Some(routes.NetTakingsHigherRateController.onPageLoad(NormalMode).url)
 
   "NetTakingsHigher Controller" - {
 
