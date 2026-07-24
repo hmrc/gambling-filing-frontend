@@ -260,8 +260,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
       }
 
-      "must go from CalculatedMGDHigherRatePage to mgd-higher-rate-narendra page when answer is No" in {
-        // TODO: /manage-gambling-tax/returns/mgd-higher-rate (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
+      "must go from CalculatedMGDHigherRatePage to MgdHigherRatePage when answer is No" in {
         val answers =
           emptyUserAnswers
             .set(CalculatedMGDHigherRatePage, false)
@@ -272,7 +271,7 @@ class NavigatorSpec extends SpecBase {
           CalculatedMGDHigherRatePage,
           NormalMode,
           answers
-        ) mustBe routes.PageNotFoundController.onPageLoad()
+        ) mustBe routes.MgdHigherRateController.onPageLoad(NormalMode)
       }
 
       "must go from NetTakingsHigherPage to CalculatedMGDHigherRatePage" in {
@@ -292,6 +291,14 @@ class NavigatorSpec extends SpecBase {
 
       "must go from MgdStandardRatePage to Index when no answer exists" in {
         navigator.nextPage(MgdStandardRatePage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad()
+      }
+
+      "must go from MgdHigherRatePage to UnderDeclaredDutyPage" in {
+        navigator.nextPage(
+          MgdHigherRatePage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
       }
     }
 
@@ -520,8 +527,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
       }
 
-      "must go from CalculatedMGDHigherRatePage to mgd-higher-rate-narendra page when answer is No" in {
-        // TODO: /manage-gambling-tax/returns/mgd-higher-rate (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
+      "must go from CalculatedMGDHigherRatePage to MgdHigherRatePage when answer is No" in {
         val answers =
           emptyUserAnswers
             .set(CalculatedMGDHigherRatePage, false)
@@ -532,7 +538,7 @@ class NavigatorSpec extends SpecBase {
           CalculatedMGDHigherRatePage,
           CheckMode,
           answers
-        ) mustBe routes.PageNotFoundController.onPageLoad()
+        ) mustBe routes.MgdHigherRateController.onPageLoad(CheckMode)
       }
 
       "must go from NetTakingsHigherPage to CalculatedMGDHigherRatePage" in {
@@ -553,6 +559,14 @@ class NavigatorSpec extends SpecBase {
       "must go from MgdStandardRatePage to Index when no answer exists" in {
         val result = navigator.nextPage(MgdStandardRatePage, CheckMode, emptyUserAnswers)
         result mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from MgdHigherRatePage to UnderDeclaredDutyPage" in {
+        navigator.nextPage(
+          MgdHigherRatePage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
       }
     }
   }
