@@ -95,3 +95,8 @@ GET        /under-declared-duty                 controllers.UnderDeclaredDutyCon
 POST       /under-declared-duty                 controllers.UnderDeclaredDutyController.onSubmit(mode: Mode = NormalMode)
 GET        /change-under-declared-duty          controllers.UnderDeclaredDutyController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-under-declared-duty          controllers.UnderDeclaredDutyController.onSubmit(mode: Mode = CheckMode)
+
+GET        /mgd-higher-rate                 controllers.MgdHigherRateController.onPageLoad(mode: Mode = NormalMode)
+POST       /mgd-higher-rate                 controllers.MgdHigherRateController.onSubmit(mode: Mode = NormalMode)
+GET        /change-mgd-higher-rate          controllers.MgdHigherRateController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-mgd-higher-rate          controllers.MgdHigherRateController.onSubmit(mode: Mode = CheckMode)
