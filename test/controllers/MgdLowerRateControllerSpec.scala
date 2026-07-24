@@ -207,5 +207,31 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual onwardRoute.url
       }
     }
+
+    "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
+      val application = applicationBuilder(userAnswers = None).build()
+
+      running(application) {
+        val request = FakeRequest(GET, mgdLowerRateRoute)
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
+      }
+    }
+
+    "must redirect to SelectReturnController on a POST when no SelectedReturn is found in the session" in {
+      val application = applicationBuilder(userAnswers = None).build()
+      running(application) {
+        val request =
+          FakeRequest(POST, mgdLowerRateRoute)
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
+      }
+    }
   }
 }
