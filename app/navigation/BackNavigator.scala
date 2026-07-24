@@ -88,6 +88,9 @@ class BackNavigator @Inject() () {
     case CalculatedMGDHigherRatePage =>
       _ => routes.NetTakingsHigherController.onPageLoad(NormalMode)
 
+    case UnderDeclaredDutyLimitsPage =>
+      _ => routes.IndexController.onPageLoad() // TODO: under-declared-duty-reasonable-care
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }
@@ -145,6 +148,9 @@ class BackNavigator @Inject() () {
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case NetTakingsHigherPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case UnderDeclaredDutyLimitsPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case _ =>

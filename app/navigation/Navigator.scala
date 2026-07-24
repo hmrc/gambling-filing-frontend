@@ -108,6 +108,19 @@ class Navigator @Inject() () {
     case NetTakingsHigherPage =>
       _ => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
 
+    case UnderDeclaredDutyLimitsPage =>
+      userAnswers =>
+        userAnswers.get(UnderDeclaredDutyLimitsPage) match {
+          case Some(true) =>
+            routes.IndexController.onPageLoad() // TODO: TotalUnderDeclaredDutyController
+
+          case Some(false) =>
+            routes.IndexController.onPageLoad() // TODO: ContactHmrcController
+
+          case None =>
+            routes.JourneyRecoveryController.onPageLoad()
+        }
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }
@@ -193,6 +206,9 @@ class Navigator @Inject() () {
 
     case NetTakingsHigherPage =>
       _ => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
+
+    case UnderDeclaredDutyLimitsPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case _ =>
       _ => routes.CheckYourAnswersController.onPageLoad()

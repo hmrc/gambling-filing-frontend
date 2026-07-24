@@ -229,3 +229,12 @@ netTakingsHigherRate.caption = File a return for {0} to {1}
 netTakingsHigherRate.p1 = Any machines that do not qualify for the lower or standard rates of duty are subject to the higher rate of duty.
 netTakingsHigherRate.question = Do you have any net takings liable to the higher rate of duty?
 netTakingsHigherRate.error.required = Select yes if you have net takings liable to the higher rate of duty
+
+underDeclaredDutyLimits.title = Under-declared duty limits
+underDeclaredDutyLimits.heading = Under-declared duty limits
+underDeclaredDutyLimits.caption = File a return for {0} to {1}
+underDeclaredDutyLimits.p1 = The overall amount of under-declared duty must not exceed either:
+underDeclaredDutyLimits.bullet1 = £10,000 (net value)
+underDeclaredDutyLimits.bullet2 = £50,000 (net value) and not be more than 1% of the total net takings in the accounting period that the error was discovered
+underDeclaredDutyLimits.question = Does the amount you wish to declare fall within these limits?
+underDeclaredDutyLimits.error.required = Select yes if the amount you wish to declare falls within these limits
