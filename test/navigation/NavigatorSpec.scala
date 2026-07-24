@@ -311,12 +311,12 @@ class NavigatorSpec extends SpecBase {
           routes.CheckYourAnswersController.onPageLoad()
       }
 
-      "must go from MachinesAvailablePage to NetTakingsLowerRatePage" in {
+      "must go from MachinesAvailablePage to CheckYourAnswersController" in {
         navigator.nextPage(
           MachinesAvailablePage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.NetTakingsLowerRateController.onPageLoad(CheckMode)
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
       "must go from NetTakingsLowerRatePage to NetTakingsLowerPage when answer is Yes" in {
@@ -347,12 +347,12 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
       }
 
-      "must go from NetTakingsLowerPage to CalculationLowerCheckPage" in {
+      "must go from NetTakingsLowerPage to CheckYourAnswersController" in {
         navigator.nextPage(
           NetTakingsLowerPage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.CalculationLowerCheckController.onPageLoad(CheckMode)
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
       "must go from CalculationLowerCheckPage to NetTakingsStandardRatePage when answer is Yes" in {
@@ -383,12 +383,12 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.MgdLowerRateController.onPageLoad(CheckMode)
       }
 
-      "must go from Mgd LowerRatePage to NetTakingsStandardRatePage" in {
+      "must go from Mgd LowerRatePage to CheckYourAnswersController" in {
         navigator.nextPage(
           MgdLowerRatePage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
       "must go from NetTakingsStandardRatePage to NetTakingsStandardPage when answer is Yes" in {
@@ -419,12 +419,12 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
       }
 
-      "must go from NetTakingsStandardPage to CalculatedMGDStandardRatePage" in {
+      "must go from NetTakingsStandardPage to CheckYourAnswersController" in {
         navigator.nextPage(
           NetTakingsStandardPage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
       "must go from CalculatedMGDStandardRatePage to NetTakingsHigherRatePage when answer is Yes" in {
@@ -541,12 +541,12 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.MgdHigherRateController.onPageLoad(CheckMode)
       }
 
-      "must go from NetTakingsHigherPage to CalculatedMGDHigherRatePage" in {
+      "must go from NetTakingsHigherPage to CheckYourAnswersController" in {
         navigator.nextPage(
           NetTakingsHigherPage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
       "must go from MgdStandardRatePage to NetTakingsHigherRatePage when answer exists" in {
@@ -561,12 +561,12 @@ class NavigatorSpec extends SpecBase {
         result mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
-      "must go from MgdHigherRatePage to UnderDeclaredDutyPage" in {
+      "must go from MgdHigherRatePage to CheckYourAnswersController" in {
         navigator.nextPage(
           MgdHigherRatePage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
     }
   }

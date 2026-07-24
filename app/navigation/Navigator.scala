@@ -135,7 +135,7 @@ class Navigator @Inject() () {
   private val checkRouteMap: Page => UserAnswers => Call = {
 
     case MachinesAvailablePage =>
-      _ => routes.NetTakingsLowerRateController.onPageLoad(CheckMode)
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case NetTakingsLowerRatePage =>
       userAnswers =>
@@ -151,7 +151,7 @@ class Navigator @Inject() () {
         }
 
     case NetTakingsLowerPage =>
-      _ => routes.CalculationLowerCheckController.onPageLoad(CheckMode)
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case CalculationLowerCheckPage =>
       userAnswers =>
@@ -167,10 +167,10 @@ class Navigator @Inject() () {
         }
 
     case MgdLowerRatePage =>
-      _ => routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case NetTakingsStandardPage =>
-      _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case CalculatedMGDStandardRatePage =>
       userAnswers =>
@@ -209,7 +209,7 @@ class Navigator @Inject() () {
         }
 
     case NetTakingsHigherPage =>
-      _ => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case MgdStandardRatePage =>
       _.get(MgdStandardRatePage)
@@ -237,7 +237,7 @@ class Navigator @Inject() () {
         }
 
     case MgdHigherRatePage =>
-      _ => routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case _ =>
       _ => routes.CheckYourAnswersController.onPageLoad()
