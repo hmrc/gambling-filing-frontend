@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.MgdHigherRateFormProvider
 import models.{Mode, UserAnswers}
-import navigation.Navigator
+import navigation.{BackNavigator, Navigator}
 import pages.{MgdHigherRatePage, SelectReturnPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,6 +34,7 @@ class MgdHigherRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
+  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: MgdHigherRateFormProvider,
@@ -50,7 +51,7 @@ class MgdHigherRateController @Inject() (
       .flatMap(_.get(SelectReturnPage))
       .fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
         val preparedForm = request.userAnswers.flatMap(_.get(MgdHigherRatePage)).fold(form)(form.fill)
-        Ok(view(preparedForm, mode, selectedReturn))
+        Ok(view(preparedForm, mode, backNavigator.backPage(MgdHigherRatePage, mode, request), selectedReturn))
       }
   }
 
@@ -61,7 +62,8 @@ class MgdHigherRateController @Inject() (
         form
           .bindFromRequest()
           .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+            formWithErrors =>
+              Future.successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(MgdHigherRatePage, mode, request), selectedReturn))),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
               for {

@@ -18,21 +18,19 @@
 @import viewmodels.LabelSize
 @import models.SelectedReturn
 @import utils.DateTimeFormats
-@import views.html.components._
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
-    heading: H1,
     caption: components.Caption,
     govukErrorSummary: GovukErrorSummary,
     govukInput: GovukInput,
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, backLink: Option[String], selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("mgdHigherRate.title"))) {
+@layout(pageTitle = title(form, messages("mgdHigherRate.title")), backLink = backLink) {
 
     @formHelper(action = routes.MgdHigherRateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
@@ -47,16 +45,13 @@
             )
         )
 
-        @heading(
-            messages("mgdHigherRate.heading")
-        )
-
         @govukInput(
             InputViewModel(
                 field = form("value"),
-                label = LabelViewModel(messages("mgdHigherRate.question")).withCssClass("govuk-caption-l") @* TODO *@
+                label = LabelViewModel(messages("mgdHigherRate.heading")).asPageHeading(LabelSize.Large)
             )
             .withPrefix(PrefixOrSuffix(content = Text("£")))
+            .withHint(HintViewModel(HtmlContent(messages("mgdHigherRate.hint"))))
             .withWidth(Fixed20)
         )
 

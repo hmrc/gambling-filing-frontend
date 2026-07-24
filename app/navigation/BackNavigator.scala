@@ -93,15 +93,16 @@ class BackNavigator @Inject() () {
         userAnswers.get(NetTakingsHigherRatePage) match {
           case Some(true) =>
             userAnswers.get(CalculatedMGDHigherRatePage) match {
-              case Some(true) => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
-              case Some(false) =>
-                routes.PageNotFoundController
-                  .onPageLoad() // TODO: /manage-gambling-tax/returns/mgd-higher-rate  (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
-              case None => routes.IndexController.onPageLoad()
+              case Some(true)  => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
+              case Some(false) => routes.MgdHigherRateController.onPageLoad(NormalMode)
+              case None        => routes.IndexController.onPageLoad()
             }
           case Some(false) => routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
           case None        => routes.IndexController.onPageLoad()
         }
+
+    case MgdHigherRatePage =>
+      _ => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
 
     case _ =>
       _ => routes.IndexController.onPageLoad()
@@ -170,15 +171,16 @@ class BackNavigator @Inject() () {
         userAnswers.get(NetTakingsHigherRatePage) match {
           case Some(true) =>
             userAnswers.get(CalculatedMGDHigherRatePage) match {
-              case Some(true) => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
-              case Some(false) =>
-                routes.PageNotFoundController
-                  .onPageLoad() // TODO: /manage-gambling-tax/returns/mgd-higher-rate  (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
-              case None => routes.CheckYourAnswersController.onPageLoad()
+              case Some(true)  => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
+              case Some(false) => routes.MgdHigherRateController.onPageLoad(CheckMode)
+              case None        => routes.CheckYourAnswersController.onPageLoad()
             }
           case Some(false) => routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
           case None        => routes.CheckYourAnswersController.onPageLoad()
         }
+
+    case MgdHigherRatePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case _ =>
       _ => routes.CheckYourAnswersController.onPageLoad()
