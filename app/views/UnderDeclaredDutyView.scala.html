@@ -15,6 +15,7 @@
  *@
 
 @import views.html.components._
+@import viewmodels.LegendSize
 @import models.SelectedReturn
 @import utils.DateTimeFormats
 
@@ -49,7 +50,7 @@
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("underDeclaredDuty.heading")).withCssClass("govuk-fieldset__legend--l")
+                legend = LegendViewModel(messages("underDeclaredDuty.heading")).asPageHeading(LegendSize.Large)
             )
         )
 
