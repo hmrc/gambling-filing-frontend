@@ -216,8 +216,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
       }
 
-      "must go from UnderDeclaredDutyPage to under-declared-duty-resonable-care when answer is Yes" in {
-        // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)  DTR-6999  abdulla.juma
+      "must go from UnderDeclaredDutyPage to UnderDeclaredDutyReasonableCare when answer is Yes" in {
         val answers =
           emptyUserAnswers
             .set(UnderDeclaredDutyPage, true)
@@ -228,7 +227,7 @@ class NavigatorSpec extends SpecBase {
           UnderDeclaredDutyPage,
           NormalMode,
           answers
-        ) mustBe routes.PageNotFoundController.onPageLoad()
+        ) mustBe routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
       }
 
       "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in {
@@ -513,8 +512,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
       }
 
-      "must go from UnderDeclaredDutyPage to under-declared-duty-resonable-care when answer is Yes" in {
-        // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)  DTR-6999  abdulla.juma
+      "must go from UnderDeclaredDutyPage to UnderDeclaredDutyReasonableCare when answer is Yes" in {
         val answers =
           emptyUserAnswers
             .set(UnderDeclaredDutyPage, true)
@@ -525,7 +523,7 @@ class NavigatorSpec extends SpecBase {
           UnderDeclaredDutyPage,
           CheckMode,
           answers
-        ) mustBe routes.PageNotFoundController.onPageLoad()
+        ) mustBe routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
       }
 
       "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in {

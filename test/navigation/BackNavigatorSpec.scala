@@ -327,17 +327,12 @@ class BackNavigatorSpec extends SpecBase {
 
       "UnderDeclaredDutyReasonableCarePage" - {
 
-        // TODO - to be updated to correct page FAR-UND-QUE
-        "must go from UnderDeclaredDutyReasonableCarePage to SelectReturnPage" in {
+        "must go from UnderDeclaredDutyReasonableCarePage to UnderDeclaredDutyPage" in {
           navigator.backPage(
             UnderDeclaredDutyReasonableCarePage,
             NormalMode,
             optionalDataRequest
-          ) mustBe Some(
-            routes.SelectReturnController
-              .onPageLoad()
-              .url
-          )
+          ) mustBe Some(routes.UnderDeclaredDutyController.onPageLoad(NormalMode).url)
         }
       }
 

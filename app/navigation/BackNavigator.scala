@@ -105,7 +105,7 @@ class BackNavigator @Inject() () {
       _ => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
 
     case UnderDeclaredDutyReasonableCarePage =>
-      _ => routes.SelectReturnController.onPageLoad() // TODO go back to FAR-UND-QUE once page is developed
+      _ => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
 
     case _ =>
       _ => routes.IndexController.onPageLoad()
