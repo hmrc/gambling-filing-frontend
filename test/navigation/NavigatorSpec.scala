@@ -293,6 +293,14 @@ class NavigatorSpec extends SpecBase {
       "must go from MgdStandardRatePage to Index when no answer exists" in {
         navigator.nextPage(MgdStandardRatePage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad()
       }
+
+      "must go from ContactHmrcPage to Index" in {
+        navigator.nextPage(
+          MgdStandardRatePage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe routes.IndexController.onPageLoad()
+      }
     }
 
     "in Check mode" - {
@@ -553,6 +561,14 @@ class NavigatorSpec extends SpecBase {
       "must go from MgdStandardRatePage to Index when no answer exists" in {
         val result = navigator.nextPage(MgdStandardRatePage, CheckMode, emptyUserAnswers)
         result mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from ContactHmrcPage to CYA" in {
+        navigator.nextPage(
+          MgdStandardRatePage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
     }
   }

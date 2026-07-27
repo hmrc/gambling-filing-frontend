@@ -103,6 +103,9 @@ class BackNavigator @Inject() () {
           case None        => routes.IndexController.onPageLoad()
         }
 
+    case ContactHmrcPage =>
+      _ => routes.IndexController.onPageLoad()
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }
@@ -191,4 +194,7 @@ class BackNavigator @Inject() () {
       case CheckMode  => Some(checkBackRouteMap(page)(userAnswers).url)
     }
   }
+
+  def backPage(page: Page, request: OptionalDataRequest[AnyContent]): Option[String] =
+    backPage(page, NormalMode, request)
 }

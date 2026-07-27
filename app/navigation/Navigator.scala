@@ -117,6 +117,9 @@ class Navigator @Inject() () {
           case None => routes.IndexController.onPageLoad()
         }
 
+    case ContactHmrcPage => // TODO: /manage-gambling-tax/returns/duty-brought-forward
+      _ => routes.IndexController.onPageLoad()
+
     case CalculatedMGDHigherRatePage =>
       userAnswers =>
         userAnswers.get(CalculatedMGDHigherRatePage) match {
@@ -193,8 +196,6 @@ class Navigator @Inject() () {
             routes.CheckYourAnswersController.onPageLoad()
         }
 
-
-
     case NetTakingsHigherRatePage =>
       userAnswers =>
         userAnswers.get(NetTakingsHigherRatePage) match {
@@ -236,6 +237,9 @@ class Navigator @Inject() () {
             routes.PageNotFoundController.onPageLoad() // TODO: /manage-gambling-tax/returns/mgd-higher-rate (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
           case None => routes.CheckYourAnswersController.onPageLoad()
         }
+
+    case ContactHmrcPage => // TODO: /manage-gambling-tax/returns/duty-brought-forward
+      _ => routes.IndexController.onPageLoad()
 
     case _ =>
       _ => routes.CheckYourAnswersController.onPageLoad()

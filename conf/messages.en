@@ -234,3 +234,11 @@ underDeclaredDuty.title = Do you have any under-declared duty from previous retu
 underDeclaredDuty.heading = Do you have any under-declared duty from previous returns?
 underDeclaredDuty.caption = File a return for {0} to {1}
 underDeclaredDuty.error.required = Select yes if you have under-declared duty from a previous return
+
+contactHmrc.title = Under-declared duty
+contactHmrc.heading = Under-declared duty
+contactHmrc.caption = File a return for {0} to {1}
+contactHmrc.p1 = You cannot declare under-declared duty in this return. You should
+contactHmrc.link = Contact HRMC (opens in a new tab)
+contactHmrc.p2 = to discuss your under-declared duty.
+contactHmrc.p3 = You may continue with the rest of your return in the meantime.

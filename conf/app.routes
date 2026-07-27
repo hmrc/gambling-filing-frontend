@@ -95,3 +95,5 @@ GET        /under-declared-duty                 controllers.UnderDeclaredDutyCon
 POST       /under-declared-duty                 controllers.UnderDeclaredDutyController.onSubmit(mode: Mode = NormalMode)
 GET        /change-under-declared-duty          controllers.UnderDeclaredDutyController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-under-declared-duty          controllers.UnderDeclaredDutyController.onSubmit(mode: Mode = CheckMode)
+
+GET        /contact-hmrc                        controllers.ContactHmrcController.onPageLoad()
