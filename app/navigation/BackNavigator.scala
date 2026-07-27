@@ -91,6 +91,22 @@ class BackNavigator @Inject() () {
     case UnderDeclaredDutyLimitsPage =>
       _ => routes.IndexController.onPageLoad() // TODO: under-declared-duty-reasonable-care
 
+    case UnderDeclaredDutyPage =>
+      userAnswers =>
+        userAnswers.get(NetTakingsHigherRatePage) match {
+          case Some(true) =>
+            userAnswers.get(CalculatedMGDHigherRatePage) match {
+              case Some(true)  => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
+              case Some(false) => routes.MgdHigherRateController.onPageLoad(NormalMode)
+              case None        => routes.IndexController.onPageLoad()
+            }
+          case Some(false) => routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
+          case None        => routes.IndexController.onPageLoad()
+        }
+
+    case MgdHigherRatePage =>
+      _ => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }
@@ -104,30 +120,33 @@ class BackNavigator @Inject() () {
       _ => routes.SelectReturnController.onPageLoad()
 
     case NetTakingsLowerRatePage =>
-      _ => routes.MachinesAvailableController.onPageLoad(NormalMode)
+      _ => routes.MachinesAvailableController.onPageLoad(CheckMode)
 
     case NetTakingsLowerPage =>
-      _ => routes.NetTakingsLowerRateController.onPageLoad(NormalMode)
+      _ => routes.NetTakingsLowerRateController.onPageLoad(CheckMode)
 
     case CalculationLowerCheckPage =>
-      _ => routes.NetTakingsLowerController.onPageLoad(NormalMode)
+      _ => routes.NetTakingsLowerController.onPageLoad(CheckMode)
 
     case MgdLowerRatePage =>
-      _ => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
+      _ => routes.CalculationLowerCheckController.onPageLoad(CheckMode)
+
+    case MgdStandardRatePage =>
+      _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
 
     case CalculatedMGDStandardRatePage =>
-      _ => routes.NetTakingsStandardController.onPageLoad(NormalMode)
+      _ => routes.NetTakingsStandardController.onPageLoad(CheckMode)
 
     case NetTakingsHigherRatePage =>
       userAnswers =>
         userAnswers.get(NetTakingsStandardRatePage) match {
           case Some(true) =>
-            userAnswers.get(CalculatedMGDStandardRatePage) match { // TODO CalculatedMGDStandardRatePage
-              case Some(true)  => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode) // TODO CalculatedMGDStandardRateController
-              case Some(false) => routes.MgdStandardRateController.onPageLoad(NormalMode)
+            userAnswers.get(CalculatedMGDStandardRatePage) match {
+              case Some(true)  => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
+              case Some(false) => routes.MgdStandardRateController.onPageLoad(CheckMode)
               case None        => routes.CheckYourAnswersController.onPageLoad()
             }
-          case Some(false) => routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
+          case Some(false) => routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
           case None        => routes.CheckYourAnswersController.onPageLoad()
         }
 
@@ -136,18 +155,34 @@ class BackNavigator @Inject() () {
         userAnswers.get(NetTakingsLowerRatePage) match {
           case Some(true) =>
             userAnswers.get(CalculationLowerCheckPage) match {
-              case Some(true)  => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
-              case Some(false) => routes.MgdLowerRateController.onPageLoad(NormalMode)
-              case None        => routes.IndexController.onPageLoad()
+              case Some(true)  => routes.CalculationLowerCheckController.onPageLoad(CheckMode)
+              case Some(false) => routes.MgdLowerRateController.onPageLoad(CheckMode)
+              case None        => routes.CheckYourAnswersController.onPageLoad()
             }
-          case Some(false) => routes.NetTakingsLowerRateController.onPageLoad(NormalMode)
-          case None        => routes.IndexController.onPageLoad()
+          case Some(false) => routes.NetTakingsLowerRateController.onPageLoad(CheckMode)
+          case None        => routes.CheckYourAnswersController.onPageLoad()
         }
 
     case CalculatedMGDHigherRatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case NetTakingsHigherPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case UnderDeclaredDutyPage =>
+      userAnswers =>
+        userAnswers.get(NetTakingsHigherRatePage) match {
+          case Some(true) =>
+            userAnswers.get(CalculatedMGDHigherRatePage) match {
+              case Some(true)  => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
+              case Some(false) => routes.MgdHigherRateController.onPageLoad(CheckMode)
+              case None        => routes.CheckYourAnswersController.onPageLoad()
+            }
+          case Some(false) => routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
+          case None        => routes.CheckYourAnswersController.onPageLoad()
+        }
+
+    case MgdHigherRatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case UnderDeclaredDutyLimitsPage =>

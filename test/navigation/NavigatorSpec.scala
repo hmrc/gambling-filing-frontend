@@ -108,7 +108,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.MgdLowerRateController.onPageLoad(NormalMode)
       }
 
-      "must go from Mgd LowerRatePage to NetTakingsStandardRatePage" in {
+      "must go from MgdLowerRatePage to NetTakingsStandardRatePage" in {
         navigator.nextPage(
           MgdLowerRatePage,
           NormalMode,
@@ -188,14 +188,6 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.IndexController.onPageLoad()
       }
 
-      "must go from MgdStandardRatePage to NetTakingsHigherRatePage" in {
-        navigator.nextPage(
-          MgdStandardRatePage,
-          NormalMode,
-          emptyUserAnswers
-        ) mustBe routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
-      }
-
       "must go from NetTakingsHigherRatePage to NetTakingsHigherPage when answer is Yes" in {
         val answers =
           emptyUserAnswers
@@ -210,7 +202,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NetTakingsHigherController.onPageLoad(NormalMode)
       }
 
-      "must go from NetTakingsHigherRatePage to under-declared-duty page when answer is No" in {
+      "must go from NetTakingsHigherRatePage to UnderDeclaredDutyPage when answer is No" in {
         val answers =
           emptyUserAnswers
             .set(NetTakingsHigherRatePage, false)
@@ -221,7 +213,65 @@ class NavigatorSpec extends SpecBase {
           NetTakingsHigherRatePage,
           NormalMode,
           answers
-        ) mustBe routes.IndexController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
+        ) mustBe routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
+      }
+
+      "must go from UnderDeclaredDutyPage to under-declared-duty-resonable-care when answer is Yes" in {
+        // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)  DTR-6999  abdulla.juma
+        val answers =
+          emptyUserAnswers
+            .set(UnderDeclaredDutyPage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          UnderDeclaredDutyPage,
+          NormalMode,
+          answers
+        ) mustBe routes.PageNotFoundController.onPageLoad()
+      }
+
+      "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in {
+        // TODO: /manage-gambling-tax/returns/duty-brought-forward (FAR-NEG-SCR) 20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
+        val answers =
+          emptyUserAnswers
+            .set(UnderDeclaredDutyPage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          UnderDeclaredDutyPage,
+          NormalMode,
+          answers
+        ) mustBe routes.PageNotFoundController.onPageLoad()
+      }
+
+      "must go from CalculatedMGDHigherRatePage to UnderDeclaredDutyController when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(CalculatedMGDHigherRatePage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          CalculatedMGDHigherRatePage,
+          NormalMode,
+          answers
+        ) mustBe routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
+      }
+
+      "must go from CalculatedMGDHigherRatePage to MgdHigherRatePage when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(CalculatedMGDHigherRatePage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          CalculatedMGDHigherRatePage,
+          NormalMode,
+          answers
+        ) mustBe routes.MgdHigherRateController.onPageLoad(NormalMode)
       }
 
       "must go from NetTakingsHigherPage to CalculatedMGDHigherRatePage" in {
@@ -232,6 +282,25 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
       }
 
+      "must go from MgdStandardRatePage to NetTakingsHigherRatePage when answer exists" in {
+        val answers = emptyUserAnswers.set(MgdStandardRatePage, BigDecimal(100)).success.value
+
+        val result = navigator.nextPage(MgdStandardRatePage, NormalMode, answers)
+        result mustBe routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
+      }
+
+      "must go from MgdStandardRatePage to Index when no answer exists" in {
+        navigator.nextPage(MgdStandardRatePage, NormalMode, emptyUserAnswers) mustBe routes.IndexController.onPageLoad()
+      }
+
+      "must go from MgdHigherRatePage to UnderDeclaredDutyPage" in {
+        navigator.nextPage(
+          MgdHigherRatePage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
+      }
+    }
       "must go from UnderDeclaredDutyLimitsPage to Under-declared duty input when answer is Yes" in {
         val answers =
           emptyUserAnswers
@@ -278,13 +347,13 @@ class NavigatorSpec extends SpecBase {
             routes.CheckYourAnswersController.onPageLoad()
         }
 
-        "must go from MachinesAvailablePage to NetTakingsLowerRatePage" in {
-          navigator.nextPage(
-            MachinesAvailablePage,
-            CheckMode,
-            emptyUserAnswers
-          ) mustBe routes.NetTakingsLowerRateController.onPageLoad(CheckMode)
-        }
+      "must go from MachinesAvailablePage to CheckYourAnswersController" in {
+        navigator.nextPage(
+          MachinesAvailablePage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
 
         "must go from NetTakingsLowerRatePage to NetTakingsLowerPage when answer is Yes" in {
           val answers =
@@ -321,6 +390,13 @@ class NavigatorSpec extends SpecBase {
             emptyUserAnswers
           ) mustBe routes.CalculationLowerCheckController.onPageLoad(CheckMode)
         }
+      "must go from NetTakingsLowerPage to CheckYourAnswersController" in {
+        navigator.nextPage(
+          NetTakingsLowerPage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
 
         "must go from CalculationLowerCheckPage to NetTakingsStandardRatePage when answer is Yes" in {
           val answers =
@@ -357,6 +433,13 @@ class NavigatorSpec extends SpecBase {
             emptyUserAnswers
           ) mustBe routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
         }
+      "must go from Mgd LowerRatePage to CheckYourAnswersController" in {
+        navigator.nextPage(
+          MgdLowerRatePage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
 
         "must go from NetTakingsStandardRatePage to NetTakingsStandardPage when answer is Yes" in {
           val answers =
@@ -393,6 +476,13 @@ class NavigatorSpec extends SpecBase {
             emptyUserAnswers
           ) mustBe routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
         }
+      "must go from NetTakingsStandardPage to CheckYourAnswersController" in {
+        navigator.nextPage(
+          NetTakingsStandardPage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
 
         "must go from CalculatedMGDStandardRatePage to NetTakingsHigherRatePage when answer is Yes" in {
           val answers =
@@ -436,6 +526,12 @@ class NavigatorSpec extends SpecBase {
               .set(NetTakingsHigherRatePage, true)
               .success
               .value
+      "must go from NetTakingsHigherRatePage to NetTakingsHigherPage when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsHigherRatePage, true)
+            .success
+            .value
 
           navigator.nextPage(
             NetTakingsHigherRatePage,
@@ -444,19 +540,34 @@ class NavigatorSpec extends SpecBase {
           ) mustBe routes.NetTakingsHigherController.onPageLoad(CheckMode)
         }
 
-        "must go from NetTakingsHigherRatePage to under-declared-duty page when answer is No" in {
-          val answers =
-            emptyUserAnswers
-              .set(NetTakingsHigherRatePage, false)
-              .success
-              .value
+      "must go from NetTakingsHigherRatePage to UnderDeclaredDutyPage when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(NetTakingsHigherRatePage, false)
+            .success
+            .value
 
-          navigator.nextPage(
-            NetTakingsHigherRatePage,
-            CheckMode,
-            answers
-          ) mustBe routes.IndexController.onPageLoad() // TODO: /manage-gambling-tax/under-declared-duty
-        }
+        navigator.nextPage(
+          NetTakingsHigherRatePage,
+          CheckMode,
+          answers
+        ) mustBe routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
+      }
+
+      "must go from UnderDeclaredDutyPage to under-declared-duty-resonable-care when answer is Yes" in {
+        // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)  DTR-6999  abdulla.juma
+        val answers =
+          emptyUserAnswers
+            .set(UnderDeclaredDutyPage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          UnderDeclaredDutyPage,
+          CheckMode,
+          answers
+        ) mustBe routes.PageNotFoundController.onPageLoad()
+      }
 
         "must go from NetTakingsHigherPage to CalculatedMGDHigherRatePage" in {
           navigator.nextPage(
@@ -465,6 +576,75 @@ class NavigatorSpec extends SpecBase {
             emptyUserAnswers
           ) mustBe routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
         }
+      "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in {
+        // TODO: /manage-gambling-tax/returns/duty-brought-forward   20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
+        val answers =
+          emptyUserAnswers
+            .set(UnderDeclaredDutyPage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          UnderDeclaredDutyPage,
+          CheckMode,
+          answers
+        ) mustBe routes.PageNotFoundController.onPageLoad()
+      }
+
+      "must go from CalculatedMGDHigherRatePage to UnderDeclaredDutyController when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(CalculatedMGDHigherRatePage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          CalculatedMGDHigherRatePage,
+          CheckMode,
+          answers
+        ) mustBe routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
+      }
+
+      "must go from CalculatedMGDHigherRatePage to MgdHigherRatePage when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(CalculatedMGDHigherRatePage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          CalculatedMGDHigherRatePage,
+          CheckMode,
+          answers
+        ) mustBe routes.MgdHigherRateController.onPageLoad(CheckMode)
+      }
+
+      "must go from NetTakingsHigherPage to CheckYourAnswersController" in {
+        navigator.nextPage(
+          NetTakingsHigherPage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from MgdStandardRatePage to NetTakingsHigherRatePage when answer exists" in {
+        val answers = emptyUserAnswers.set(MgdStandardRatePage, BigDecimal(100)).success.value
+
+        val result = navigator.nextPage(MgdStandardRatePage, CheckMode, answers)
+        result mustBe routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
+      }
+
+      "must go from MgdStandardRatePage to Index when no answer exists" in {
+        val result = navigator.nextPage(MgdStandardRatePage, CheckMode, emptyUserAnswers)
+        result mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from MgdHigherRatePage to CheckYourAnswersController" in {
+        navigator.nextPage(
+          MgdHigherRatePage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
     }
   }
