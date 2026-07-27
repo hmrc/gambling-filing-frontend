@@ -107,14 +107,17 @@ class BackNavigator @Inject() () {
     case UnderDeclaredDutyReasonableCarePage =>
       _ => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
 
+    case UnderDeclaredDutyLimitsPage =>
+      _ => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
+
     case ContactHmrcPage =>
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyReasonableCarePage) match {
           case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
 
           case _ =>
-            userAnswers.get(UnderDeclaredDutyReasonableCarePage) match { // TODO: UnderDeclaredDutyLimitsPage
-              case Some(false) => routes.UnderDeclaredDutyController.onPageLoad(NormalMode) // TODO: UnderDeclaredDutyLimitsController
+            userAnswers.get(UnderDeclaredDutyLimitsPage) match {
+              case Some(false) => routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
 
               case _ => routes.IndexController.onPageLoad()
             }
@@ -198,6 +201,9 @@ class BackNavigator @Inject() () {
     case MgdHigherRatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
+    case UnderDeclaredDutyLimitsPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
     case UnderDeclaredDutyReasonableCarePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
@@ -207,8 +213,8 @@ class BackNavigator @Inject() () {
           case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
 
           case _ =>
-            userAnswers.get(UnderDeclaredDutyReasonableCarePage) match { // TODO: UnderDeclaredDutyLimitsPage
-              case Some(false) => routes.IndexController.onPageLoad() // TODO: UnderDeclaredDutyLimitsController
+            userAnswers.get(UnderDeclaredDutyLimitsPage) match {
+              case Some(false) => routes.UnderDeclaredDutyLimitsController.onPageLoad(CheckMode)
 
               case _ => routes.CheckYourAnswersController.onPageLoad()
             }

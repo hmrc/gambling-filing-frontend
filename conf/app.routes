@@ -101,6 +101,11 @@ POST       /mgd-higher-rate                 controllers.MgdHigherRateController.
 GET        /change-mgd-higher-rate          controllers.MgdHigherRateController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-mgd-higher-rate          controllers.MgdHigherRateController.onSubmit(mode: Mode = CheckMode)
 
+GET        /under-declared-duty-limits                 controllers.UnderDeclaredDutyLimitsController.onPageLoad(mode: Mode = NormalMode)
+POST       /under-declared-duty-limits                 controllers.UnderDeclaredDutyLimitsController.onSubmit(mode: Mode = NormalMode)
+GET        /change-under-declared-duty-limits          controllers.UnderDeclaredDutyLimitsController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-under-declared-duty-limits          controllers.UnderDeclaredDutyLimitsController.onSubmit(mode: Mode = CheckMode)
+
 GET        /under-declared-duty-reasonable-care          controllers.UnderDeclaredDutyReasonableCareController.onPageLoad(mode: Mode = NormalMode)
 POST       /under-declared-duty-reasonable-care          controllers.UnderDeclaredDutyReasonableCareController.onSubmit(mode: Mode = NormalMode)
 GET        /change-under-declared-duty-reasonable-care   controllers.UnderDeclaredDutyReasonableCareController.onPageLoad(mode: Mode = CheckMode)

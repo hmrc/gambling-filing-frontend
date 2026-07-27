@@ -126,6 +126,19 @@ class Navigator @Inject() () {
     case MgdHigherRatePage =>
       _ => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
 
+    case UnderDeclaredDutyLimitsPage =>
+      userAnswers =>
+        userAnswers.get(UnderDeclaredDutyLimitsPage) match {
+          case Some(true) =>
+            routes.IndexController.onPageLoad() // TODO: TotalUnderDeclaredDutyController
+
+          case Some(false) =>
+            routes.ContactHmrcController.onPageLoad()
+
+          case None =>
+            routes.JourneyRecoveryController.onPageLoad()
+        }
+
     case UnderDeclaredDutyReasonableCarePage =>
       _.get(UnderDeclaredDutyReasonableCarePage) match {
         case Some(true)  => routes.ContactHmrcController.onPageLoad()
@@ -245,11 +258,14 @@ class Navigator @Inject() () {
     case MgdHigherRatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
+    case UnderDeclaredDutyLimitsPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
     case UnderDeclaredDutyReasonableCarePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
-    case ContactHmrcPage => // TODO: /manage-gambling-tax/returns/duty-brought-forward
-      _ => routes.IndexController.onPageLoad()
+    case ContactHmrcPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case _ =>
       _ => routes.CheckYourAnswersController.onPageLoad()
