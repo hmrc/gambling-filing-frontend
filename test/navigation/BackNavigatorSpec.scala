@@ -329,9 +329,7 @@ class BackNavigatorSpec extends SpecBase {
             UnderDeclaredDutyLimitsPage,
             NormalMode,
             optionalDataRequest
-          ) mustBe Some(
-            routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode).url)
-          )
+          ) mustBe Some(routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode).url)
         }
       }
 

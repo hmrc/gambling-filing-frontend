@@ -42,7 +42,7 @@ class UnderDeclaredDutyLimitsControllerSpec extends SpecBase with MockitoSugar {
   def onwardRoute: Call = Call("GET", "/foo")
 
   val validAnswer: Boolean = true
-  val backUrl = Some("/manage-gambling-tax/returns/")
+  val backUrl = Some("/manage-gambling-tax/returns/under-declared-duty-reasonable-care")
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
