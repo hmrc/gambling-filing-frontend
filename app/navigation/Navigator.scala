@@ -142,7 +142,7 @@ class Navigator @Inject() () {
     case UnderDeclaredDutyReasonableCarePage =>
       _.get(UnderDeclaredDutyReasonableCarePage) match {
         case Some(true)  => routes.ContactHmrcController.onPageLoad()
-        case Some(false) => routes.SelectReturnController.onPageLoad() // TODO: next page FAR-UND-LIM
+        case Some(false) => routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
         case None        => routes.SelectReturnController.onPageLoad()
       }
 

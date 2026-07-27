@@ -291,15 +291,14 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.ContactHmrcController.onPageLoad()
       }
 
-      // TODO Update this test once FAR-UND-LIM page is added
-      "must go from UnderDeclaredDutyReasonableCarePage to SelectReturnPage when answer is No" in {
+      "must go from UnderDeclaredDutyReasonableCarePage to UnderDeclaredDutyLimitsPage when answer is No" in {
         val answers = emptyUserAnswers.set(UnderDeclaredDutyReasonableCarePage, false).success.value
 
         navigator.nextPage(
           UnderDeclaredDutyReasonableCarePage,
           NormalMode,
           answers
-        ) mustBe routes.SelectReturnController.onPageLoad()
+        ) mustBe routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
       }
 
       "must go from UnderDeclaredDutyReasonableCarePage to SelectReturnPage when no answer exists" in {
