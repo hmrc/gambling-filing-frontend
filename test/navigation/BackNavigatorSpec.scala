@@ -330,7 +330,7 @@ class BackNavigatorSpec extends SpecBase {
             NormalMode,
             optionalDataRequest
           ) mustBe Some(
-            routes.IndexController.onPageLoad().url // TODO - to be updated to correct page FAR-UND-ERR
+            routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode).url)
           )
         }
       }

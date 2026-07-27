@@ -355,7 +355,7 @@ class NavigatorSpec extends SpecBase {
           UnderDeclaredDutyLimitsPage,
           NormalMode,
           answers
-        ) mustBe routes.IndexController.onPageLoad() // TODO: TotalUnderDeclaredDutyController
+        ) mustBe routes.IndexController.onPageLoad() // TODO: ContactHMRC
       }
 
       "must go from UnderDeclaredDutyLimitsPage to JourneyRecoveryController when no answer exists" in {
