@@ -213,7 +213,7 @@ class UnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
         redirectLocation(result).value mustEqual onwardRoute.url
       }
     }
-    
+
     "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
       val application = applicationBuilder(userAnswers = None).build()
 
