@@ -207,3 +207,8 @@ mgdHigherRate.hint = Enter pounds and pence, like £1,150.72
 mgdHigherRate.error.required = Enter how much MGD at the higher rate you owe
 mgdHigherRate.error.invalid = Enter your higher rate MGD in pounds and pence
 mgdHigherRate.error.range = Your MGD must be between -£1 billion and £1 billion
+
+underDeclaredDutyReasonableCare.title = Nature of under-declared duty error
+underDeclaredDutyReasonableCare.heading = Was the error that led to your under-declared duty caused by a failure to take reasonable care?
+underDeclaredDutyReasonableCare.caption = File a return for {0} to {1}
+underDeclaredDutyReasonableCare.error.required = Select yes if the error that led to your under-declared duty was caused by a failure to take reasonable care

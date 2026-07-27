@@ -17,41 +17,41 @@
 package controllers
 
 import base.SpecBase
-import forms.UnderDeclaredDutyFormProvider
+import forms.UnderDeclaredDutyReasonableCareFormProvider
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{SelectReturnPage, UnderDeclaredDutyPage}
+import pages.{SelectReturnPage, UnderDeclaredDutyReasonableCarePage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.UnderDeclaredDutyView
+import views.html.UnderDeclaredDutyReasonableCareView
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class UnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
+class UnderDeclaredDutyReasonableCareControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider = new UnderDeclaredDutyFormProvider()
+  val formProvider = new UnderDeclaredDutyReasonableCareFormProvider()
   val form = formProvider()
 
-  def onwardRoute: Call = Call("GET", "/foo")
+  def onwardRoute: Call = Call("GET", "/next-page")
 
   val validAnswer: Boolean = true
-  val backUrl = Some("/manage-gambling-tax/returns/")
+  val backUrl = Some("/manage-gambling-tax/returns/under-declared-duty")
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
   def userAnswersWithSelectedReturn: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
 
-  lazy val underDeclaredDutyRoute: String =
-    routes.UnderDeclaredDutyController.onPageLoad(NormalMode).url
+  lazy val underDeclaredDutyReasonableCareRoute: String =
+    routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode).url
 
-  "UnderDeclaredDuty Controller" - {
+  "UnderDeclaredDutyReasonableCare Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
@@ -59,9 +59,9 @@ class UnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn), regime = Regime.MGD).build()
 
       running(application) {
-        val request = FakeRequest(GET, underDeclaredDutyRoute)
+        val request = FakeRequest(GET, underDeclaredDutyReasonableCareRoute)
         val result = route(application, request).value
-        val view = application.injector.instanceOf[UnderDeclaredDutyView]
+        val view = application.injector.instanceOf[UnderDeclaredDutyReasonableCareView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
@@ -72,7 +72,7 @@ class UnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
       val userAnswers =
         userAnswersWithSelectedReturn
-          .set(UnderDeclaredDutyPage, validAnswer)
+          .set(UnderDeclaredDutyReasonableCarePage, validAnswer)
           .success
           .value
 
@@ -80,9 +80,9 @@ class UnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(userAnswers), regime = Regime.MGD).build()
 
       running(application) {
-        val request = FakeRequest(GET, underDeclaredDutyRoute)
+        val request = FakeRequest(GET, underDeclaredDutyReasonableCareRoute)
         val result = route(application, request).value
-        val view = application.injector.instanceOf[UnderDeclaredDutyView]
+        val view = application.injector.instanceOf[UnderDeclaredDutyReasonableCareView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
@@ -105,7 +105,7 @@ class UnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, underDeclaredDutyRoute)
+          FakeRequest(POST, underDeclaredDutyReasonableCareRoute)
             .withFormUrlEncodedBody("value" -> validAnswer.toString)
 
         val result = route(application, request).value
@@ -122,15 +122,46 @@ class UnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, underDeclaredDutyRoute)
+          FakeRequest(POST, underDeclaredDutyReasonableCareRoute)
             .withFormUrlEncodedBody("value" -> "invalid value")
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
-        val view = application.injector.instanceOf[UnderDeclaredDutyView]
+        val view = application.injector.instanceOf[UnderDeclaredDutyReasonableCareView]
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+      }
+    }
+
+    "must redirect to SelectReturnController on GET when no selected return is found" in {
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), regime = Regime.MGD).build()
+
+      running(application) {
+        val request = FakeRequest(GET, underDeclaredDutyReasonableCareRoute)
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
+      }
+    }
+
+    "must redirect to SelectReturnController on POST when no selected return is found" in {
+
+      val application =
+        applicationBuilder(userAnswers = Some(emptyUserAnswers), regime = Regime.MGD).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, underDeclaredDutyReasonableCareRoute)
+            .withFormUrlEncodedBody("value" -> validAnswer.toString)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
 
@@ -143,7 +174,7 @@ class UnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(regime = Regime.fromString(code).get).build()
 
         running(application) {
-          val request = FakeRequest(GET, underDeclaredDutyRoute)
+          val request = FakeRequest(GET, underDeclaredDutyReasonableCareRoute)
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
@@ -162,7 +193,7 @@ class UnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, underDeclaredDutyRoute)
+            FakeRequest(POST, underDeclaredDutyReasonableCareRoute)
               .withFormUrlEncodedBody("value" -> validAnswer.toString)
 
           val result = route(application, request).value
@@ -170,73 +201,6 @@ class UnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
         }
-      }
-    }
-
-    "must return OK and the correct view for a GET when no existing data is found" in {
-
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn), regime = Regime.MGD).build()
-
-      running(application) {
-        val request = FakeRequest(GET, underDeclaredDutyRoute)
-        val result = route(application, request).value
-        val view = application.injector.instanceOf[UnderDeclaredDutyView]
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to the next page when valid data is submitted and no existing data is found" in {
-
-      val mockSessionRepository = mock[SessionRepository]
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
-
-      val application =
-        applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn), regime = Regime.MGD)
-          .overrides(
-            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
-          )
-          .build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, underDeclaredDutyRoute)
-            .withFormUrlEncodedBody("value" -> validAnswer.toString)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
-      }
-    }
-
-    "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
-      val application = applicationBuilder(userAnswers = None).build()
-
-      running(application) {
-        val request = FakeRequest(GET, underDeclaredDutyRoute)
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
-      }
-    }
-
-    "must redirect to SelectReturnController on a POST when no SelectedReturn is found in the session" in {
-      val application = applicationBuilder(userAnswers = None).build()
-      running(application) {
-        val request =
-          FakeRequest(POST, underDeclaredDutyRoute)
-            .withFormUrlEncodedBody(("value", validAnswer.toString))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
   }
