@@ -281,7 +281,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
       }
 
-      "must go from UnderDeclaredDutyReasonableCarePage to SelectReturnPage when answer is Yes" in {
+      "must go from UnderDeclaredDutyReasonableCarePage to ContactHmrcPage when answer is Yes" in {
         val answers = emptyUserAnswers.set(UnderDeclaredDutyReasonableCarePage, true).success.value
 
         navigator.nextPage(
@@ -329,9 +329,10 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
       }
 
-      "must go from ContactHmrcPage to Index" in {
+      // TODO Update this test once duty-brought-forward page(FAR-NEG-SCR) is added
+      "must go from ContactHmrcPage to DutyBroughtForwardPage" in {
         navigator.nextPage(
-          MgdStandardRatePage,
+          ContactHmrcPage,
           NormalMode,
           emptyUserAnswers
         ) mustBe routes.IndexController.onPageLoad()
@@ -634,7 +635,7 @@ class NavigatorSpec extends SpecBase {
 
       "must go from ContactHmrcPage to CYA" in {
         navigator.nextPage(
-          MgdStandardRatePage,
+          ContactHmrcPage,
           CheckMode,
           emptyUserAnswers
         ) mustBe routes.CheckYourAnswersController.onPageLoad()

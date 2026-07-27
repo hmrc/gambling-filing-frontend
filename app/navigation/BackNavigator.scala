@@ -113,8 +113,8 @@ class BackNavigator @Inject() () {
           case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
 
           case _ =>
-            userAnswers.get(UnderDeclaredDutyReasonableCarePage) match { // TODO: /manage-gambling-tax/returns/under-declared-duty-limits
-              case Some(false) => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
+            userAnswers.get(UnderDeclaredDutyReasonableCarePage) match { // TODO: UnderDeclaredDutyLimitsPage
+              case Some(false) => routes.UnderDeclaredDutyController.onPageLoad(NormalMode) // TODO: UnderDeclaredDutyLimitsController
 
               case _ => routes.IndexController.onPageLoad()
             }
@@ -207,8 +207,8 @@ class BackNavigator @Inject() () {
           case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
 
           case _ =>
-            userAnswers.get(UnderDeclaredDutyReasonableCarePage) match { // TODO: /manage-gambling-tax/returns/under-declared-duty-limits
-              case Some(false) => routes.IndexController.onPageLoad()
+            userAnswers.get(UnderDeclaredDutyReasonableCarePage) match { // TODO: UnderDeclaredDutyLimitsPage
+              case Some(false) => routes.IndexController.onPageLoad() // TODO: UnderDeclaredDutyLimitsController
 
               case _ => routes.CheckYourAnswersController.onPageLoad()
             }

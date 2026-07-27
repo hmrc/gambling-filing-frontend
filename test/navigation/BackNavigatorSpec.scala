@@ -394,7 +394,6 @@ class BackNavigatorSpec extends SpecBase {
             .url
         )
       }
-
     }
   }
 
