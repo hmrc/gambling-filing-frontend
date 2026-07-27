@@ -222,7 +222,7 @@ class BackNavigatorSpec extends SpecBase {
           Some(routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode).url)
       }
 
-      "must go from NetTakingsHigherRatePage to MgdStandardRateController when answer is No" in {
+      "must go from NetTakingsHigherRatePage to CalculatedMGDStandardRateController when answer is No" in {
         val answers =
           emptyUserAnswers
             .set(NetTakingsStandardRatePage, true)
@@ -317,11 +317,19 @@ class BackNavigatorSpec extends SpecBase {
             CalculatedMGDHigherRatePage,
             NormalMode,
             optionalDataRequest
-          ) mustBe Some(
-            routes.NetTakingsHigherController
-              .onPageLoad(NormalMode)
-              .url
-          )
+          ) mustBe Some(routes.NetTakingsHigherController.onPageLoad(NormalMode).url)
+        }
+      }
+
+      "UnderDeclaredDutyLimitsPage" - {
+
+        "must go from UnderDeclaredDutyLimitsPage to UnderDeclaredDutyReasonableCarePage" in {
+
+          navigator.backPage(
+            UnderDeclaredDutyLimitsPage,
+            NormalMode,
+            optionalDataRequest
+          ) mustBe Some(routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode).url)
         }
       }
 
@@ -510,6 +518,13 @@ class BackNavigatorSpec extends SpecBase {
         CheckMode,
         request
       ) mustBe Some(routes.NetTakingsHigherRateController.onPageLoad(CheckMode).url)
+    }
+
+    "must go from UnderDeclaredDutyLimitsPage to CheckYourAnswer" in {
+      val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(emptyUserAnswers))
+
+      val result = navigator.backPage(UnderDeclaredDutyLimitsPage, CheckMode, request)
+      result mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
     }
 
     "must go from UnderDeclaredDutyReasonableCarePage to CheckYourAnswers regardless of previous answers" in {

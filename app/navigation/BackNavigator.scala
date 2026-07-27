@@ -88,6 +88,9 @@ class BackNavigator @Inject() () {
     case CalculatedMGDHigherRatePage =>
       _ => routes.NetTakingsHigherController.onPageLoad(NormalMode)
 
+    case UnderDeclaredDutyLimitsPage =>
+      _ => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
+
     case UnderDeclaredDutyPage =>
       userAnswers =>
         userAnswers.get(NetTakingsHigherRatePage) match {
@@ -183,6 +186,9 @@ class BackNavigator @Inject() () {
         }
 
     case MgdHigherRatePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case UnderDeclaredDutyLimitsPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case UnderDeclaredDutyReasonableCarePage =>

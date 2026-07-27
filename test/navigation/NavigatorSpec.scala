@@ -329,6 +329,42 @@ class NavigatorSpec extends SpecBase {
           emptyUserAnswers
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
       }
+
+      "must go from UnderDeclaredDutyLimitsPage to Under-declared duty input when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(UnderDeclaredDutyLimitsPage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          UnderDeclaredDutyLimitsPage,
+          NormalMode,
+          answers
+        ) mustBe routes.IndexController.onPageLoad() // TODO: TotalUnderDeclaredDutyController
+      }
+
+      "must go from UnderDeclaredDutyLimitsPage  to Contact HMRC when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(UnderDeclaredDutyLimitsPage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          UnderDeclaredDutyLimitsPage,
+          NormalMode,
+          answers
+        ) mustBe routes.IndexController.onPageLoad() // TODO: ContactHMRC
+      }
+
+      "must go from UnderDeclaredDutyLimitsPage to JourneyRecoveryController when no answer exists" in {
+        navigator.nextPage(
+          UnderDeclaredDutyLimitsPage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe routes.JourneyRecoveryController.onPageLoad()
+      }
     }
 
     "in Check mode" - {

@@ -126,6 +126,19 @@ class Navigator @Inject() () {
     case MgdHigherRatePage =>
       _ => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
 
+    case UnderDeclaredDutyLimitsPage =>
+      userAnswers =>
+        userAnswers.get(UnderDeclaredDutyLimitsPage) match {
+          case Some(true) =>
+            routes.IndexController.onPageLoad() // TODO: TotalUnderDeclaredDutyController
+
+          case Some(false) =>
+            routes.IndexController.onPageLoad() // TODO: ContactHmrcController
+
+          case None =>
+            routes.JourneyRecoveryController.onPageLoad()
+        }
+
     case UnderDeclaredDutyReasonableCarePage =>
       _.get(UnderDeclaredDutyReasonableCarePage) match {
         case Some(true)  => routes.SelectReturnController.onPageLoad() // TODO: next page FAR-UND-CON
@@ -240,6 +253,9 @@ class Navigator @Inject() () {
         }
 
     case MgdHigherRatePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case UnderDeclaredDutyLimitsPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case UnderDeclaredDutyReasonableCarePage =>
