@@ -335,6 +335,17 @@ class BackNavigatorSpec extends SpecBase {
         }
       }
 
+      "UnderDeclaredDutyReasonableCarePage" - {
+
+        "must go from UnderDeclaredDutyReasonableCarePage to UnderDeclaredDutyPage" in {
+          navigator.backPage(
+            UnderDeclaredDutyReasonableCarePage,
+            NormalMode,
+            optionalDataRequest
+          ) mustBe Some(routes.UnderDeclaredDutyController.onPageLoad(NormalMode).url)
+        }
+      }
+
       "must go from UnderDeclaredDutyPage to CalculatedMGDHigherRateController when answer is Yes" in {
         val answers =
           emptyUserAnswers
@@ -515,6 +526,13 @@ class BackNavigatorSpec extends SpecBase {
       val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(emptyUserAnswers))
 
       val result = navigator.backPage(UnderDeclaredDutyLimitsPage, CheckMode, request)
+      result mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+    }
+
+    "must go from UnderDeclaredDutyReasonableCarePage to CheckYourAnswers regardless of previous answers" in {
+      val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(emptyUserAnswers))
+
+      val result = navigator.backPage(UnderDeclaredDutyReasonableCarePage, CheckMode, request)
       result mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
     }
 

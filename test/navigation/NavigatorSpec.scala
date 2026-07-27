@@ -216,8 +216,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
       }
 
-      "must go from UnderDeclaredDutyPage to under-declared-duty-resonable-care when answer is Yes" in {
-        // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)  DTR-6999  abdulla.juma
+      "must go from UnderDeclaredDutyPage to UnderDeclaredDutyReasonableCare when answer is Yes" in {
         val answers =
           emptyUserAnswers
             .set(UnderDeclaredDutyPage, true)
@@ -228,7 +227,7 @@ class NavigatorSpec extends SpecBase {
           UnderDeclaredDutyPage,
           NormalMode,
           answers
-        ) mustBe routes.PageNotFoundController.onPageLoad()
+        ) mustBe routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
       }
 
       "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in {
@@ -280,6 +279,36 @@ class NavigatorSpec extends SpecBase {
           NormalMode,
           emptyUserAnswers
         ) mustBe routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
+      }
+
+      // TODO Update this test once FAR-UND-CON page is added
+      "must go from UnderDeclaredDutyReasonableCarePage to SelectReturnPage when answer is Yes" in {
+        val answers = emptyUserAnswers.set(UnderDeclaredDutyReasonableCarePage, true).success.value
+
+        navigator.nextPage(
+          UnderDeclaredDutyReasonableCarePage,
+          NormalMode,
+          answers
+        ) mustBe routes.SelectReturnController.onPageLoad()
+      }
+
+      // TODO Update this test once FAR-UND-LIM page is added
+      "must go from UnderDeclaredDutyReasonableCarePage to SelectReturnPage when answer is No" in {
+        val answers = emptyUserAnswers.set(UnderDeclaredDutyReasonableCarePage, false).success.value
+
+        navigator.nextPage(
+          UnderDeclaredDutyReasonableCarePage,
+          NormalMode,
+          answers
+        ) mustBe routes.SelectReturnController.onPageLoad()
+      }
+
+      "must go from UnderDeclaredDutyReasonableCarePage to SelectReturnPage when no answer exists" in {
+        navigator.nextPage(
+          UnderDeclaredDutyReasonableCarePage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe routes.SelectReturnController.onPageLoad()
       }
 
       "must go from MgdStandardRatePage to NetTakingsHigherRatePage when answer exists" in {
@@ -519,8 +548,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
       }
 
-      "must go from UnderDeclaredDutyPage to under-declared-duty-resonable-care when answer is Yes" in {
-        // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)  DTR-6999  abdulla.juma
+      "must go from UnderDeclaredDutyPage to UnderDeclaredDutyReasonableCare when answer is Yes" in {
         val answers =
           emptyUserAnswers
             .set(UnderDeclaredDutyPage, true)
@@ -531,7 +559,7 @@ class NavigatorSpec extends SpecBase {
           UnderDeclaredDutyPage,
           CheckMode,
           answers
-        ) mustBe routes.PageNotFoundController.onPageLoad()
+        ) mustBe routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
       }
 
       "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in {
@@ -600,6 +628,34 @@ class NavigatorSpec extends SpecBase {
       "must go from MgdHigherRatePage to CheckYourAnswersController" in {
         navigator.nextPage(
           MgdHigherRatePage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from UnderDeclaredDutyReasonableCarePage to CheckYourAnswersPage when answer is Yes" in {
+        val answers = emptyUserAnswers.set(UnderDeclaredDutyReasonableCarePage, true).success.value
+
+        navigator.nextPage(
+          UnderDeclaredDutyReasonableCarePage,
+          CheckMode,
+          answers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from UnderDeclaredDutyReasonableCarePage to CheckYourAnswersPage when answer is No" in {
+        val answers = emptyUserAnswers.set(UnderDeclaredDutyReasonableCarePage, false).success.value
+
+        navigator.nextPage(
+          UnderDeclaredDutyReasonableCarePage,
+          CheckMode,
+          answers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from UnderDeclaredDutyReasonableCarePage to CheckYourAnswersPage when no answer exists" in {
+        navigator.nextPage(
+          UnderDeclaredDutyReasonableCarePage,
           CheckMode,
           emptyUserAnswers
         ) mustBe routes.CheckYourAnswersController.onPageLoad()

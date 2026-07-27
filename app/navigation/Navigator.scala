@@ -108,9 +108,7 @@ class Navigator @Inject() () {
     case UnderDeclaredDutyPage =>
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyPage) match {
-          case Some(true) =>
-            routes.PageNotFoundController
-              .onPageLoad() // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)      NormalMode DTR-6999  abdulla.juma UnderDeclaredDutyReasonableCareController
+          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
           case Some(false) =>
             routes.PageNotFoundController
               .onPageLoad() // TODO: /manage-gambling-tax/returns/duty-brought-forward (FAR-NEG-SCR) NormalMode  20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
@@ -140,6 +138,13 @@ class Navigator @Inject() () {
           case None =>
             routes.JourneyRecoveryController.onPageLoad()
         }
+
+    case UnderDeclaredDutyReasonableCarePage =>
+      _.get(UnderDeclaredDutyReasonableCarePage) match {
+        case Some(true)  => routes.SelectReturnController.onPageLoad() // TODO: next page FAR-UND-CON
+        case Some(false) => routes.SelectReturnController.onPageLoad() // TODO: next page FAR-UND-LIM
+        case None        => routes.SelectReturnController.onPageLoad()
+      }
 
     case _ =>
       _ => routes.IndexController.onPageLoad()
@@ -232,9 +237,7 @@ class Navigator @Inject() () {
     case UnderDeclaredDutyPage =>
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyPage) match {
-          case Some(true) =>
-            routes.PageNotFoundController
-              .onPageLoad() // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)     CheckMode DTR-6999  abdulla.juma UnderDeclaredDutyReasonableCareController
+          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
           case Some(false) =>
             routes.PageNotFoundController
               .onPageLoad() // TODO: /manage-gambling-tax/returns/duty-brought-forward (FAR-NEG-SCR)                   CheckMode  20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
@@ -253,6 +256,9 @@ class Navigator @Inject() () {
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case UnderDeclaredDutyLimitsPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case UnderDeclaredDutyReasonableCarePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case _ =>
