@@ -22,5 +22,5 @@ case object ContactHmrcPage extends QuestionPage {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "ContactHmrc"
+  override def toString: String = "contactHmrc"
 }
