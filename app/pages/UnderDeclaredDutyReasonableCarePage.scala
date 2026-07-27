@@ -18,9 +18,9 @@ package pages
 
 import play.api.libs.json.JsPath
 
-case object ContactHmrcPage extends QuestionPage {
+case object UnderDeclaredDutyReasonableCarePage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
-  override def toString: String = "ContactHmrc"
+  override def toString: String = "underDeclaredDutyReasonableCare"
 }

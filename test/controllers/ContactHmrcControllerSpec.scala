@@ -50,7 +50,7 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(
           userAnswers = Some(userAnswersWithSelectedReturn),
-          regime = Regime.MGD
+          regime      = Regime.MGD
         ).build()
 
       running(application) {
@@ -63,7 +63,7 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
 
         contentAsString(result) mustEqual
           view(
-            backLink = backUrl,
+            backLink       = backUrl,
             selectedReturn = selectedReturn,
             contactHmrcUrl = appConfig.contactHmrcUrl
           )(
@@ -86,7 +86,7 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
         running(application) {
           val request = FakeRequest(GET, contactHmrcRoute)
           val result = route(application, request).value
-          
+
           status(result) mustEqual SEE_OTHER
           redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
         }
@@ -98,7 +98,7 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(
           userAnswers = None,
-          regime = Regime.MGD
+          regime      = Regime.MGD
         ).build()
 
       running(application) {
@@ -117,7 +117,7 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(
           userAnswers = Some(UserAnswers(userAnswersId)),
-          regime = Regime.MGD
+          regime      = Regime.MGD
         ).build()
 
       running(application) {

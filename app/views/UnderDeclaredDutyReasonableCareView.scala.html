@@ -14,16 +14,14 @@
  * limitations under the License.
  *@
 
+@import viewmodels.LegendSize.Large
 @import views.html.components._
-@import viewmodels.LegendSize
 @import models.SelectedReturn
 @import utils.DateTimeFormats
-
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
-    bulletList: BulletList,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
     govukButton: GovukButton,
@@ -32,25 +30,25 @@
 
 @(form: Form[_], mode: Mode, backLink: Option[String], selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("underDeclaredDuty.title")), backLink = backLink) {
-    @formHelper(action = routes.UnderDeclaredDutyController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+@layout(pageTitle = title(form, messages("underDeclaredDutyReasonableCare.title")), backLink = backLink) {
+    @formHelper(action = routes.UnderDeclaredDutyReasonableCareController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
         @if(form.hasErrors) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
         @caption(
-            messages("underDeclaredDuty.caption",
+            messages(
+                "underDeclaredDutyReasonableCare.caption",
                 DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
                 DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
             )
         )
 
-
         @govukRadios(
             RadiosViewModel.yesNo(
                 field = form("value"),
-                legend = LegendViewModel(messages("underDeclaredDuty.heading")).asPageHeading(LegendSize.Large)
+                legend = LegendViewModel(messages("underDeclaredDutyReasonableCare.heading")).asPageHeading(Large)
             )
         )
 

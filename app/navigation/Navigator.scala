@@ -108,26 +108,33 @@ class Navigator @Inject() () {
     case UnderDeclaredDutyPage =>
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyPage) match {
-          case Some(true) =>
-            routes.PageNotFoundController
-              .onPageLoad() // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)      NormalMode DTR-6999  abdulla.juma
+          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
           case Some(false) =>
             routes.PageNotFoundController
               .onPageLoad() // TODO: /manage-gambling-tax/returns/duty-brought-forward (FAR-NEG-SCR) NormalMode  20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
           case None => routes.IndexController.onPageLoad()
         }
 
-    case ContactHmrcPage => // TODO: /manage-gambling-tax/returns/duty-brought-forward
-      _ => routes.IndexController.onPageLoad()
-
     case CalculatedMGDHigherRatePage =>
       userAnswers =>
         userAnswers.get(CalculatedMGDHigherRatePage) match {
-          case Some(true) => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
-          case Some(false) =>
-            routes.PageNotFoundController.onPageLoad() // TODO: /manage-gambling-tax/returns/mgd-higher-rate (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
-          case None => routes.IndexController.onPageLoad()
+          case Some(true)  => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
+          case Some(false) => routes.MgdHigherRateController.onPageLoad(NormalMode)
+          case None        => routes.IndexController.onPageLoad()
         }
+
+    case MgdHigherRatePage =>
+      _ => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
+
+    case UnderDeclaredDutyReasonableCarePage =>
+      _.get(UnderDeclaredDutyReasonableCarePage) match {
+        case Some(true)  => routes.ContactHmrcController.onPageLoad()
+        case Some(false) => routes.SelectReturnController.onPageLoad() // TODO: next page FAR-UND-LIM
+        case None        => routes.SelectReturnController.onPageLoad()
+      }
+
+    case ContactHmrcPage => // TODO: /manage-gambling-tax/returns/duty-brought-forward
+      _ => routes.IndexController.onPageLoad()
 
     case _ =>
       _ => routes.IndexController.onPageLoad()
@@ -136,7 +143,7 @@ class Navigator @Inject() () {
   private val checkRouteMap: Page => UserAnswers => Call = {
 
     case MachinesAvailablePage =>
-      _ => routes.NetTakingsLowerRateController.onPageLoad(CheckMode)
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case NetTakingsLowerRatePage =>
       userAnswers =>
@@ -152,7 +159,7 @@ class Navigator @Inject() () {
         }
 
     case NetTakingsLowerPage =>
-      _ => routes.CalculationLowerCheckController.onPageLoad(CheckMode)
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case CalculationLowerCheckPage =>
       userAnswers =>
@@ -168,10 +175,10 @@ class Navigator @Inject() () {
         }
 
     case MgdLowerRatePage =>
-      _ => routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case NetTakingsStandardPage =>
-      _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case CalculatedMGDStandardRatePage =>
       userAnswers =>
@@ -210,7 +217,7 @@ class Navigator @Inject() () {
         }
 
     case NetTakingsHigherPage =>
-      _ => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case MgdStandardRatePage =>
       _.get(MgdStandardRatePage)
@@ -220,9 +227,7 @@ class Navigator @Inject() () {
     case UnderDeclaredDutyPage =>
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyPage) match {
-          case Some(true) =>
-            routes.PageNotFoundController
-              .onPageLoad() // TODO: /manage-gambling-tax/returns/under-declared-duty-resonable-care (FAR-UND-ERR)     CheckMode DTR-6999  abdulla.juma
+          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
           case Some(false) =>
             routes.PageNotFoundController
               .onPageLoad() // TODO: /manage-gambling-tax/returns/duty-brought-forward (FAR-NEG-SCR)                   CheckMode  20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
@@ -232,11 +237,16 @@ class Navigator @Inject() () {
     case CalculatedMGDHigherRatePage =>
       userAnswers =>
         userAnswers.get(CalculatedMGDHigherRatePage) match {
-          case Some(true) => routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
-          case Some(false) =>
-            routes.PageNotFoundController.onPageLoad() // TODO: /manage-gambling-tax/returns/mgd-higher-rate (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
-          case None => routes.CheckYourAnswersController.onPageLoad()
+          case Some(true)  => routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
+          case Some(false) => routes.MgdHigherRateController.onPageLoad(CheckMode)
+          case None        => routes.CheckYourAnswersController.onPageLoad()
         }
+
+    case MgdHigherRatePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case UnderDeclaredDutyReasonableCarePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case ContactHmrcPage => // TODO: /manage-gambling-tax/returns/duty-brought-forward
       _ => routes.IndexController.onPageLoad()

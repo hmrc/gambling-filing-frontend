@@ -14,44 +14,45 @@
  * limitations under the License.
  *@
 
-@import views.html.components._
-@import viewmodels.LegendSize
+@import viewmodels.InputWidth._
+@import viewmodels.LabelSize
 @import models.SelectedReturn
 @import utils.DateTimeFormats
-
 
 @this(
     layout: templates.Layout,
     formHelper: FormWithCSRF,
-    bulletList: BulletList,
+    caption: components.Caption,
     govukErrorSummary: GovukErrorSummary,
-    govukRadios: GovukRadios,
-    govukButton: GovukButton,
-    caption: components.Caption
+    govukInput: GovukInput,
+    govukButton: GovukButton
 )
 
 @(form: Form[_], mode: Mode, backLink: Option[String], selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("underDeclaredDuty.title")), backLink = backLink) {
-    @formHelper(action = routes.UnderDeclaredDutyController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+@layout(pageTitle = title(form, messages("mgdHigherRate.title")), backLink = backLink) {
 
-        @if(form.hasErrors) {
+    @formHelper(action = routes.MgdHigherRateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+
+        @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
         @caption(
-            messages("underDeclaredDuty.caption",
+            messages("mgdHigherRate.caption",
                 DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
                 DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
             )
         )
 
-
-        @govukRadios(
-            RadiosViewModel.yesNo(
+        @govukInput(
+            InputViewModel(
                 field = form("value"),
-                legend = LegendViewModel(messages("underDeclaredDuty.heading")).asPageHeading(LegendSize.Large)
+                label = LabelViewModel(messages("mgdHigherRate.heading")).asPageHeading(LabelSize.Large)
             )
+            .withPrefix(PrefixOrSuffix(content = Text("£")))
+            .withHint(HintViewModel(HtmlContent(messages("mgdHigherRate.hint"))))
+            .withWidth(Fixed20)
         )
 
         @govukButton(

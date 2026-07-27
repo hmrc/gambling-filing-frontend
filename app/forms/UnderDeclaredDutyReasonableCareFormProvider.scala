@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package pages
+package forms
 
-import play.api.libs.json.JsPath
+import forms.mappings.Mappings
+import play.api.data.Form
 
-case object ContactHmrcPage extends QuestionPage {
+import javax.inject.Inject
 
-  override def path: JsPath = JsPath \ toString
+class UnderDeclaredDutyReasonableCareFormProvider @Inject() extends Mappings {
 
-  override def toString: String = "ContactHmrc"
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("underDeclaredDutyReasonableCare.error.required")
+    )
 }

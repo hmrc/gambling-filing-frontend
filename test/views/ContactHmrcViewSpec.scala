@@ -60,7 +60,7 @@ class ContactHmrcViewSpec extends SpecBase {
 
       button.text mustBe messages("site.continue")
       button.attr("href") mustBe controllers.routes.IndexController.onPageLoad().url
-      
+
     }
   }
 
@@ -69,9 +69,9 @@ class ContactHmrcViewSpec extends SpecBase {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[ContactHmrcView]
     val selectedReturn = SelectedReturn(
-        LocalDate.of(2025, 1, 1),
-        LocalDate.of(2025, 3, 31)
-      )
+      LocalDate.of(2025, 1, 1),
+      LocalDate.of(2025, 3, 31)
+    )
     val contactHmrcUrl =
       "https://www.gov.uk/find-hmrc-contacts/gambling-duties-enquiries"
 

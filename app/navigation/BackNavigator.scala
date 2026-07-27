@@ -93,18 +93,32 @@ class BackNavigator @Inject() () {
         userAnswers.get(NetTakingsHigherRatePage) match {
           case Some(true) =>
             userAnswers.get(CalculatedMGDHigherRatePage) match {
-              case Some(true) => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
-              case Some(false) =>
-                routes.PageNotFoundController
-                  .onPageLoad() // TODO: /manage-gambling-tax/returns/mgd-higher-rate  (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
-              case None => routes.IndexController.onPageLoad()
+              case Some(true)  => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
+              case Some(false) => routes.MgdHigherRateController.onPageLoad(NormalMode)
+              case None        => routes.IndexController.onPageLoad()
             }
           case Some(false) => routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
           case None        => routes.IndexController.onPageLoad()
         }
 
+    case MgdHigherRatePage =>
+      _ => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
+
+    case UnderDeclaredDutyReasonableCarePage =>
+      _ => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
+
     case ContactHmrcPage =>
-      _ => routes.IndexController.onPageLoad()
+      userAnswers =>
+        userAnswers.get(UnderDeclaredDutyReasonableCarePage) match {
+          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
+
+          case _ =>
+            userAnswers.get(UnderDeclaredDutyReasonableCarePage) match { // TODO: /manage-gambling-tax/returns/under-declared-duty-limits
+              case Some(false) => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
+
+              case _ => routes.IndexController.onPageLoad()
+            }
+        }
 
     case _ =>
       _ => routes.IndexController.onPageLoad()
@@ -173,14 +187,31 @@ class BackNavigator @Inject() () {
         userAnswers.get(NetTakingsHigherRatePage) match {
           case Some(true) =>
             userAnswers.get(CalculatedMGDHigherRatePage) match {
-              case Some(true) => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
-              case Some(false) =>
-                routes.PageNotFoundController
-                  .onPageLoad() // TODO: /manage-gambling-tax/returns/mgd-higher-rate  (FAR-DUE-HIG) DTR-6771 narendra.paduchuri
-              case None => routes.CheckYourAnswersController.onPageLoad()
+              case Some(true)  => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
+              case Some(false) => routes.MgdHigherRateController.onPageLoad(CheckMode)
+              case None        => routes.CheckYourAnswersController.onPageLoad()
             }
           case Some(false) => routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
           case None        => routes.CheckYourAnswersController.onPageLoad()
+        }
+
+    case MgdHigherRatePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case UnderDeclaredDutyReasonableCarePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case ContactHmrcPage =>
+      userAnswers =>
+        userAnswers.get(UnderDeclaredDutyReasonableCarePage) match {
+          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
+
+          case _ =>
+            userAnswers.get(UnderDeclaredDutyReasonableCarePage) match { // TODO: /manage-gambling-tax/returns/under-declared-duty-limits
+              case Some(false) => routes.IndexController.onPageLoad()
+
+              case _ => routes.CheckYourAnswersController.onPageLoad()
+            }
         }
 
     case _ =>

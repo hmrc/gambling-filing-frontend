@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package pages
+package forms
 
-import play.api.libs.json.JsPath
+import forms.mappings.Mappings
+import play.api.data.Form
 
-case object ContactHmrcPage extends QuestionPage {
+import javax.inject.Inject
 
-  override def path: JsPath = JsPath \ toString
+class MgdHigherRateFormProvider @Inject() extends Mappings {
 
-  override def toString: String = "ContactHmrc"
+  def apply(): Form[BigDecimal] =
+    Form(
+      "value" -> currency(
+        "mgdHigherRate.error.required",
+        "mgdHigherRate.error.invalid",
+        "mgdHigherRate.error.range"
+      )
+    )
 }

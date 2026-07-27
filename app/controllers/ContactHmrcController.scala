@@ -31,15 +31,14 @@ import javax.inject.Inject
 import scala.concurrent.Future
 
 class ContactHmrcController @Inject() (
-                                        override val messagesApi: MessagesApi,
-                                        backNavigator: BackNavigator,
-                                        authorise: AuthorisedAction,
-                                        getData: DataRetrievalAction,
-                                        val controllerComponents: MessagesControllerComponents,
-                                        appConfig: FrontendAppConfig,
-                                        view: ContactHmrcView
-                                      )
-  extends FrontendBaseController
+  override val messagesApi: MessagesApi,
+  backNavigator: BackNavigator,
+  authorise: AuthorisedAction,
+  getData: DataRetrievalAction,
+  val controllerComponents: MessagesControllerComponents,
+  appConfig: FrontendAppConfig,
+  view: ContactHmrcView
+) extends FrontendBaseController
     with I18nSupport
     with Logging {
 
