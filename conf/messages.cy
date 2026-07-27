@@ -221,3 +221,11 @@ underDeclaredDutyReasonableCare.title = Nature of under-declared duty error
 underDeclaredDutyReasonableCare.heading = Was the error that led to your under-declared duty caused by a failure to take reasonable care?
 underDeclaredDutyReasonableCare.caption = File a return for {0} to {1}
 underDeclaredDutyReasonableCare.error.required = Select yes if the error that led to your under-declared duty was caused by a failure to take reasonable care
+
+contactHmrc.title = Under-declared duty
+contactHmrc.heading = Under-declared duty
+contactHmrc.caption = File a return for {0} to {1}
+contactHmrc.p1 = You cannot declare under-declared duty in this return. You should
+contactHmrc.link = Contact HRMC (opens in a new tab)
+contactHmrc.p2 = to discuss your under-declared duty.
+contactHmrc.p3 = You may continue with the rest of your return in the meantime.

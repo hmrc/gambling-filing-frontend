@@ -281,26 +281,24 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
       }
 
-      // TODO Update this test once FAR-UND-CON page is added
-      "must go from UnderDeclaredDutyReasonableCarePage to SelectReturnPage when answer is Yes" in {
+      "must go from UnderDeclaredDutyReasonableCarePage to ContactHmrcPage when answer is Yes" in {
         val answers = emptyUserAnswers.set(UnderDeclaredDutyReasonableCarePage, true).success.value
 
         navigator.nextPage(
           UnderDeclaredDutyReasonableCarePage,
           NormalMode,
           answers
-        ) mustBe routes.SelectReturnController.onPageLoad()
+        ) mustBe routes.ContactHmrcController.onPageLoad()
       }
 
-      // TODO Update this test once FAR-UND-LIM page is added
-      "must go from UnderDeclaredDutyReasonableCarePage to SelectReturnPage when answer is No" in {
+      "must go from UnderDeclaredDutyReasonableCarePage to UnderDeclaredDutyLimitsPage when answer is No" in {
         val answers = emptyUserAnswers.set(UnderDeclaredDutyReasonableCarePage, false).success.value
 
         navigator.nextPage(
           UnderDeclaredDutyReasonableCarePage,
           NormalMode,
           answers
-        ) mustBe routes.SelectReturnController.onPageLoad()
+        ) mustBe routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
       }
 
       "must go from UnderDeclaredDutyReasonableCarePage to SelectReturnPage when no answer exists" in {
@@ -355,7 +353,7 @@ class NavigatorSpec extends SpecBase {
           UnderDeclaredDutyLimitsPage,
           NormalMode,
           answers
-        ) mustBe routes.IndexController.onPageLoad() // TODO: ContactHMRC
+        ) mustBe routes.ContactHmrcController.onPageLoad()
       }
 
       "must go from UnderDeclaredDutyLimitsPage to JourneyRecoveryController when no answer exists" in {
@@ -364,6 +362,15 @@ class NavigatorSpec extends SpecBase {
           NormalMode,
           emptyUserAnswers
         ) mustBe routes.JourneyRecoveryController.onPageLoad()
+      }
+
+      // TODO Update this test once duty-brought-forward page(FAR-NEG-SCR) is added
+      "must go from ContactHmrcPage to DutyBroughtForwardPage" in {
+        navigator.nextPage(
+          ContactHmrcPage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe routes.IndexController.onPageLoad()
       }
     }
 
@@ -656,6 +663,14 @@ class NavigatorSpec extends SpecBase {
       "must go from UnderDeclaredDutyReasonableCarePage to CheckYourAnswersPage when no answer exists" in {
         navigator.nextPage(
           UnderDeclaredDutyReasonableCarePage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from ContactHmrcPage to CYA" in {
+        navigator.nextPage(
+          ContactHmrcPage,
           CheckMode,
           emptyUserAnswers
         ) mustBe routes.CheckYourAnswersController.onPageLoad()

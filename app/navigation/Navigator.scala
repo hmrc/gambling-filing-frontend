@@ -133,7 +133,7 @@ class Navigator @Inject() () {
             routes.IndexController.onPageLoad() // TODO: TotalUnderDeclaredDutyController
 
           case Some(false) =>
-            routes.IndexController.onPageLoad() // TODO: ContactHmrcController
+            routes.ContactHmrcController.onPageLoad()
 
           case None =>
             routes.JourneyRecoveryController.onPageLoad()
@@ -141,10 +141,13 @@ class Navigator @Inject() () {
 
     case UnderDeclaredDutyReasonableCarePage =>
       _.get(UnderDeclaredDutyReasonableCarePage) match {
-        case Some(true)  => routes.SelectReturnController.onPageLoad() // TODO: next page FAR-UND-CON
-        case Some(false) => routes.SelectReturnController.onPageLoad() // TODO: next page FAR-UND-LIM
+        case Some(true)  => routes.ContactHmrcController.onPageLoad()
+        case Some(false) => routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
         case None        => routes.SelectReturnController.onPageLoad()
       }
+
+    case ContactHmrcPage => // TODO: /manage-gambling-tax/returns/duty-brought-forward
+      _ => routes.IndexController.onPageLoad()
 
     case _ =>
       _ => routes.IndexController.onPageLoad()
@@ -259,6 +262,9 @@ class Navigator @Inject() () {
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case UnderDeclaredDutyReasonableCarePage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case ContactHmrcPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case _ =>

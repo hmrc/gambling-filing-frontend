@@ -88,9 +88,6 @@ class BackNavigator @Inject() () {
     case CalculatedMGDHigherRatePage =>
       _ => routes.NetTakingsHigherController.onPageLoad(NormalMode)
 
-    case UnderDeclaredDutyLimitsPage =>
-      _ => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
-
     case UnderDeclaredDutyPage =>
       userAnswers =>
         userAnswers.get(NetTakingsHigherRatePage) match {
@@ -109,6 +106,22 @@ class BackNavigator @Inject() () {
 
     case UnderDeclaredDutyReasonableCarePage =>
       _ => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
+
+    case UnderDeclaredDutyLimitsPage =>
+      _ => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
+
+    case ContactHmrcPage =>
+      userAnswers =>
+        userAnswers.get(UnderDeclaredDutyReasonableCarePage) match {
+          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
+
+          case _ =>
+            userAnswers.get(UnderDeclaredDutyLimitsPage) match {
+              case Some(false) => routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
+
+              case _ => routes.IndexController.onPageLoad()
+            }
+        }
 
     case _ =>
       _ => routes.IndexController.onPageLoad()
@@ -194,6 +207,19 @@ class BackNavigator @Inject() () {
     case UnderDeclaredDutyReasonableCarePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
+    case ContactHmrcPage =>
+      userAnswers =>
+        userAnswers.get(UnderDeclaredDutyReasonableCarePage) match {
+          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
+
+          case _ =>
+            userAnswers.get(UnderDeclaredDutyLimitsPage) match {
+              case Some(false) => routes.UnderDeclaredDutyLimitsController.onPageLoad(CheckMode)
+
+              case _ => routes.CheckYourAnswersController.onPageLoad()
+            }
+        }
+
     case _ =>
       _ => routes.CheckYourAnswersController.onPageLoad()
   }
@@ -205,4 +231,7 @@ class BackNavigator @Inject() () {
       case CheckMode  => Some(checkBackRouteMap(page)(userAnswers).url)
     }
   }
+
+  def backPage(page: Page, request: OptionalDataRequest[AnyContent]): Option[String] =
+    backPage(page, NormalMode, request)
 }
