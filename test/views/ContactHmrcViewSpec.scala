@@ -31,7 +31,7 @@ class ContactHmrcViewSpec extends SpecBase {
   "ContactHmrcView" - {
     "must render the page with the correct content" in new Setup {
 
-      val html = view(None, selectedReturn, contactHmrcUrl)
+      val html = view(None, selectedReturn, contactHmrcUrl, continueUrl)
       val doc = Jsoup.parse(html.body)
 
       doc.title must include(messages("contactHmrc.title"))
@@ -59,7 +59,7 @@ class ContactHmrcViewSpec extends SpecBase {
       val button = doc.select(".govuk-button")
 
       button.text mustBe messages("site.continue")
-      button.attr("href") mustBe controllers.routes.IndexController.onPageLoad().url
+      button.attr("href") mustBe continueUrl
 
     }
   }
@@ -74,6 +74,8 @@ class ContactHmrcViewSpec extends SpecBase {
     )
     val contactHmrcUrl =
       "https://www.gov.uk/find-hmrc-contacts/gambling-duties-enquiries"
+    val continueUrl =
+      controllers.routes.IndexController.onPageLoad().url
 
     implicit val request: Request[?] =
       FakeRequest()

@@ -133,7 +133,7 @@ class Navigator @Inject() () {
             routes.IndexController.onPageLoad() // TODO: TotalUnderDeclaredDutyController
 
           case Some(false) =>
-            routes.ContactHmrcController.onPageLoad()
+            routes.ContactHmrcController.onPageLoad(NormalMode)
 
           case None =>
             routes.JourneyRecoveryController.onPageLoad()
@@ -141,7 +141,7 @@ class Navigator @Inject() () {
 
     case UnderDeclaredDutyReasonableCarePage =>
       _.get(UnderDeclaredDutyReasonableCarePage) match {
-        case Some(true)  => routes.ContactHmrcController.onPageLoad()
+        case Some(true)  => routes.ContactHmrcController.onPageLoad(NormalMode)
         case Some(false) => routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
         case None        => routes.SelectReturnController.onPageLoad()
       }
@@ -262,7 +262,11 @@ class Navigator @Inject() () {
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case UnderDeclaredDutyReasonableCarePage =>
-      _ => routes.CheckYourAnswersController.onPageLoad()
+      _.get(UnderDeclaredDutyReasonableCarePage) match {
+        case Some(true)  => routes.ContactHmrcController.onPageLoad(CheckMode)
+        case Some(false) => routes.UnderDeclaredDutyLimitsController.onPageLoad(CheckMode)
+        case None        => routes.CheckYourAnswersController.onPageLoad()
+      }
 
     case ContactHmrcPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()

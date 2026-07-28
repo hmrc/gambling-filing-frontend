@@ -18,8 +18,8 @@ package controllers
 
 import config.FrontendAppConfig
 import controllers.actions.*
-import models.Regime
-import navigation.BackNavigator
+import models.{Mode, Regime, UserAnswers}
+import navigation.{BackNavigator, Navigator}
 import pages.{ContactHmrcPage, SelectReturnPage}
 import play.api.Logging
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -32,6 +32,7 @@ import scala.concurrent.Future
 
 class ContactHmrcController @Inject() (
   override val messagesApi: MessagesApi,
+  navigator: Navigator,
   backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
@@ -42,7 +43,7 @@ class ContactHmrcController @Inject() (
     with I18nSupport
     with Logging {
 
-  def onPageLoad(): Action[AnyContent] =
+  def onPageLoad(mode: Mode): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
 
       request.regime match {
@@ -57,15 +58,19 @@ class ContactHmrcController @Inject() (
                 )
               )
             ) { selectedReturn =>
+              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+
               Future.successful(
                 Ok(
                   view(
                     backLink = backNavigator.backPage(
                       ContactHmrcPage,
+                      mode,
                       request
                     ),
                     selectedReturn = selectedReturn,
-                    contactHmrcUrl = appConfig.contactHmrcUrl
+                    contactHmrcUrl = appConfig.contactHmrcUrl,
+                    continueUrl    = navigator.nextPage(ContactHmrcPage, mode, userAnswers).url
                   )
                 )
               )
