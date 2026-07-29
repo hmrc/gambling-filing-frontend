@@ -19,14 +19,12 @@ package controllers
 import config.FrontendAppConfig
 import controllers.actions.*
 import forms.CalculatedMGDStandardRateFormProvider
-import models.{Mode, Regime, SelectedReturn, UserAnswers}
+import models.{Mode, SelectedReturn, UserAnswers}
 import navigation.{BackNavigator, Navigator}
 import pages.{CalculatedMGDStandardRatePage, MgdStandardRatePage, NetTakingsStandardPage, SelectReturnPage}
-import play.api.Logging
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.CalculatedMGDStandardRateView
 
 import javax.inject.Inject
@@ -44,88 +42,78 @@ class CalculatedMGDStandardRateController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   view: CalculatedMGDStandardRateView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    extends BaseFilingController {
 
   private val form = formProvider()
   private val ratePercentage = frontendAppConfig.standardRateDutyPercentage * 100
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
-    request.regime match {
-      case Regime.MGD =>
-        val radioAnswer = request.userAnswers.flatMap(_.get(CalculatedMGDStandardRatePage)).fold(form)(form.fill)
+    whenMgd {
+      val radioAnswer = request.userAnswers.flatMap(_.get(CalculatedMGDStandardRatePage)).fold(form)(form.fill)
 
-        request.userAnswers
-          .flatMap(_.get(SelectReturnPage))
-          .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
-            request.userAnswers
-              .flatMap(_.get(NetTakingsStandardPage))
-              .fold(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))) { netTakings =>
-                val duty = netTakings * frontendAppConfig.standardRateDutyPercentage
-                Future.successful(
-                  Ok(
-                    view(radioAnswer,
-                         netTakings,
-                         duty,
-                         ratePercentage,
-                         mode,
-                         backNavigator.backPage(CalculatedMGDStandardRatePage, mode, request),
-                         selectedReturn
-                        )
-                  )
+      request.userAnswers
+        .flatMap(_.get(SelectReturnPage))
+        .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
+          request.userAnswers
+            .flatMap(_.get(NetTakingsStandardPage))
+            .fold(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))) { netTakings =>
+              val duty = netTakings * frontendAppConfig.standardRateDutyPercentage
+              Future.successful(
+                Ok(
+                  view(radioAnswer,
+                       netTakings,
+                       duty,
+                       ratePercentage,
+                       mode,
+                       backNavigator.backPage(CalculatedMGDStandardRatePage, mode, request),
+                       selectedReturn
+                      )
                 )
-              }
-          }
-      case _ =>
-        logger.info(s"[onPageLoad] regime ${request.regime} is not Authorised")
-        Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
+              )
+            }
+        }
     }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
-    request.regime match {
-      case Regime.MGD =>
-        request.userAnswers
-          .flatMap(_.get(SelectReturnPage))
-          .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
-            request.userAnswers
-              .flatMap(_.get(NetTakingsStandardPage))
-              .fold(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))) { netTakings =>
-                val duty = netTakings * frontendAppConfig.standardRateDutyPercentage
+    whenMgd {
+      request.userAnswers
+        .flatMap(_.get(SelectReturnPage))
+        .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
+          request.userAnswers
+            .flatMap(_.get(NetTakingsStandardPage))
+            .fold(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))) { netTakings =>
+              val duty = netTakings * frontendAppConfig.standardRateDutyPercentage
 
-                form
-                  .bindFromRequest()
-                  .fold(
-                    formWithErrors =>
-                      Future.successful(
-                        BadRequest(
-                          view(formWithErrors,
-                               netTakings,
-                               duty,
-                               ratePercentage,
-                               mode,
-                               backNavigator.backPage(CalculatedMGDStandardRatePage, mode, request),
-                               selectedReturn
-                              )
-                        )
-                      ),
-                    value => {
-                      val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-                      for {
-                        updatedAnswers <- Future.fromTry(userAnswers.set(CalculatedMGDStandardRatePage, value))
-                        finalAnswers <-
-                          if (value) Future.fromTry(updatedAnswers.set(MgdStandardRatePage, duty))
-                          else Future.successful(updatedAnswers)
-                        _ <- sessionRepository.set(finalAnswers)
-                      } yield Redirect(navigator.nextPage(CalculatedMGDStandardRatePage, mode, finalAnswers))
-                    }
-                  )
-              }
-          }
-      case _ =>
-        logger.info(s"[onSubmit] regime ${request.regime} is not Authorised")
-        Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
+              form
+                .bindFromRequest()
+                .fold(
+                  formWithErrors =>
+                    Future.successful(
+                      BadRequest(
+                        view(formWithErrors,
+                             netTakings,
+                             duty,
+                             ratePercentage,
+                             mode,
+                             backNavigator.backPage(CalculatedMGDStandardRatePage, mode, request),
+                             selectedReturn
+                            )
+                      )
+                    ),
+                  value => {
+                    val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+                    for {
+                      updatedAnswers <- Future.fromTry(userAnswers.set(CalculatedMGDStandardRatePage, value))
+                      finalAnswers <-
+                        if (value) Future.fromTry(updatedAnswers.set(MgdStandardRatePage, duty))
+                        else Future.successful(updatedAnswers)
+                      _ <- sessionRepository.set(finalAnswers)
+                    } yield Redirect(navigator.nextPage(CalculatedMGDStandardRatePage, mode, finalAnswers))
+                  }
+                )
+            }
+        }
     }
   }
 }
