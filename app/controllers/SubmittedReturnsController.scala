@@ -17,18 +17,15 @@
 package controllers
 
 import controllers.actions.{AuthorisedAction, DataRetrievalAction}
-import models.{Regime, SortBy}
-import play.api.Logging
-import play.api.i18n.I18nSupport
+import models.SortBy
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GamblingService
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import utils.QueryParameters.OrderBy
 import views.html.{SubmittedReturnView, SubmittedReturnsView}
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class SubmittedReturnsController @Inject() (
   val controllerComponents: MessagesControllerComponents,
@@ -38,27 +35,21 @@ class SubmittedReturnsController @Inject() (
   submittedReturnsView: SubmittedReturnsView,
   submittedReturnView: SubmittedReturnView
 )(implicit ec: ExecutionContext)
-    extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+    extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
       val regNum = request.regNum
       val logTxt = s"[onPageLoad] for regNum=$regNum"
 
-      request.regime match {
-        case Regime.MGD =>
-          gamblingService
-            .getSubmittedReturns(regNum, SortBy.PeriodStartDate, OrderBy.Descending)
-            .map(submittedReturns => Ok(submittedReturnsView(regNum, submittedReturns)))
-            .recover { case ex =>
-              logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED", ex)
-              Redirect(controllers.routes.SystemErrorController.onPageLoad())
-            }
-        case _ =>
-          logger.info(s"$logTxt regime ${request.regime} is not Authorised")
-          Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
+      whenMgd {
+        gamblingService
+          .getSubmittedReturns(regNum, SortBy.PeriodStartDate, OrderBy.Descending)
+          .map(submittedReturns => Ok(submittedReturnsView(regNum, submittedReturns)))
+          .recover { case ex =>
+            logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED", ex)
+            Redirect(controllers.routes.SystemErrorController.onPageLoad())
+          }
       }
     }
 
@@ -67,18 +58,14 @@ class SubmittedReturnsController @Inject() (
       val regNum = request.regNum
       val logTxt = s"[viewFiledReturn] for regNum=$regNum"
 
-      request.regime match {
-        case Regime.MGD =>
-          gamblingService
-            .getSubmittedReturn(regNum, consecNo)
-            .map(filedReturn => Ok(submittedReturnView(filedReturn)))
-            .recover { case ex =>
-              logger.error(s"$logTxt failed for regNum=$regNum consecNo=$consecNo", ex)
-              Redirect(controllers.routes.SystemErrorController.onPageLoad())
-            }
-        case _ =>
-          logger.info(s"$logTxt regime ${request.regime} is not Authorised")
-          Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
+      whenMgd {
+        gamblingService
+          .getSubmittedReturn(regNum, consecNo)
+          .map(filedReturn => Ok(submittedReturnView(filedReturn)))
+          .recover { case ex =>
+            logger.error(s"$logTxt failed for regNum=$regNum consecNo=$consecNo", ex)
+            Redirect(controllers.routes.SystemErrorController.onPageLoad())
+          }
       }
     }
 }

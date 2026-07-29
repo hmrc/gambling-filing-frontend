@@ -18,13 +18,11 @@ package controllers
 
 import config.FrontendAppConfig
 import controllers.actions.*
-import models.{Mode, Regime, UserAnswers}
+import models.{Mode, UserAnswers}
 import navigation.{BackNavigator, Navigator}
 import pages.{ContactHmrcPage, SelectReturnPage}
-import play.api.Logging
-import play.api.i18n.{I18nSupport, MessagesApi}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.ContactHmrcView
 
 import javax.inject.Inject
@@ -39,53 +37,39 @@ class ContactHmrcController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   appConfig: FrontendAppConfig,
   view: ContactHmrcView
-) extends FrontendBaseController
-    with I18nSupport
-    with Logging {
+) extends BaseFilingController {
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
 
-      request.regime match {
-
-        case Regime.MGD =>
-          request.userAnswers
-            .flatMap(_.get(SelectReturnPage))
-            .fold(
-              Future.successful(
-                Redirect(
-                  controllers.routes.SelectReturnController.onPageLoad()
-                )
+      whenMgd {
+        request.userAnswers
+          .flatMap(_.get(SelectReturnPage))
+          .fold(
+            Future.successful(
+              Redirect(
+                controllers.routes.SelectReturnController.onPageLoad()
               )
-            ) { selectedReturn =>
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-
-              Future.successful(
-                Ok(
-                  view(
-                    backLink = backNavigator.backPage(
-                      ContactHmrcPage,
-                      mode,
-                      request
-                    ),
-                    selectedReturn = selectedReturn,
-                    contactHmrcUrl = appConfig.contactHmrcUrl,
-                    continueUrl    = navigator.nextPage(ContactHmrcPage, mode, userAnswers).url
-                  )
-                )
-              )
-            }
-
-        case _ =>
-          logger.info(
-            s"[onPageLoad] regime ${request.regime} is not authorised"
-          )
-
-          Future.successful(
-            Redirect(
-              controllers.routes.AccessDeniedController.onPageLoad()
             )
-          )
+          ) { selectedReturn =>
+            val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+
+            Future.successful(
+              Ok(
+                view(
+                  backLink = backNavigator.backPage(
+                    ContactHmrcPage,
+                    mode,
+                    request
+                  ),
+                  selectedReturn = selectedReturn,
+                  contactHmrcUrl = appConfig.contactHmrcUrl,
+                  continueUrl    = navigator.nextPage(ContactHmrcPage, mode, userAnswers).url
+                )
+              )
+            )
+          }
+
       }
     }
 }
