@@ -650,7 +650,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.ContactHmrcController.onPageLoad(CheckMode)
       }
 
-      "must go from UnderDeclaredDutyReasonableCarePage to CheckYourAnswersPage when answer is No" in {
+      "must go from UnderDeclaredDutyReasonableCarePage to UnderDeclaredDutyLimitsController when answer is No" in {
         val answers = emptyUserAnswers.set(UnderDeclaredDutyReasonableCarePage, false).success.value
 
         navigator.nextPage(
