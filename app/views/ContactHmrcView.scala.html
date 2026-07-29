@@ -28,7 +28,7 @@ govukButton: GovukButton,
 caption: components.Caption
 )
 
-@(backLink: Option[String], selectedReturn: SelectedReturn, contactHmrcUrl: String)(implicit request: Request[_], messages: Messages)
+@(backLink: Option[String], selectedReturn: SelectedReturn, contactHmrcUrl: String, continueUrl: String)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("contactHmrc.title")),backLink = backLink) {
 
@@ -57,7 +57,7 @@ caption: components.Caption
    <div class="govuk-clearfix">
       @govukButton(
          ButtonViewModel(messages("site.continue"))
-         .asLink(routes.IndexController.onPageLoad().url)
+         .asLink(continueUrl)
      )
    </div>
 

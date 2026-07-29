@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import config.FrontendAppConfig
-import models.{Regime, SelectedReturn, UserAnswers}
+import models.{CheckMode, NormalMode, Regime, SelectedReturn, UserAnswers}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.SelectReturnPage
 import play.api.test.FakeRequest
@@ -41,11 +41,14 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
       .value
 
   lazy val contactHmrcRoute: String =
-    routes.ContactHmrcController.onPageLoad().url
+    routes.ContactHmrcController.onPageLoad(NormalMode).url
+
+  lazy val changeContactHmrcRoute: String =
+    routes.ContactHmrcController.onPageLoad(CheckMode).url
 
   "ContactHmrc Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET in NormalMode" in {
 
       val application =
         applicationBuilder(
@@ -65,7 +68,37 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
           view(
             backLink       = backUrl,
             selectedReturn = selectedReturn,
-            contactHmrcUrl = appConfig.contactHmrcUrl
+            contactHmrcUrl = appConfig.contactHmrcUrl,
+            continueUrl    = controllers.routes.IndexController.onPageLoad().url
+          )(
+            request,
+            messages(application)
+          ).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET in CheckMode" in {
+
+      val application =
+        applicationBuilder(
+          userAnswers = Some(userAnswersWithSelectedReturn),
+          regime      = Regime.MGD
+        ).build()
+
+      running(application) {
+        val request = FakeRequest(GET, changeContactHmrcRoute)
+        val result = route(application, request).value
+        val view = application.injector.instanceOf[ContactHmrcView]
+        val appConfig = application.injector.instanceOf[FrontendAppConfig]
+
+        status(result) mustEqual OK
+
+        contentAsString(result) mustEqual
+          view(
+            backLink       = Some(controllers.routes.CheckYourAnswersController.onPageLoad().url),
+            selectedReturn = selectedReturn,
+            contactHmrcUrl = appConfig.contactHmrcUrl,
+            continueUrl    = controllers.routes.CheckYourAnswersController.onPageLoad().url
           )(
             request,
             messages(application)

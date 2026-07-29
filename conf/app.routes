@@ -112,4 +112,5 @@ GET        /change-under-declared-duty-reasonable-care   controllers.UnderDeclar
 POST       /change-under-declared-duty-reasonable-care   controllers.UnderDeclaredDutyReasonableCareController.onSubmit(mode: Mode = CheckMode)
 
 
-GET        /contact-hmrc                        controllers.ContactHmrcController.onPageLoad()
+GET        /contact-hmrc                        controllers.ContactHmrcController.onPageLoad(mode: Mode = NormalMode)
+GET        /change-contact-hmrc                 controllers.ContactHmrcController.onPageLoad(mode: Mode = CheckMode)

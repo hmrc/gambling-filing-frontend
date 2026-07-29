@@ -114,12 +114,10 @@ class BackNavigator @Inject() () {
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyReasonableCarePage) match {
           case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
-
           case _ =>
             userAnswers.get(UnderDeclaredDutyLimitsPage) match {
               case Some(false) => routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
-
-              case _ => routes.IndexController.onPageLoad()
+              case _           => routes.IndexController.onPageLoad()
             }
         }
 

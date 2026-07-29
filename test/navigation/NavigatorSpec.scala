@@ -288,7 +288,7 @@ class NavigatorSpec extends SpecBase {
           UnderDeclaredDutyReasonableCarePage,
           NormalMode,
           answers
-        ) mustBe routes.ContactHmrcController.onPageLoad()
+        ) mustBe routes.ContactHmrcController.onPageLoad(NormalMode)
       }
 
       "must go from UnderDeclaredDutyReasonableCarePage to UnderDeclaredDutyLimitsPage when answer is No" in {
@@ -353,7 +353,7 @@ class NavigatorSpec extends SpecBase {
           UnderDeclaredDutyLimitsPage,
           NormalMode,
           answers
-        ) mustBe routes.ContactHmrcController.onPageLoad()
+        ) mustBe routes.ContactHmrcController.onPageLoad(NormalMode)
       }
 
       "must go from UnderDeclaredDutyLimitsPage to JourneyRecoveryController when no answer exists" in {
@@ -640,24 +640,24 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
-      "must go from UnderDeclaredDutyReasonableCarePage to CheckYourAnswersPage when answer is Yes" in {
+      "must go from UnderDeclaredDutyReasonableCarePage to ContactHmrcController when answer is Yes" in {
         val answers = emptyUserAnswers.set(UnderDeclaredDutyReasonableCarePage, true).success.value
 
         navigator.nextPage(
           UnderDeclaredDutyReasonableCarePage,
           CheckMode,
           answers
-        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+        ) mustBe routes.ContactHmrcController.onPageLoad(CheckMode)
       }
 
-      "must go from UnderDeclaredDutyReasonableCarePage to CheckYourAnswersPage when answer is No" in {
+      "must go from UnderDeclaredDutyReasonableCarePage to UnderDeclaredDutyLimitsController when answer is No" in {
         val answers = emptyUserAnswers.set(UnderDeclaredDutyReasonableCarePage, false).success.value
 
         navigator.nextPage(
           UnderDeclaredDutyReasonableCarePage,
           CheckMode,
           answers
-        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+        ) mustBe routes.UnderDeclaredDutyLimitsController.onPageLoad(CheckMode)
       }
 
       "must go from UnderDeclaredDutyReasonableCarePage to CheckYourAnswersPage when no answer exists" in {
