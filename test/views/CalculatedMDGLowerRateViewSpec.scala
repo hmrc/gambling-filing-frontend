@@ -27,7 +27,7 @@ import views.html.CalculationLowerCheckView
 
 import java.time.LocalDate
 
-class CalculationLowerCheckViewSpec extends SpecBase {
+class CalculatedMDGLowerRateViewSpec extends SpecBase {
 
   "LowerRateCalculationCheckView" - {
 
