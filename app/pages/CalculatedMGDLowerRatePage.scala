@@ -18,7 +18,7 @@ package pages
 
 import play.api.libs.json.JsPath
 
-case object CalculationLowerCheckPage extends QuestionPage[Boolean] {
+case object CalculatedMGDLowerRatePage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 

@@ -17,26 +17,26 @@
 package controllers
 
 import base.SpecBase
-import forms.CalculationLowerCheckFormProvider
+import forms.CalculatedMGDLowerRateFormProvider
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CalculationLowerCheckPage, NetTakingsLowerPage, SelectReturnPage}
+import pages.{CalculatedMGDLowerRatePage, NetTakingsLowerPage, SelectReturnPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.CalculationLowerCheckView
+import views.html.CalculatedMGDLowerRateView
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
+class CalculatedMGDLowerRateControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider = new CalculationLowerCheckFormProvider()
+  val formProvider = new CalculatedMGDLowerRateFormProvider()
   val form = formProvider()
 
   val validAnswer: Boolean = true
@@ -66,26 +66,26 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
 
   val userAnswers =
     userAnswersWithNetTakings
-      .set(CalculationLowerCheckPage, validAnswer)
+      .set(CalculatedMGDLowerRatePage, validAnswer)
       .success
       .value
 
   def onwardRoute = Call("GET", "/foo")
 
-  lazy val calculationLowerCheckRoute = routes.CalculationLowerCheckController.onPageLoad(NormalMode).url
+  lazy val calculatedMgdLowerRateRoute = routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode).url
 
-  "CalculationLowerCheck Controller" - {
+  "CalculatedMGDLowerRate Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
 
       running(application) {
-        val request = FakeRequest(GET, calculationLowerCheckRoute)
+        val request = FakeRequest(GET, calculatedMgdLowerRateRoute)
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CalculationLowerCheckView]
+        val view = application.injector.instanceOf[CalculatedMGDLowerRateView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, netTakings, duty, percentage, NormalMode, backUrl, selectedReturn)(request,
@@ -99,9 +99,9 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, calculationLowerCheckRoute)
+        val request = FakeRequest(GET, calculatedMgdLowerRateRoute)
 
-        val view = application.injector.instanceOf[CalculationLowerCheckView]
+        val view = application.injector.instanceOf[CalculatedMGDLowerRateView]
 
         val result = route(application, request).value
 
@@ -129,7 +129,7 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, calculationLowerCheckRoute)
+          FakeRequest(POST, calculatedMgdLowerRateRoute)
             .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
@@ -145,12 +145,12 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, calculationLowerCheckRoute)
+          FakeRequest(POST, calculatedMgdLowerRateRoute)
             .withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
-        val view = application.injector.instanceOf[CalculationLowerCheckView]
+        val view = application.injector.instanceOf[CalculatedMGDLowerRateView]
 
         val result = route(application, request).value
 
@@ -169,7 +169,7 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(userAnswersWithoutSelectedReturn)).build()
 
       running(application) {
-        val request = FakeRequest(GET, calculationLowerCheckRoute)
+        val request = FakeRequest(GET, calculatedMgdLowerRateRoute)
 
         val result = route(application, request).value
 
@@ -185,7 +185,7 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
         val application = applicationBuilder(regime = Regime.fromString(code).get).build()
 
         running(application) {
-          val request = FakeRequest(GET, calculationLowerCheckRoute)
+          val request = FakeRequest(GET, calculatedMgdLowerRateRoute)
 
           val result = route(application, request).value
 
@@ -203,7 +203,7 @@ class CalculationLowerCheckControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, calculationLowerCheckRoute)
+            FakeRequest(POST, calculatedMgdLowerRateRoute)
               .withFormUrlEncodedBody(("value", validAnswer.toString))
 
           val result = route(application, request).value
