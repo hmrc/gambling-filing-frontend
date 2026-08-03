@@ -28,9 +28,9 @@
 
 @(form: Form[_],netTakings: BigDecimal,duty: BigDecimal, percentage: BigDecimal, mode: Mode, backLink: Option[String], selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("calculationLowerCheck.title", CurrencyFormatter.currencyFormat(duty))), backLink = backLink) {
+@layout(pageTitle = title(form, messages("calculatedMGDLowerRate.title", CurrencyFormatter.currencyFormat(duty))), backLink = backLink) {
 
-    @formHelper(action = routes.CalculationLowerCheckController.onSubmit(mode)) {
+    @formHelper(action = routes.CalculatedMGDLowerRateController.onSubmit(mode)) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))
@@ -38,28 +38,25 @@
 
             <span class="govuk-caption-l">
                 @messages(
-                    "calculationLowerCheck.caption",
+                    "calculatedMGDLowerRate.caption",
                     DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
                     DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
                 )
             </span>
 
             <h1 class="govuk-heading-l">
-                @messages("calculationLowerCheck.heading")
-                    <span style="white-space: nowrap;">
-                        @CurrencyFormatter.formatAmountHtml(duty)
-                    </span>
+                @Html(messages("calculatedMGDLowerRate.heading", CurrencyFormatter.formatAmountHtml(duty)))
             </h1>
 
             <p class="govuk-body">
-                @Html(messages("calculationLowerCheck.body", percentage, CurrencyFormatter.formatAmountHtml(netTakings)))
+                @Html(messages("calculatedMGDLowerRate.body", percentage, CurrencyFormatter.formatAmountHtml(netTakings)))
             </p>
 
         @govukRadios(
                     RadiosViewModel.yesNo(
                         field = form("value"),
                         legend = Legend(
-                            content = Text(messages("calculationLowerCheck.subheading")),
+                            content = Text(messages("calculatedMGDLowerRate.subheading")),
                             isPageHeading = false,
                             classes = "govuk-fieldset__legend--m"
                         )

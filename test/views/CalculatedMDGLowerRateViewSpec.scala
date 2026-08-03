@@ -18,18 +18,18 @@ package views
 
 import base.SpecBase
 import config.CurrencyFormatter
-import forms.CalculationLowerCheckFormProvider
+import forms.CalculatedMGDLowerRateFormProvider
 import models.{NormalMode, SelectedReturn}
 import org.jsoup.Jsoup
 import play.api.i18n.Messages
 import play.api.test.FakeRequest
-import views.html.CalculationLowerCheckView
+import views.html.CalculatedMGDLowerRateView
 
 import java.time.LocalDate
 
-class CalculationLowerCheckViewSpec extends SpecBase {
+class CalculatedMDGLowerRateViewSpec extends SpecBase {
 
-  "LowerRateCalculationCheckView" - {
+  "CalculatedMDGLowerRateView" - {
 
     "must render the page with correct heading, caption and input" in new Setup {
 
@@ -37,10 +37,10 @@ class CalculationLowerCheckViewSpec extends SpecBase {
       val html = view(form, BigDecimal(1000), BigDecimal(50), 5, NormalMode, None, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
-      doc.title must include(messages("calculationLowerCheck.title", CurrencyFormatter.currencyFormat(BigDecimal(50))))
-      doc.select("h1").text mustBe s"${messages("calculationLowerCheck.heading")} ${CurrencyFormatter.currencyFormat(BigDecimal(50))}"
+      doc.title must include(messages("calculatedMGDLowerRate.title", CurrencyFormatter.currencyFormat(BigDecimal(50))))
+      doc.select("h1").text mustBe messages ("calculatedMGDLowerRate.heading", CurrencyFormatter.currencyFormat(BigDecimal(50)))
 
-      doc.select(".govuk-caption-l").text mustBe messages("calculationLowerCheck.caption", "1 Jan 2025", "31 Mar 2025")
+      doc.select(".govuk-caption-l").text mustBe messages("calculatedMGDLowerRate.caption", "1 Jan 2025", "31 Mar 2025")
       doc.select("button").text mustBe messages("site.continue")
     }
 
@@ -52,7 +52,7 @@ class CalculationLowerCheckViewSpec extends SpecBase {
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
-      doc.select(".govuk-error-summary__list a").text must include(messages("calculationLowerCheck.error.required"))
+      doc.select(".govuk-error-summary__list a").text must include(messages("calculatedMGDLowerRate.error.required"))
     }
 
     "must populate the input when form has a value" in new Setup {
@@ -68,8 +68,8 @@ class CalculationLowerCheckViewSpec extends SpecBase {
 
   trait Setup {
     val app = applicationBuilder().build()
-    val view = app.injector.instanceOf[CalculationLowerCheckView]
-    val form = new CalculationLowerCheckFormProvider()()
+    val view = app.injector.instanceOf[CalculatedMGDLowerRateView]
+    val form = new CalculatedMGDLowerRateFormProvider()()
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 

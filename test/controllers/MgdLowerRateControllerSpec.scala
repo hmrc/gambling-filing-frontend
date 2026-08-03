@@ -53,7 +53,7 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
-      val backUrl = Some(routes.CalculationLowerCheckController.onPageLoad(NormalMode).url)
+      val backUrl = Some(routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode).url)
 
       running(application) {
         val request = FakeRequest(GET, mgdLowerRateRoute)
@@ -70,7 +70,7 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
     "must populate the view correctly on a GET when the question has previously been answered" in {
       val userAnswers = userAnswersWithSelectedReturn.set(MgdLowerRatePage, validAnswer).success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-      val backUrl = Some(routes.CalculationLowerCheckController.onPageLoad(NormalMode).url)
+      val backUrl = Some(routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode).url)
 
       running(application) {
         val request = FakeRequest(GET, mgdLowerRateRoute)
@@ -112,7 +112,7 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
-      val backUrl = Some(routes.CalculationLowerCheckController.onPageLoad(NormalMode).url)
+      val backUrl = Some(routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode).url)
 
       running(application) {
         val request =
@@ -168,7 +168,7 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET when no existing data is found" in {
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
-      val backUrl = Some(routes.CalculationLowerCheckController.onPageLoad(NormalMode).url)
+      val backUrl = Some(routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode).url)
 
       running(application) {
         val request = FakeRequest(GET, mgdLowerRateRoute)

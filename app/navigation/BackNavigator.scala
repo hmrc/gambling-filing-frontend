@@ -41,11 +41,11 @@ class BackNavigator @Inject() () {
     case NetTakingsLowerPage =>
       _ => routes.NetTakingsLowerRateController.onPageLoad(NormalMode)
 
-    case CalculationLowerCheckPage =>
+    case CalculatedMGDLowerRatePage =>
       _ => routes.NetTakingsLowerController.onPageLoad(NormalMode)
 
     case MgdLowerRatePage =>
-      _ => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
+      _ => routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode)
 
     case NetTakingsStandardPage =>
       _ => routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
@@ -76,8 +76,8 @@ class BackNavigator @Inject() () {
       userAnswers =>
         userAnswers.get(NetTakingsLowerRatePage) match {
           case Some(true) =>
-            userAnswers.get(CalculationLowerCheckPage) match {
-              case Some(true)  => routes.CalculationLowerCheckController.onPageLoad(NormalMode)
+            userAnswers.get(CalculatedMGDLowerRatePage) match {
+              case Some(true)  => routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode)
               case Some(false) => routes.MgdLowerRateController.onPageLoad(NormalMode)
               case None        => routes.IndexController.onPageLoad()
             }
@@ -139,11 +139,11 @@ class BackNavigator @Inject() () {
     case NetTakingsLowerPage =>
       _ => routes.NetTakingsLowerRateController.onPageLoad(CheckMode)
 
-    case CalculationLowerCheckPage =>
+    case CalculatedMGDLowerRatePage =>
       _ => routes.NetTakingsLowerController.onPageLoad(CheckMode)
 
     case MgdLowerRatePage =>
-      _ => routes.CalculationLowerCheckController.onPageLoad(CheckMode)
+      _ => routes.CalculatedMGDLowerRateController.onPageLoad(CheckMode)
 
     case MgdStandardRatePage =>
       _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
@@ -168,8 +168,8 @@ class BackNavigator @Inject() () {
       userAnswers =>
         userAnswers.get(NetTakingsLowerRatePage) match {
           case Some(true) =>
-            userAnswers.get(CalculationLowerCheckPage) match {
-              case Some(true)  => routes.CalculationLowerCheckController.onPageLoad(CheckMode)
+            userAnswers.get(CalculatedMGDLowerRatePage) match {
+              case Some(true)  => routes.CalculatedMGDLowerRateController.onPageLoad(CheckMode)
               case Some(false) => routes.MgdLowerRateController.onPageLoad(CheckMode)
               case None        => routes.CheckYourAnswersController.onPageLoad()
             }
