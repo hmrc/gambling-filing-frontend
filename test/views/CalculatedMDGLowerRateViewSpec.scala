@@ -38,7 +38,7 @@ class CalculatedMDGLowerRateViewSpec extends SpecBase {
       val doc = Jsoup.parse(html.body)
 
       doc.title must include(messages("calculatedMGDLowerRate.title", CurrencyFormatter.currencyFormat(BigDecimal(50))))
-      doc.select("h1").text mustBe s"${messages("calculatedMGDLowerRate.heading")} ${CurrencyFormatter.currencyFormat(BigDecimal(50))}"
+      doc.select("h1").text mustBe messages ("calculatedMGDLowerRate.heading", CurrencyFormatter.currencyFormat(BigDecimal(50)))
 
       doc.select(".govuk-caption-l").text mustBe messages("calculatedMGDLowerRate.caption", "1 Jan 2025", "31 Mar 2025")
       doc.select("button").text mustBe messages("site.continue")
