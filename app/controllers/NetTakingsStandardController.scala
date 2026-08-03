@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.NetTakingsStandardFormProvider
 import models.{Mode, UserAnswers}
-import navigation.Navigator
+import navigation.{BackNavigator, Navigator}
 import pages.{NetTakingsStandardPage, SelectReturnPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,6 +34,7 @@ class NetTakingsStandardController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
+  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
@@ -51,7 +52,7 @@ class NetTakingsStandardController @Inject() (
       .flatMap(_.get(SelectReturnPage))
       .fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
         val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsStandardPage)).fold(form)(form.fill)
-        Ok(view(preparedForm, mode, selectedReturn))
+        Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsStandardPage, mode, request), selectedReturn))
       }
   }
 
@@ -62,7 +63,9 @@ class NetTakingsStandardController @Inject() (
         form
           .bindFromRequest()
           .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+            formWithErrors =>
+              Future
+                .successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(NetTakingsStandardPage, mode, request), selectedReturn))),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
               for {

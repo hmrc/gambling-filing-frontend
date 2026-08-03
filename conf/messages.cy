@@ -145,7 +145,7 @@ submittedReturn.returnDetails = Return details
 submittedReturn.submittedDate = Date submitted
 submittedReturn.ackRef = Acknowledgement reference
 submittedReturn.noOfMachines = Number of machines available for play
-submittedReturn.netTakingsLowerRate = Net takings for lower rate of duty
+submittedReturn.underDeclaredDutyLimits = Net takings for lower rate of duty
 submittedReturn.totalDueLowerRate = MGD due at lower rate
 submittedReturn.netTakingsStdRate = Net takings for standard rate of duty
 submittedReturn.totalDueStdRate = MGD due at standard rate
@@ -194,3 +194,38 @@ netTakingsHigherRate.caption = File a return for {0} to {1}
 netTakingsHigherRate.p1 = Any machines that do not qualify for the lower or standard rates of duty are subject to the higher rate of duty.
 netTakingsHigherRate.question = Do you have any net takings liable to the higher rate of duty?
 netTakingsHigherRate.error.required = Select yes if you have net takings liable to the higher rate of duty
+
+underDeclaredDuty.title = Do you have any under-declared duty from previous returns?
+underDeclaredDuty.heading = Do you have any under-declared duty from previous returns?
+underDeclaredDuty.caption = File a return for {0} to {1}
+underDeclaredDuty.error.required = Select yes if you have under-declared duty from a previous return
+
+mgdHigherRate.title = How much MGD at the higher rate do you owe?
+mgdHigherRate.heading = How much MGD at the higher rate do you owe?
+mgdHigherRate.caption = File a return for {0} to {1}
+mgdHigherRate.hint = Enter pounds and pence, like £1,150.72
+mgdHigherRate.error.required = Enter how much MGD at the higher rate you owe
+mgdHigherRate.error.invalid = Enter your higher rate MGD in pounds and pence
+mgdHigherRate.error.range = Your MGD must be between -£1 billion and £1 billion
+
+underDeclaredDutyLimits.title = Under-declared duty limits
+underDeclaredDutyLimits.heading = Under-declared duty limits
+underDeclaredDutyLimits.caption = File a return for {0} to {1}
+underDeclaredDutyLimits.p1 = The overall amount of under-declared duty must not exceed either:
+underDeclaredDutyLimits.bullet1 = £10,000 (net value)
+underDeclaredDutyLimits.bullet2 = £50,000 (net value) and not be more than 1% of the total net takings in the accounting period that the error was discovered
+underDeclaredDutyLimits.question = Does the amount you wish to declare fall within these limits?
+underDeclaredDutyLimits.error.required = Select yes if the amount you wish to declare falls within these limits
+
+underDeclaredDutyReasonableCare.title = Nature of under-declared duty error
+underDeclaredDutyReasonableCare.heading = Was the error that led to your under-declared duty caused by a failure to take reasonable care?
+underDeclaredDutyReasonableCare.caption = File a return for {0} to {1}
+underDeclaredDutyReasonableCare.error.required = Select yes if the error that led to your under-declared duty was caused by a failure to take reasonable care
+
+contactHmrc.title = Under-declared duty
+contactHmrc.heading = Under-declared duty
+contactHmrc.caption = File a return for {0} to {1}
+contactHmrc.p1 = You cannot declare under-declared duty in this return. You should
+contactHmrc.link = Contact HRMC (opens in a new tab)
+contactHmrc.p2 = to discuss your under-declared duty.
+contactHmrc.p3 = You may continue with the rest of your return in the meantime.

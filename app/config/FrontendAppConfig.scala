@@ -43,6 +43,7 @@ class FrontendAppConfig @Inject() (configuration: Configuration) {
   lazy val gamblingManagementHomeUrl: String = configuration.get[String]("urls.gamblingManagementHome")
   private val exitSurveyBaseUrl: String = configuration.get[Service]("microservice.services.feedback-frontend").baseUrl
   val exitSurveyUrl: String = s"$exitSurveyBaseUrl/feedback/gambling-filing-frontend"
+  lazy val contactHmrcUrl: String = configuration.get[String]("urls.contactHmrc")
 
   val languageTranslationEnabled: Boolean =
     configuration.get[Boolean]("features.welsh-translation")

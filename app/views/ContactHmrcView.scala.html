@@ -1,0 +1,64 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.components._
+@import models.SelectedReturn
+@import utils.DateTimeFormats
+
+@this(
+layout: templates.Layout,
+heading: H1,
+paragraph: Paragraph,
+paragraphWithLink: ParagraphMessageWithLink,
+bulletList: BulletList,
+govukButton: GovukButton,
+caption: components.Caption
+)
+
+@(backLink: Option[String], selectedReturn: SelectedReturn, contactHmrcUrl: String, continueUrl: String)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("contactHmrc.title")),backLink = backLink) {
+
+    @caption(
+      messages(
+        "contactHmrc.caption",
+         DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
+         DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
+      )
+    )
+
+   @heading(messages("contactHmrc.heading"))
+
+   @paragraphWithLink(
+      message1 = Some(messages("contactHmrc.p1")),
+      linkMessage = messages("contactHmrc.link"),
+      message2 = Some(messages("contactHmrc.p2")),
+      linkUrl = contactHmrcUrl,
+      target = "_blank",
+      linkRel = "noopener noreferrer",
+      linkFullStop = false
+   )
+
+   @paragraph(messages("contactHmrc.p3"))
+
+   <div class="govuk-clearfix">
+      @govukButton(
+         ButtonViewModel(messages("site.continue"))
+         .asLink(continueUrl)
+     )
+   </div>
+
+}
