@@ -149,11 +149,17 @@ class Navigator @Inject() () {
     case ContactHmrcPage => // TODO: /manage-gambling-tax/returns/duty-brought-forward
       _ => routes.IndexController.onPageLoad()
 
+    case NegativeDutyBroughtForwardInputPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }
 
   private val checkRouteMap: Page => UserAnswers => Call = {
+
+    case NegativeDutyBroughtForwardInputPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case MachinesAvailablePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()

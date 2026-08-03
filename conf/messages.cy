@@ -222,6 +222,14 @@ underDeclaredDutyReasonableCare.heading = Was the error that led to your under-d
 underDeclaredDutyReasonableCare.caption = File a return for {0} to {1}
 underDeclaredDutyReasonableCare.error.required = Select yes if the error that led to your under-declared duty was caused by a failure to take reasonable care
 
+negativeDutyBroughtForwardInput.caption = File a return for {0} to {1}
+negativeDutyBroughtForwardInput.title = Amount of duty brought forward from your previous return
+negativeDutyBroughtForwardInput.heading = What is the amount of duty brought forward from your previous return?
+negativeDutyBroughtForwardInput.hint = Enter a negative amount in pounds and pence, like -£1,150.72
+negativeDutyBroughtForwardInput.error.required = Enter the amount of duty brought forward from your previous return
+negativeDutyBroughtForwardInput.error.invalid = Enter the amount of duty brought forward from your previous return in pounds and pence
+negativeDutyBroughtForwardInput.error.range = The amount of duty brought forward from your previous return must be a negative number between -£1 billion and 0
+
 contactHmrc.title = Under-declared duty
 contactHmrc.heading = Under-declared duty
 contactHmrc.caption = File a return for {0} to {1}
