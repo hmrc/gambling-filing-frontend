@@ -72,37 +72,37 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
       }
 
-      "must go from NetTakingsLowerPage to CalculationLowerCheckPage" in {
+      "must go from NetTakingsLowerPage to CalculatedMGDLowerRatePage" in {
         navigator.nextPage(
           NetTakingsLowerPage,
           NormalMode,
           emptyUserAnswers
-        ) mustBe routes.CalculationLowerCheckController.onPageLoad(NormalMode)
+        ) mustBe routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode)
       }
 
-      "must go from CalculationLowerCheckPage to NetTakingsStandardRatePage when answer is Yes" in {
+      "must go from CalculatedMGDLowerRatePage to NetTakingsStandardRatePage when answer is Yes" in {
         val answers =
           emptyUserAnswers
-            .set(CalculationLowerCheckPage, true)
+            .set(CalculatedMGDLowerRatePage, true)
             .success
             .value
 
         navigator.nextPage(
-          CalculationLowerCheckPage,
+          CalculatedMGDLowerRatePage,
           NormalMode,
           answers
         ) mustBe routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
       }
 
-      "must go from CalculationLowerCheckPage to Mgd LowerRateRatePage when answer is No" in {
+      "must go from CalculatedMGDLowerRatePage to Mgd LowerRateRatePage when answer is No" in {
         val answers =
           emptyUserAnswers
-            .set(CalculationLowerCheckPage, false)
+            .set(CalculatedMGDLowerRatePage, false)
             .success
             .value
 
         navigator.nextPage(
-          CalculationLowerCheckPage,
+          CalculatedMGDLowerRatePage,
           NormalMode,
           answers
         ) mustBe routes.MgdLowerRateController.onPageLoad(NormalMode)
@@ -427,29 +427,29 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
-      "must go from CalculationLowerCheckPage to NetTakingsStandardRatePage when answer is Yes" in {
+      "must go from CalculatedMGDLowerRatePage to NetTakingsStandardRatePage when answer is Yes" in {
         val answers =
           emptyUserAnswers
-            .set(CalculationLowerCheckPage, true)
+            .set(CalculatedMGDLowerRatePage, true)
             .success
             .value
 
         navigator.nextPage(
-          CalculationLowerCheckPage,
+          CalculatedMGDLowerRatePage,
           CheckMode,
           answers
         ) mustBe routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
       }
 
-      "must go from CalculationLowerCheckPage to Mgd LowerRateRatePage when answer is No" in {
+      "must go from CalculatedMGDLowerRatePage to Mgd LowerRateRatePage when answer is No" in {
         val answers =
           emptyUserAnswers
-            .set(CalculationLowerCheckPage, false)
+            .set(CalculatedMGDLowerRatePage, false)
             .success
             .value
 
         navigator.nextPage(
-          CalculationLowerCheckPage,
+          CalculatedMGDLowerRatePage,
           CheckMode,
           answers
         ) mustBe routes.MgdLowerRateController.onPageLoad(CheckMode)

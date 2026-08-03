@@ -112,12 +112,12 @@ class BackNavigatorSpec extends SpecBase {
         }
       }
 
-      "CalculationLowerCheckPage" - {
+      "CalculatedMGDLowerRatePage" - {
 
-        "must go from CalculationLowerCheckPage to NetTakingsLowerRateController" in {
+        "must go from CalculatedMGDLowerRatePage to NetTakingsLowerRateController" in {
 
           navigator.backPage(
-            CalculationLowerCheckPage,
+            CalculatedMGDLowerRatePage,
             NormalMode,
             optionalDataRequest
           ) mustBe Some(
@@ -130,14 +130,14 @@ class BackNavigatorSpec extends SpecBase {
 
       "MgdLowerRatePage" - {
 
-        "must go from MgdLowerRatePage to CalculationLowerCheckPage" in {
+        "must go from MgdLowerRatePage to CalculatedMGDLowerRatePage" in {
 
           navigator.backPage(
             MgdLowerRatePage,
             NormalMode,
             optionalDataRequest
           ) mustBe Some(
-            routes.CalculationLowerCheckController
+            routes.CalculatedMGDLowerRateController
               .onPageLoad(NormalMode)
               .url
           )
@@ -259,21 +259,21 @@ class BackNavigatorSpec extends SpecBase {
         val answers =
           emptyUserAnswers
             .set(NetTakingsLowerRatePage, true)
-            .flatMap(_.set(CalculationLowerCheckPage, true))
+            .flatMap(_.set(CalculatedMGDLowerRatePage, true))
             .success
             .value
 
         val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(answers))
 
         navigator.backPage(NetTakingsStandardRatePage, NormalMode, request) mustBe
-          Some(routes.CalculationLowerCheckController.onPageLoad(NormalMode).url)
+          Some(routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode).url)
       }
 
       "must go from NetTakingsStandardRatePage to Mgd LowerRateController when answer is No" in {
         val answers =
           emptyUserAnswers
             .set(NetTakingsLowerRatePage, true)
-            .flatMap(_.set(CalculationLowerCheckPage, false))
+            .flatMap(_.set(CalculatedMGDLowerRatePage, false))
             .success
             .value
 

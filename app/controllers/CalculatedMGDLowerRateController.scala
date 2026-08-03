@@ -18,29 +18,29 @@ package controllers
 
 import config.FrontendAppConfig
 import controllers.actions.*
-import forms.CalculationLowerCheckFormProvider
+import forms.CalculatedMGDLowerRateFormProvider
 import models.{Mode, UserAnswers}
 import navigation.{BackNavigator, Navigator}
-import pages.{CalculationLowerCheckPage, DutyLowerRatePage, NetTakingsLowerPage, SelectReturnPage}
+import pages.{CalculatedMGDLowerRatePage, DutyLowerRatePage, NetTakingsLowerPage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.CalculationLowerCheckView
+import views.html.CalculatedMGDLowerRateView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class CalculationLowerCheckController @Inject() (
+class CalculatedMGDLowerRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
   backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
-  formProvider: CalculationLowerCheckFormProvider,
+  formProvider: CalculatedMGDLowerRateFormProvider,
   frontendAppConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
-  view: CalculationLowerCheckView
+  view: CalculatedMGDLowerRateView
 )(implicit ec: ExecutionContext)
     extends BaseFilingController {
 
@@ -48,7 +48,7 @@ class CalculationLowerCheckController @Inject() (
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     whenMgd {
-      val radioAnswer = request.userAnswers.flatMap(_.get(CalculationLowerCheckPage)) match {
+      val radioAnswer = request.userAnswers.flatMap(_.get(CalculatedMGDLowerRatePage)) match {
         case None        => form
         case Some(value) => form.fill(value)
       }
@@ -61,7 +61,7 @@ class CalculationLowerCheckController @Inject() (
 
           Future.successful(
             Ok(
-              view(radioAnswer, netTakings, duty, percentage, mode, backNavigator.backPage(CalculationLowerCheckPage, mode, request), selectedReturn)
+              view(radioAnswer, netTakings, duty, percentage, mode, backNavigator.backPage(CalculatedMGDLowerRatePage, mode, request), selectedReturn)
             )
           )
 
@@ -93,7 +93,7 @@ class CalculationLowerCheckController @Inject() (
                          duty,
                          percentage,
                          mode,
-                         backNavigator.backPage(CalculationLowerCheckPage, mode, request),
+                         backNavigator.backPage(CalculatedMGDLowerRatePage, mode, request),
                          selectedReturn
                         )
                   )
@@ -101,7 +101,7 @@ class CalculationLowerCheckController @Inject() (
               value => {
                 val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
                 for {
-                  updatedAnswers <- Future.fromTry(userAnswers.set(CalculationLowerCheckPage, value))
+                  updatedAnswers <- Future.fromTry(userAnswers.set(CalculatedMGDLowerRatePage, value))
 
                   finalAnswers <- if (value) {
                                     Future.fromTry(updatedAnswers.set(DutyLowerRatePage, duty))
@@ -110,7 +110,7 @@ class CalculationLowerCheckController @Inject() (
                                   }
 
                   _ <- sessionRepository.set(finalAnswers)
-                } yield Redirect(navigator.nextPage(CalculationLowerCheckPage, mode, finalAnswers))
+                } yield Redirect(navigator.nextPage(CalculatedMGDLowerRatePage, mode, finalAnswers))
               }
             )
 

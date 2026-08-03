@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package pages
+package forms
 
-import play.api.libs.json.JsPath
+import forms.mappings.Mappings
+import play.api.data.Form
 
-case object CalculationLowerCheckPage extends QuestionPage[Boolean] {
+import javax.inject.Inject
 
-  override def path: JsPath = JsPath \ toString
+class CalculatedMGDLowerRateFormProvider @Inject() extends Mappings {
 
-  override def toString: String = "lowerRateCalculationCheck"
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean(
+        "calculatedMGDLowerRate.error.required"
+      )
+    )
 }
