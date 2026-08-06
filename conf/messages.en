@@ -281,3 +281,10 @@ contactHmrc.p1 = You cannot declare under-declared duty in this return. You shou
 contactHmrc.link = Contact HRMC (opens in a new tab)
 contactHmrc.p2 = to discuss your under-declared duty.
 contactHmrc.p3 = You may continue with the rest of your return in the meantime.
+
+negativeDuty.title = Duty brought forward from your previous return
+negativeDuty.heading = Duty brought forward from your previous return
+negativeDuty.p1 = If your previous return resulted in a negative amount of MGD, you can carry it forward into this return.
+negativeDuty.caption = File a return for {0} to {1}
+negativeDuty.question = Did you have a negative amount of MGD in your previous return?
+negativeDuty.error.required = Select yes if you had a negative amount of MGD in your previous return
