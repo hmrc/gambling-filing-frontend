@@ -53,7 +53,7 @@ class NegativeDutyBroughtForwardInputViewSpec extends SpecBase {
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
       doc.select(".govuk-error-summary__list a").text must include(messages("negativeDutyBroughtForwardInput.error.required"))
-      doc.select("#value-error").text must include(messages("negativeDutyBroughtForwardInput.error.required"))
+      doc.select("#value-error").text                 must include(messages("negativeDutyBroughtForwardInput.error.required"))
     }
 
     "must render an invalid format error when a non-numeric amount is entered" in new Setup {

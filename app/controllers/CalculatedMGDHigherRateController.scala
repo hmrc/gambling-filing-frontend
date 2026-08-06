@@ -37,6 +37,7 @@ class CalculatedMGDHigherRateController @Inject() (
   backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
+  requireMgd: MgdRegimeAction,
   formProvider: CalculatedMGDHigherRateFormProvider,
   frontendAppConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
@@ -47,73 +48,69 @@ class CalculatedMGDHigherRateController @Inject() (
   private val form = formProvider()
   private val ratePercentage = frontendAppConfig.higherRateDutyPercentage * 100
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
-    whenMgd {
-      val radioAnswer = request.userAnswers.flatMap(_.get(CalculatedMGDHigherRatePage)).fold(form)(form.fill)
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
+    val radioAnswer = request.userAnswers.flatMap(_.get(CalculatedMGDHigherRatePage)).fold(form)(form.fill)
 
-      request.userAnswers
-        .flatMap(_.get(SelectReturnPage))
-        .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
-          request.userAnswers
-            .flatMap(_.get(NetTakingsHigherPage))
-            .fold(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))) { netTakings =>
-              val duty = netTakings * frontendAppConfig.higherRateDutyPercentage
-              Future.successful(
-                Ok(
-                  view(radioAnswer,
-                       netTakings,
-                       duty,
-                       ratePercentage,
-                       mode,
-                       backNavigator.backPage(CalculatedMGDHigherRatePage, mode, request),
-                       selectedReturn
-                      )
-                )
+    request.userAnswers
+      .flatMap(_.get(SelectReturnPage))
+      .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
+        request.userAnswers
+          .flatMap(_.get(NetTakingsHigherPage))
+          .fold(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))) { netTakings =>
+            val duty = netTakings * frontendAppConfig.higherRateDutyPercentage
+            Future.successful(
+              Ok(
+                view(radioAnswer,
+                     netTakings,
+                     duty,
+                     ratePercentage,
+                     mode,
+                     backNavigator.backPage(CalculatedMGDHigherRatePage, mode, request),
+                     selectedReturn
+                    )
               )
-            }
-        }
-    }
+            )
+          }
+      }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
-    whenMgd {
-      request.userAnswers
-        .flatMap(_.get(SelectReturnPage))
-        .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
-          request.userAnswers
-            .flatMap(_.get(NetTakingsHigherPage))
-            .fold(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))) { netTakings =>
-              val duty = netTakings * frontendAppConfig.higherRateDutyPercentage
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
+    request.userAnswers
+      .flatMap(_.get(SelectReturnPage))
+      .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
+        request.userAnswers
+          .flatMap(_.get(NetTakingsHigherPage))
+          .fold(Future.successful(Redirect(routes.JourneyRecoveryController.onPageLoad()))) { netTakings =>
+            val duty = netTakings * frontendAppConfig.higherRateDutyPercentage
 
-              form
-                .bindFromRequest()
-                .fold(
-                  formWithErrors =>
-                    Future.successful(
-                      BadRequest(
-                        view(formWithErrors,
-                             netTakings,
-                             duty,
-                             ratePercentage,
-                             mode,
-                             backNavigator.backPage(CalculatedMGDHigherRatePage, mode, request),
-                             selectedReturn
-                            )
-                      )
-                    ),
-                  value => {
-                    val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-                    for {
-                      updatedAnswers <- Future.fromTry(userAnswers.set(CalculatedMGDHigherRatePage, value))
-                      finalAnswers <-
-                        if (value) Future.fromTry(updatedAnswers.set(MgdHigherRatePage, duty))
-                        else Future.successful(updatedAnswers)
-                      _ <- sessionRepository.set(finalAnswers)
-                    } yield Redirect(navigator.nextPage(CalculatedMGDHigherRatePage, mode, finalAnswers))
-                  }
-                )
-            }
-        }
-    }
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(
+                      view(formWithErrors,
+                           netTakings,
+                           duty,
+                           ratePercentage,
+                           mode,
+                           backNavigator.backPage(CalculatedMGDHigherRatePage, mode, request),
+                           selectedReturn
+                          )
+                    )
+                  ),
+                value => {
+                  val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+                  for {
+                    updatedAnswers <- Future.fromTry(userAnswers.set(CalculatedMGDHigherRatePage, value))
+                    finalAnswers <-
+                      if (value) Future.fromTry(updatedAnswers.set(MgdHigherRatePage, duty))
+                      else Future.successful(updatedAnswers)
+                    _ <- sessionRepository.set(finalAnswers)
+                  } yield Redirect(navigator.nextPage(CalculatedMGDHigherRatePage, mode, finalAnswers))
+                }
+              )
+          }
+      }
   }
 }

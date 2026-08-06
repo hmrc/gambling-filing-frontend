@@ -16,23 +16,8 @@
 
 package controllers
 
-import models.Regime
-import models.requests.OptionalDataRequest
 import play.api.Logging
 import play.api.i18n.I18nSupport
-import play.api.mvc.Result
-import play.api.mvc.Results.Redirect
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 
-import scala.concurrent.Future
-
-abstract class BaseFilingController extends FrontendBaseController with I18nSupport with Logging {
-
-  def whenMgd(block: => Future[Result])(implicit request: OptionalDataRequest[?]): Future[Result] =
-    request.regime match {
-      case Regime.MGD => block
-      case _ =>
-        logger.info(s"regime ${request.regime} is not Authorised to use this service")
-        Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
-    }
-}
+abstract class BaseFilingController extends FrontendBaseController with I18nSupport with Logging
