@@ -111,6 +111,10 @@ POST       /under-declared-duty-reasonable-care          controllers.UnderDeclar
 GET        /change-under-declared-duty-reasonable-care   controllers.UnderDeclaredDutyReasonableCareController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-under-declared-duty-reasonable-care   controllers.UnderDeclaredDutyReasonableCareController.onSubmit(mode: Mode = CheckMode)
 
+GET        /total-duty-brought-forward                  controllers.NegativeDutyBroughtForwardInputController.onPageLoad(mode: Mode = NormalMode)
+POST       /total-duty-brought-forward                  controllers.NegativeDutyBroughtForwardInputController.onSubmit(mode: Mode = NormalMode)
+GET        /change-total-duty-brought-forward           controllers.NegativeDutyBroughtForwardInputController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-total-duty-brought-forward           controllers.NegativeDutyBroughtForwardInputController.onSubmit(mode: Mode = CheckMode)
 
 GET        /contact-hmrc                        controllers.ContactHmrcController.onPageLoad(mode: Mode = NormalMode)
 GET        /change-contact-hmrc                 controllers.ContactHmrcController.onPageLoad(mode: Mode = CheckMode)
