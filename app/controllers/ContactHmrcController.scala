@@ -34,42 +34,39 @@ class ContactHmrcController @Inject() (
   backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
+  requireMgd: MgdRegimeAction,
   val controllerComponents: MessagesControllerComponents,
   appConfig: FrontendAppConfig,
   view: ContactHmrcView
 ) extends BaseFilingController {
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (authorise andThen getData).async { implicit request =>
+    (authorise andThen getData andThen requireMgd).async { implicit request =>
+      request.userAnswers
+        .flatMap(_.get(SelectReturnPage))
+        .fold(
+          Future.successful(
+            Redirect(
+              controllers.routes.SelectReturnController.onPageLoad()
+            )
+          )
+        ) { selectedReturn =>
+          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 
-      whenMgd {
-        request.userAnswers
-          .flatMap(_.get(SelectReturnPage))
-          .fold(
-            Future.successful(
-              Redirect(
-                controllers.routes.SelectReturnController.onPageLoad()
+          Future.successful(
+            Ok(
+              view(
+                backLink = backNavigator.backPage(
+                  ContactHmrcPage,
+                  mode,
+                  request
+                ),
+                selectedReturn = selectedReturn,
+                contactHmrcUrl = appConfig.contactHmrcUrl,
+                continueUrl    = navigator.nextPage(ContactHmrcPage, mode, userAnswers).url
               )
             )
-          ) { selectedReturn =>
-            val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-
-            Future.successful(
-              Ok(
-                view(
-                  backLink = backNavigator.backPage(
-                    ContactHmrcPage,
-                    mode,
-                    request
-                  ),
-                  selectedReturn = selectedReturn,
-                  contactHmrcUrl = appConfig.contactHmrcUrl,
-                  continueUrl    = navigator.nextPage(ContactHmrcPage, mode, userAnswers).url
-                )
-              )
-            )
-          }
-
-      }
+          )
+        }
     }
 }
