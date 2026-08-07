@@ -116,5 +116,12 @@ POST       /total-duty-brought-forward                  controllers.NegativeDuty
 GET        /change-total-duty-brought-forward           controllers.NegativeDutyBroughtForwardInputController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-total-duty-brought-forward           controllers.NegativeDutyBroughtForwardInputController.onSubmit(mode: Mode = CheckMode)
 
+GET        /duty-brought-forward       controllers.NegativeDutyController.onPageLoad(mode: Mode = NormalMode)
+POST       /duty-brought-forward        controllers.NegativeDutyController.onSubmit(mode: Mode = NormalMode)
+GET        /change-duty-brought-forward  controllers.NegativeDutyController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-duty-brought-forward  controllers.NegativeDutyController.onSubmit(mode: Mode = CheckMode)
+
+
+
 GET        /contact-hmrc                        controllers.ContactHmrcController.onPageLoad(mode: Mode = NormalMode)
 GET        /change-contact-hmrc                 controllers.ContactHmrcController.onPageLoad(mode: Mode = CheckMode)
