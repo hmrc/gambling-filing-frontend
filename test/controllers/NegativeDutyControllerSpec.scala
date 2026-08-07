@@ -17,41 +17,41 @@
 package controllers
 
 import base.SpecBase
-import forms.UnderDeclaredDutyLimitsFormProvider
+import forms.NegativeDutyFormProvider
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{SelectReturnPage, UnderDeclaredDutyLimitsPage}
+import pages.{NegativeDutyPage, SelectReturnPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.UnderDeclaredDutyLimitsView
+import views.html.NegativeDutyView
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
 class NegativeDutyControllerSpec extends SpecBase with MockitoSugar {
 
-  val formProvider = new UnderDeclaredDutyLimitsFormProvider()
+  val formProvider = new NegativeDutyFormProvider()
   val form = formProvider()
 
   def onwardRoute: Call = Call("GET", "/foo")
 
   val validAnswer: Boolean = true
-  val backUrl = Some("/manage-gambling-tax/returns/under-declared-duty-reasonable-care")
+  val backUrl = Some("/manage-gambling-tax/returns/")
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
   def userAnswersWithSelectedReturn: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
 
-  lazy val underDeclaredDutyLimitsRoute: String =
-    routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode).url
+  lazy val negativeDutyRoute: String =
+    routes.NegativeDutyController.onPageLoad(NormalMode).url
 
-  "UnderDeclaredDutyLimits Controller" - {
+  "NegativeDuty Controller" - {
 
     "must return OK and the correct view for a GET" in {
 
@@ -59,9 +59,9 @@ class NegativeDutyControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn), regime = Regime.MGD).build()
 
       running(application) {
-        val request = FakeRequest(GET, underDeclaredDutyLimitsRoute)
+        val request = FakeRequest(GET, negativeDutyRoute)
         val result = route(application, request).value
-        val view = application.injector.instanceOf[UnderDeclaredDutyLimitsView]
+        val view = application.injector.instanceOf[NegativeDutyView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
@@ -72,7 +72,7 @@ class NegativeDutyControllerSpec extends SpecBase with MockitoSugar {
 
       val userAnswers =
         userAnswersWithSelectedReturn
-          .set(UnderDeclaredDutyLimitsPage, validAnswer)
+          .set(NegativeDutyPage, validAnswer)
           .success
           .value
 
@@ -80,9 +80,9 @@ class NegativeDutyControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(userAnswers), regime = Regime.MGD).build()
 
       running(application) {
-        val request = FakeRequest(GET, underDeclaredDutyLimitsRoute)
+        val request = FakeRequest(GET, negativeDutyRoute)
         val result = route(application, request).value
-        val view = application.injector.instanceOf[UnderDeclaredDutyLimitsView]
+        val view = application.injector.instanceOf[NegativeDutyView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
@@ -105,7 +105,7 @@ class NegativeDutyControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, underDeclaredDutyLimitsRoute)
+          FakeRequest(POST, negativeDutyRoute)
             .withFormUrlEncodedBody("value" -> validAnswer.toString)
 
         val result = route(application, request).value
@@ -122,11 +122,11 @@ class NegativeDutyControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, underDeclaredDutyLimitsRoute)
+          FakeRequest(POST, negativeDutyRoute)
             .withFormUrlEncodedBody("value" -> "invalid value")
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
-        val view = application.injector.instanceOf[UnderDeclaredDutyLimitsView]
+        val view = application.injector.instanceOf[NegativeDutyView]
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
@@ -143,7 +143,7 @@ class NegativeDutyControllerSpec extends SpecBase with MockitoSugar {
           applicationBuilder(regime = Regime.fromString(code).get).build()
 
         running(application) {
-          val request = FakeRequest(GET, underDeclaredDutyLimitsRoute)
+          val request = FakeRequest(GET, negativeDutyRoute)
           val result = route(application, request).value
 
           status(result) mustEqual SEE_OTHER
@@ -162,7 +162,7 @@ class NegativeDutyControllerSpec extends SpecBase with MockitoSugar {
 
         running(application) {
           val request =
-            FakeRequest(POST, underDeclaredDutyLimitsRoute)
+            FakeRequest(POST, negativeDutyRoute)
               .withFormUrlEncodedBody("value" -> validAnswer.toString)
 
           val result = route(application, request).value
@@ -179,9 +179,9 @@ class NegativeDutyControllerSpec extends SpecBase with MockitoSugar {
         applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn), regime = Regime.MGD).build()
 
       running(application) {
-        val request = FakeRequest(GET, underDeclaredDutyLimitsRoute)
+        val request = FakeRequest(GET, negativeDutyRoute)
         val result = route(application, request).value
-        val view = application.injector.instanceOf[UnderDeclaredDutyLimitsView]
+        val view = application.injector.instanceOf[NegativeDutyView]
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(form, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
@@ -204,7 +204,7 @@ class NegativeDutyControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request =
-          FakeRequest(POST, underDeclaredDutyLimitsRoute)
+          FakeRequest(POST, negativeDutyRoute)
             .withFormUrlEncodedBody("value" -> validAnswer.toString)
 
         val result = route(application, request).value

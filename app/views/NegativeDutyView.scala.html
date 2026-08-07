@@ -25,7 +25,6 @@
     formHelper: FormWithCSRF,
     heading: H1,
     paragraph: Paragraph,
-    bulletList: BulletList,
     govukErrorSummary: GovukErrorSummary,
     govukRadios: GovukRadios,
     govukButton: GovukButton,
@@ -56,11 +55,6 @@
 
         @paragraph(messages("negativeDuty.p1"))
 
-
-        @bulletList(Seq(
-            messages("negativeDuty.bullet1"),
-            messages("negativeDuty.bullet2")
-        ))
 
         @govukRadios(
             RadiosViewModel.yesNo(
