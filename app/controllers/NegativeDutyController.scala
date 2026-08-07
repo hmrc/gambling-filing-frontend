@@ -17,19 +17,19 @@
 package controllers
 
 import controllers.actions.*
-import forms.UnderDeclaredDutyLimitsFormProvider
+import forms.NegativeDutyFormProvider
 import models.{Mode, UserAnswers}
 import navigation.{BackNavigator, Navigator}
-import pages.{SelectReturnPage, UnderDeclaredDutyLimitsPage}
+import pages.{NegativeDutyPage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.UnderDeclaredDutyLimitsView
+import views.html.NegativeDutyView
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class UnderDeclaredDutyLimitsController @Inject() (
+class NegativeDutyController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
@@ -37,9 +37,9 @@ class UnderDeclaredDutyLimitsController @Inject() (
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   requireMgd: MgdRegimeAction,
-  formProvider: UnderDeclaredDutyLimitsFormProvider,
+  formProvider: NegativeDutyFormProvider,
   val controllerComponents: MessagesControllerComponents,
-  view: UnderDeclaredDutyLimitsView
+  view: NegativeDutyView
 )(implicit ec: ExecutionContext)
     extends BaseFilingController {
 
@@ -51,9 +51,11 @@ class UnderDeclaredDutyLimitsController @Inject() (
         logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
       case Some(selectedReturn) =>
-        val preparedForm = request.userAnswers.flatMap(_.get(UnderDeclaredDutyLimitsPage)).fold(form)(value => form.fill(value))
+        val preparedForm = request.userAnswers.flatMap(_.get(NegativeDutyPage)).fold(form)(form.fill)
 
-        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(UnderDeclaredDutyLimitsPage, mode, request), selectedReturn)))
+        Future.successful(
+          Ok(view(preparedForm, mode, backNavigator.backPage(NegativeDutyPage, mode, request), selectedReturn))
+        )
     }
   }
 
@@ -68,15 +70,17 @@ class UnderDeclaredDutyLimitsController @Inject() (
           .fold(
             formWithErrors =>
               Future.successful(
-                BadRequest(view(formWithErrors, mode, backNavigator.backPage(UnderDeclaredDutyLimitsPage, mode, request), selectedReturn))
+                BadRequest(
+                  view(formWithErrors, mode, backNavigator.backPage(NegativeDutyPage, mode, request), selectedReturn)
+                )
               ),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 
               for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(UnderDeclaredDutyLimitsPage, value))
+                updatedAnswers <- Future.fromTry(userAnswers.set(NegativeDutyPage, value))
                 _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(UnderDeclaredDutyLimitsPage, mode, updatedAnswers))
+              } yield Redirect(navigator.nextPage(NegativeDutyPage, mode, updatedAnswers))
             }
           )
     }

@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-package controllers
+package pages
 
-import play.api.Logging
-import play.api.i18n.I18nSupport
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import play.api.libs.json.JsPath
 
-abstract class BaseFilingController extends FrontendBaseController with I18nSupport with Logging
+case object NegativeDutyBroughtForwardInputPage extends QuestionPage[BigDecimal] {
+
+  override def path: JsPath = JsPath \ toString
+
+  override def toString: String = "negativeDutyBroughtForwardInput"
+}

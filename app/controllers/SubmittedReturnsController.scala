@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidateAction}
+import controllers.actions.{AuthorisedAction, DataRetrievalAction, MgdRegimeAction, ValidateAction}
 import models.SortBy
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -32,6 +32,7 @@ class SubmittedReturnsController @Inject() (
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
+  requireMgd: MgdRegimeAction,
   gamblingService: GamblingService,
   submittedReturnsView: SubmittedReturnsView,
   submittedReturnView: SubmittedReturnView
@@ -39,34 +40,30 @@ class SubmittedReturnsController @Inject() (
     extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen validate andThen getData).async { implicit request =>
+    (authorise andThen validate andThen getData andThen requireMgd).async { implicit request =>
       val regNum = request.regNum
       val logTxt = s"[onPageLoad] for regNum=$regNum"
 
-      whenMgd {
-        gamblingService
-          .getSubmittedReturns(regNum, SortBy.PeriodStartDate, OrderBy.Descending)
-          .map(submittedReturns => Ok(submittedReturnsView(regNum, submittedReturns)))
-          .recover { case ex =>
-            logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED", ex)
-            Redirect(controllers.routes.SystemErrorController.onPageLoad())
-          }
-      }
+      gamblingService
+        .getSubmittedReturns(regNum, SortBy.PeriodStartDate, OrderBy.Descending)
+        .map(submittedReturns => Ok(submittedReturnsView(regNum, submittedReturns)))
+        .recover { case ex =>
+          logger.error(s"$logTxt CALL to gamblingService.getSubmittedReturns FAILED", ex)
+          Redirect(controllers.routes.SystemErrorController.onPageLoad())
+        }
     }
 
   def viewFiledReturn(consecNo: Int): Action[AnyContent] =
-    (authorise andThen validate andThen getData).async { implicit request =>
+    (authorise andThen validate andThen getData andThen requireMgd).async { implicit request =>
       val regNum = request.regNum
       val logTxt = s"[viewFiledReturn] for regNum=$regNum"
 
-      whenMgd {
-        gamblingService
-          .getSubmittedReturn(regNum, consecNo)
-          .map(filedReturn => Ok(submittedReturnView(filedReturn)))
-          .recover { case ex =>
-            logger.error(s"$logTxt failed for regNum=$regNum consecNo=$consecNo", ex)
-            Redirect(controllers.routes.SystemErrorController.onPageLoad())
-          }
-      }
+      gamblingService
+        .getSubmittedReturn(regNum, consecNo)
+        .map(filedReturn => Ok(submittedReturnView(filedReturn)))
+        .recover { case ex =>
+          logger.error(s"$logTxt failed for regNum=$regNum consecNo=$consecNo", ex)
+          Redirect(controllers.routes.SystemErrorController.onPageLoad())
+        }
     }
 }

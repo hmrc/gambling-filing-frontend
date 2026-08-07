@@ -372,6 +372,14 @@ class NavigatorSpec extends SpecBase {
           emptyUserAnswers
         ) mustBe routes.IndexController.onPageLoad()
       }
+
+      "must go from NegativeDutyBroughtForwardInputPage to CheckYourAnswersPage" in {
+        navigator.nextPage(
+          NegativeDutyBroughtForwardInputPage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
     }
 
     "in Check mode" - {
@@ -671,6 +679,14 @@ class NavigatorSpec extends SpecBase {
       "must go from ContactHmrcPage to CYA" in {
         navigator.nextPage(
           ContactHmrcPage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from NegativeDutyBroughtForwardInputPage to CheckYourAnswersPage" in {
+        navigator.nextPage(
+          NegativeDutyBroughtForwardInputPage,
           CheckMode,
           emptyUserAnswers
         ) mustBe routes.CheckYourAnswersController.onPageLoad()

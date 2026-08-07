@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package controllers
+package forms
 
-import play.api.Logging
-import play.api.i18n.I18nSupport
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import forms.mappings.Mappings
+import play.api.data.Form
 
-abstract class BaseFilingController extends FrontendBaseController with I18nSupport with Logging
+import javax.inject.Inject
+
+class NegativeDutyFormProvider @Inject() extends Mappings {
+
+  def apply(): Form[Boolean] =
+    Form(
+      "value" -> boolean("negativeDuty.error.required")
+    )
+}

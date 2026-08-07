@@ -37,6 +37,7 @@ class MachinesAvailableController @Inject() (
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
+  requireMgd: MgdRegimeAction,
   formProvider: MachinesAvailableFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: MachinesAvailableView
@@ -45,41 +46,37 @@ class MachinesAvailableController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
-    whenMgd {
-      request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-        case None =>
-          logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
-          Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
-        case Some(selectedReturn) =>
-          val preparedForm = request.userAnswers.flatMap(_.get(MachinesAvailablePage)).fold(form)(form.fill)
-          Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(MachinesAvailablePage, mode, request), selectedReturn)))
-      }
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen requireMgd).async { implicit request =>
+    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+      case None =>
+        logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
+        Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
+      case Some(selectedReturn) =>
+        val preparedForm = request.userAnswers.flatMap(_.get(MachinesAvailablePage)).fold(form)(form.fill)
+        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(MachinesAvailablePage, mode, request), selectedReturn)))
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
-    whenMgd {
-      request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-        case None =>
-          logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
-          Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
-        case Some(selectedReturn) =>
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors =>
-                Future
-                  .successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(MachinesAvailablePage, mode, request), selectedReturn))),
-              value => {
-                val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-                for {
-                  updatedAnswers <- Future.fromTry(userAnswers.set(MachinesAvailablePage, value))
-                  _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(MachinesAvailablePage, mode, updatedAnswers))
-              }
-            )
-      }
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen requireMgd).async { implicit request =>
+    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+      case None =>
+        logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
+        Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
+      case Some(selectedReturn) =>
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              Future
+                .successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(MachinesAvailablePage, mode, request), selectedReturn))),
+            value => {
+              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+              for {
+                updatedAnswers <- Future.fromTry(userAnswers.set(MachinesAvailablePage, value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(MachinesAvailablePage, mode, updatedAnswers))
+            }
+          )
     }
   }
 }

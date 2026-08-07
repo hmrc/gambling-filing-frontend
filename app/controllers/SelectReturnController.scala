@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.SelectReturnController.SortBy
-import controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidateAction}
+import controllers.actions.{AuthorisedAction, DataRetrievalAction, MgdRegimeAction, ValidateAction}
 import models.{NormalMode, SelectedReturn, UserAnswers}
 import navigation.BackNavigator
 import pages.OpenReturnPeriodsPage
@@ -37,6 +37,7 @@ class SelectReturnController @Inject() (
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
+  requireMgd: MgdRegimeAction,
   backNavigator: BackNavigator,
   sessionRepository: SessionRepository,
   gamblingService: GamblingService,
@@ -45,53 +46,49 @@ class SelectReturnController @Inject() (
     extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen validate andThen getData).async { implicit request =>
+    (authorise andThen validate andThen getData andThen requireMgd).async { implicit request =>
       val regNum = request.regNum
       val logTxt = s"[onPageLoad] for regNum=$regNum"
 
-      whenMgd {
-        gamblingService
-          .getOpenReturnPeriods(request.regime.code, regNum, SortBy.DueDate, OrderBy.Ascending)
-          .flatMap { openReturnPeriods =>
-            val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-            Future
-              .fromTry(userAnswers.set(OpenReturnPeriodsPage, openReturnPeriods))
-              .flatMap(sessionRepository.set)
-              .map(_ =>
-                Ok(
-                  openReturnsView(regNum,
-                                  openReturnPeriods,
-                                  backNavigator.backPage(
-                                    OpenReturnPeriodsPage,
-                                    NormalMode,
-                                    request
-                                  )
-                                 )
-                )
+      gamblingService
+        .getOpenReturnPeriods(request.regime.code, regNum, SortBy.DueDate, OrderBy.Ascending)
+        .flatMap { openReturnPeriods =>
+          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+          Future
+            .fromTry(userAnswers.set(OpenReturnPeriodsPage, openReturnPeriods))
+            .flatMap(sessionRepository.set)
+            .map(_ =>
+              Ok(
+                openReturnsView(regNum,
+                                openReturnPeriods,
+                                backNavigator.backPage(
+                                  OpenReturnPeriodsPage,
+                                  NormalMode,
+                                  request
+                                )
+                               )
               )
-          }
-          .recover { case ex =>
-            logger.error(s"$logTxt CALL to gamblingService.getOpenReturnPeriods FAILED", ex)
-            Redirect(controllers.routes.SystemErrorController.onPageLoad())
-          }
-      }
+            )
+        }
+        .recover { case ex =>
+          logger.error(s"$logTxt CALL to gamblingService.getOpenReturnPeriods FAILED", ex)
+          Redirect(controllers.routes.SystemErrorController.onPageLoad())
+        }
     }
 
   def selectOpenPeriod(consecNo: Int): Action[AnyContent] =
-    (authorise andThen validate andThen getData).async { implicit request =>
-      whenMgd {
-        request.userAnswers
-          .flatMap(_.get(OpenReturnPeriodsPage))
-          .flatMap(_.openPeriods.find(_.consecNo == consecNo))
-          .flatMap(openPeriod => DateTimeFormats.parseMgdPeriod(openPeriod.period))
-          .fold(Future.successful(Redirect(routes.SelectReturnController.onPageLoad()))) { (periodStart, periodEnd) =>
-            val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-            Future
-              .fromTry(userAnswers.selectPeriod(SelectedReturn(periodStart, periodEnd)))
-              .flatMap(sessionRepository.set)
-              .map(_ => Redirect(routes.MachinesAvailableController.onPageLoad(NormalMode)))
-          }
-      }
+    (authorise andThen validate andThen getData andThen requireMgd).async { implicit request =>
+      request.userAnswers
+        .flatMap(_.get(OpenReturnPeriodsPage))
+        .flatMap(_.openPeriods.find(_.consecNo == consecNo))
+        .flatMap(openPeriod => DateTimeFormats.parseMgdPeriod(openPeriod.period))
+        .fold(Future.successful(Redirect(routes.SelectReturnController.onPageLoad()))) { (periodStart, periodEnd) =>
+          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+          Future
+            .fromTry(userAnswers.selectPeriod(SelectedReturn(periodStart, periodEnd)))
+            .flatMap(sessionRepository.set)
+            .map(_ => Redirect(routes.MachinesAvailableController.onPageLoad(NormalMode)))
+        }
     }
 }
 

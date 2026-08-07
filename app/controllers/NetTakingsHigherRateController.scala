@@ -37,6 +37,7 @@ class NetTakingsHigherRateController @Inject() (
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
+  requireMgd: MgdRegimeAction,
   formProvider: NetTakingsHigherRateFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: NetTakingsHigherRateView
@@ -45,44 +46,38 @@ class NetTakingsHigherRateController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
-    whenMgd {
-      request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-        case None =>
-          logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
-          Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-        case Some(selectedReturn) =>
-          val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsHigherRatePage)).fold(form)(value => form.fill(value))
-
-          Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsHigherRatePage, mode, request), selectedReturn)))
-      }
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen requireMgd).async { implicit request =>
+    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+      case None =>
+        logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
+        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+      case Some(selectedReturn) =>
+        val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsHigherRatePage)).fold(form)(value => form.fill(value))
+        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsHigherRatePage, mode, request), selectedReturn)))
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
-    whenMgd {
-      request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-        case None =>
-          logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
-          Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-        case Some(selectedReturn) =>
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors =>
-                Future.successful(
-                  BadRequest(view(formWithErrors, mode, backNavigator.backPage(NetTakingsHigherRatePage, mode, request), selectedReturn))
-                ),
-              value => {
-                val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-
-                for {
-                  updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsHigherRatePage, value))
-                  _              <- sessionRepository.set(updatedAnswers)
-                } yield Redirect(navigator.nextPage(NetTakingsHigherRatePage, mode, updatedAnswers))
-              }
-            )
-      }
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen requireMgd).async { implicit request =>
+    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+      case None =>
+        logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
+        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+      case Some(selectedReturn) =>
+        form
+          .bindFromRequest()
+          .fold(
+            formWithErrors =>
+              Future.successful(
+                BadRequest(view(formWithErrors, mode, backNavigator.backPage(NetTakingsHigherRatePage, mode, request), selectedReturn))
+              ),
+            value => {
+              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+              for {
+                updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsHigherRatePage, value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(NetTakingsHigherRatePage, mode, updatedAnswers))
+            }
+          )
     }
   }
 }
