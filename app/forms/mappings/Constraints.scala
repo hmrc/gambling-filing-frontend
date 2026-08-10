@@ -16,10 +16,10 @@
 
 package forms.mappings
 
-import config.CurrencyFormatter
 import java.time.LocalDate
 
 import play.api.data.validation.{Constraint, Invalid, Valid}
+import views.CurrencyFormatter
 
 trait Constraints {
 
