@@ -122,6 +122,10 @@ GET        /change-duty-brought-forward  controllers.NegativeDutyController.onPa
 POST       /change-duty-brought-forward  controllers.NegativeDutyController.onSubmit(mode: Mode = CheckMode)
 
 
-
 GET        /contact-hmrc                        controllers.ContactHmrcController.onPageLoad(mode: Mode = NormalMode)
 GET        /change-contact-hmrc                 controllers.ContactHmrcController.onPageLoad(mode: Mode = CheckMode)
+
+GET        /total-under-declared-duty                 controllers.TotalUnderDeclaredDutyController.onPageLoad(mode: Mode = NormalMode)
+POST       /total-under-declared-duty                 controllers.TotalUnderDeclaredDutyController.onSubmit(mode: Mode = NormalMode)
+GET        /change-total-under-declared-duty          controllers.TotalUnderDeclaredDutyController.onPageLoad(mode: Mode = CheckMode)
+POST       /change-total-under-declared-duty          controllers.TotalUnderDeclaredDutyController.onSubmit(mode: Mode = CheckMode)
