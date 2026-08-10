@@ -18,7 +18,7 @@ package navigation
 
 import controllers.routes
 import models.*
-import pages.*
+import pages.{TotalUnderDeclaredDutyPage, *}
 import play.api.mvc.Call
 
 import javax.inject.{Inject, Singleton}
@@ -130,7 +130,7 @@ class Navigator @Inject() () {
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyLimitsPage) match {
           case Some(true) =>
-            routes.IndexController.onPageLoad() // TODO: TotalUnderDeclaredDutyController
+            routes.TotalUnderDeclaredDutyController.onPageLoad(NormalMode)
 
           case Some(false) =>
             routes.ContactHmrcController.onPageLoad(NormalMode)
@@ -147,6 +147,9 @@ class Navigator @Inject() () {
       }
 
     case ContactHmrcPage => // TODO: /manage-gambling-tax/returns/duty-brought-forward
+      _ => routes.IndexController.onPageLoad()
+
+    case TotalUnderDeclaredDutyPage =>
       _ => routes.IndexController.onPageLoad()
 
     case NegativeDutyBroughtForwardInputPage =>
@@ -275,6 +278,9 @@ class Navigator @Inject() () {
       }
 
     case ContactHmrcPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case TotalUnderDeclaredDutyPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case _ =>

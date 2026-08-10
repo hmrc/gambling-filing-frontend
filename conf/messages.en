@@ -288,3 +288,11 @@ negativeDuty.p1 = If your previous return resulted in a negative amount of MGD, 
 negativeDuty.caption = File a return for {0} to {1}
 negativeDuty.question = Did you have a negative amount of MGD in your previous return?
 negativeDuty.error.required = Select yes if you had a negative amount of MGD in your previous return
+
+totalUnderDeclaredDuty.title = How much under-declared duty do you have from previous returns?
+totalUnderDeclaredDuty.heading = How much under-declared duty do you have from previous returns?
+totalUnderDeclaredDuty.caption = File a return for {0} to {1}
+totalUnderDeclaredDuty.hint = Enter pounds and pence, like £1,510.72
+totalUnderDeclaredDuty.error.required = Enter your under-declared duty
+totalUnderDeclaredDuty.error.invalid = Enter your under-declared duty in pounds and pence
+totalUnderDeclaredDuty.error.maximum = Your under-declared duty must be less than {0}
