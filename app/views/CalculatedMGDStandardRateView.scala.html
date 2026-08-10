@@ -45,11 +45,11 @@
         </span>
 
         <h1 class="govuk-heading-l">
-            @Html(messages("calculatedMGDStandardRate.heading", CurrencyFormatter.formatAmountHtml(duty)))
+            @Html(messages("calculatedMGDStandardRate.heading", CurrencyFormatter.formattedAmountHtml(duty)))
         </h1>
 
         <p class="govuk-body">
-            @Html(messages("calculatedMGDStandardRate.body", percentage, CurrencyFormatter.formatAmountHtml(netTakings)))
+            @Html(messages("calculatedMGDStandardRate.body", percentage, CurrencyFormatter.formattedAmountHtml(netTakings)))
         </p>
 
         @govukRadios(
