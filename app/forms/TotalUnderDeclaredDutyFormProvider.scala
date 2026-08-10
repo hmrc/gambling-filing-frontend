@@ -39,8 +39,8 @@ class TotalUnderDeclaredDutyFormProvider @Inject() extends Mappings with Currenc
     )
 
   private def maximumValue(
-                            maximumAllowed: BigDecimal
-                          ): Constraint[BigDecimal] =
+    maximumAllowed: BigDecimal
+  ): Constraint[BigDecimal] =
     Constraint[BigDecimal]("totalUnderDeclaredDuty.maximum") { value =>
       if (value <= maximumAllowed) {
         Valid

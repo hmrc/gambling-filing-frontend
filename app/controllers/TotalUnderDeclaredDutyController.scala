@@ -31,17 +31,17 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TotalUnderDeclaredDutyController @Inject() (
-                                                   override val messagesApi: MessagesApi,
-                                                   sessionRepository: SessionRepository,
-                                                   navigator: Navigator,
-                                                   backNavigator: BackNavigator,
-                                                   authorise: AuthorisedAction,
-                                                   getData: DataRetrievalAction,
-                                                   formProvider: TotalUnderDeclaredDutyFormProvider,
-                                                   val controllerComponents: MessagesControllerComponents,
-                                                   view: TotalUnderDeclaredDutyView
-                                                 )(implicit ec: ExecutionContext)
-  extends FrontendBaseController
+  override val messagesApi: MessagesApi,
+  sessionRepository: SessionRepository,
+  navigator: Navigator,
+  backNavigator: BackNavigator,
+  authorise: AuthorisedAction,
+  getData: DataRetrievalAction,
+  formProvider: TotalUnderDeclaredDutyFormProvider,
+  val controllerComponents: MessagesControllerComponents,
+  view: TotalUnderDeclaredDutyView
+)(implicit ec: ExecutionContext)
+    extends FrontendBaseController
     with I18nSupport {
 
   private val MinimumLimit = BigDecimal("10000")
@@ -78,7 +78,9 @@ class TotalUnderDeclaredDutyController @Inject() (
           .bindFromRequest()
           .fold(
             formWithErrors =>
-              Future.successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(TotalUnderDeclaredDutyPage, mode, request), selectedReturn))),
+              Future.successful(
+                BadRequest(view(formWithErrors, mode, backNavigator.backPage(TotalUnderDeclaredDutyPage, mode, request), selectedReturn))
+              ),
             value =>
               for {
                 updatedAnswers <- Future.fromTry(userAnswers.set(TotalUnderDeclaredDutyPage, value))

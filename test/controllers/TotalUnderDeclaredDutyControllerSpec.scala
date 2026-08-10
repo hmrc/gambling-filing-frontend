@@ -34,8 +34,7 @@ import views.html.TotalUnderDeclaredDutyView
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class TotalUnderDeclaredDutyControllerSpec
-  extends SpecBase with MockitoSugar {
+class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new TotalUnderDeclaredDutyFormProvider()
 
