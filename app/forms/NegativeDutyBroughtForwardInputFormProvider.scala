@@ -30,7 +30,7 @@ class NegativeDutyBroughtForwardInputFormProvider @Inject() extends Mappings {
         "negativeDutyBroughtForwardInput.error.range"
       ).verifying(
         firstError(
-          maximumCurrency(BigDecimal(0), "negativeDutyBroughtForwardInput.error.range"),
+          maximumCurrency(BigDecimal(1000000000), "negativeDutyBroughtForwardInput.error.range"),
           minimumCurrency(BigDecimal(-1000000000), "negativeDutyBroughtForwardInput.error.range")
         )
       )

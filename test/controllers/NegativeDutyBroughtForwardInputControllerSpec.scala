@@ -145,7 +145,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       }
     }
 
-    "must return a Bad Request and errors when a positive amount is submitted" in {
+    "must redirect to next page when a valid positive amount is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
 
@@ -154,7 +154,23 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
           FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
             .withFormUrlEncodedBody(("value", "100.00"))
 
-        val boundForm = form.bind(Map("value" -> "100.00"))
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.CheckYourAnswersController.onPageLoad().url
+      }
+    }
+
+    "must return a Bad Request and errors when an amount of £1 billion is submitted" in {
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
+            .withFormUrlEncodedBody(("value", "1000000000"))
+
+        val boundForm = form.bind(Map("value" -> "1000000000"))
         val view = application.injector.instanceOf[NegativeDutyBroughtForwardInputView]
         val result = route(application, request).value
 
@@ -163,16 +179,16 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       }
     }
 
-    "must return a Bad Request and errors when an amount below -£1 billion is submitted" in {
+    "must return a Bad Request and errors when an amount of -£1 billion is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
 
       running(application) {
         val request =
           FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
-            .withFormUrlEncodedBody(("value", "-1000000000.01"))
+            .withFormUrlEncodedBody(("value", "-1000000000"))
 
-        val boundForm = form.bind(Map("value" -> "-1000000000.01"))
+        val boundForm = form.bind(Map("value" -> "-1000000000"))
         val view = application.injector.instanceOf[NegativeDutyBroughtForwardInputView]
         val result = route(application, request).value
 
