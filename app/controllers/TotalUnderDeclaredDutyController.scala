@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import controllers.actions.*
 import forms.TotalUnderDeclaredDutyFormProvider
 import models.{Mode, UserAnswers}
@@ -38,15 +39,12 @@ class TotalUnderDeclaredDutyController @Inject() (
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: TotalUnderDeclaredDutyFormProvider,
+  appConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
   view: TotalUnderDeclaredDutyView
 )(implicit ec: ExecutionContext)
     extends FrontendBaseController
     with I18nSupport {
-
-  private val MinimumLimit = BigDecimal("10000")
-  private val MaximumLimit = BigDecimal("50000")
-  private val OnePercent = BigDecimal("0.01")
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData) { implicit request =>
     request.userAnswers
@@ -103,10 +101,13 @@ class TotalUnderDeclaredDutyController @Inject() (
     val totalNetTakings =
       lowerNetTakings + standardNetTakings + higherNetTakings
 
-    val onePercentOfTotalNetTakings = totalNetTakings * OnePercent
+    val percentageOfTotalNetTakings =
+      totalNetTakings * appConfig.underDeclaredDutyPercentage
 
-    MinimumLimit.max(
-      onePercentOfTotalNetTakings.min(MaximumLimit)
+    appConfig.underDeclaredDutyMinimumLimit.max(
+      percentageOfTotalNetTakings.min(
+        appConfig.underDeclaredDutyMaximumLimit
+      )
     )
   }
 

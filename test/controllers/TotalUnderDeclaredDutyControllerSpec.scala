@@ -40,6 +40,18 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute: Call = Call("GET", "/foo")
 
+  private val underDeclaredDutyConfig = Map(
+    "mgd.under-declared-duty-minimum-limit" -> 10000,
+    "mgd.under-declared-duty-maximum-limit" -> 50000,
+    "mgd.under-declared-duty-percentage"    -> 0.01
+  )
+
+  private def configuredApplicationBuilder(
+    userAnswers: Option[UserAnswers] = None
+  ) =
+    applicationBuilder(userAnswers = userAnswers)
+      .configure(underDeclaredDutyConfig)
+
   val lowerNetTakings: BigDecimal = BigDecimal("900000")
   val standardNetTakings: BigDecimal = BigDecimal("900000")
   val higherNetTakings: BigDecimal = BigDecimal("900000")
@@ -79,7 +91,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
   "TotalUnderDeclaredDuty Controller" - {
     "must return OK and the correct view for a GET" in {
       val application =
-        applicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
+        configuredApplicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
 
       running(application) {
         val request = FakeRequest(GET, totalUnderDeclaredDutyRoute)
@@ -100,7 +112,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
       val userAnswers =
         userAnswersWithNetTakings.set(TotalUnderDeclaredDutyPage, validAnswer).success.value
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      val application = configuredApplicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, totalUnderDeclaredDutyRoute)
@@ -120,7 +132,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
       val mockSessionRepository = mock[SessionRepository]
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application = applicationBuilder(
+      val application = configuredApplicationBuilder(
         userAnswers = Some(userAnswersWithNetTakings)
       )
         .overrides(
@@ -152,7 +164,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithNetTakings))
+      val application = configuredApplicationBuilder(userAnswers = Some(userAnswersWithNetTakings))
         .overrides(
           bind[Navigator]
             .toInstance(
@@ -181,7 +193,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request when the submitted value is greater than the calculated maximum" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
+      val application = configuredApplicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
 
       running(application) {
 
@@ -215,7 +227,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
+      val application = configuredApplicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
 
       running(application) {
 
@@ -271,7 +283,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
           .value
 
       val application =
-        applicationBuilder(
+        configuredApplicationBuilder(
           userAnswers = Some(userAnswers)
         ).build()
 
@@ -330,7 +342,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
           .value
 
       val application =
-        applicationBuilder(
+        configuredApplicationBuilder(
           userAnswers = Some(userAnswers)
         ).build()
 
@@ -378,7 +390,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = configuredApplicationBuilder(userAnswers = None).build()
 
       running(application) {
         val request =
@@ -399,7 +411,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
     "must redirect to SelectReturnController on a POST when no SelectedReturn is found in the session" in {
 
-      val application = applicationBuilder(userAnswers = None).build()
+      val application = configuredApplicationBuilder(userAnswers = None).build()
 
       running(application) {
         val request =
