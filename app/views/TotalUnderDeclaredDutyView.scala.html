@@ -31,30 +31,30 @@ govukButton: GovukButton
 
 @layout(pageTitle = title(form, messages("totalUnderDeclaredDuty.title")), backLink = backLink) {
 
-@formHelper(action = routes.TotalUnderDeclaredDutyController.onSubmit(mode), Symbol("autoComplete") -> "off") {
+    @formHelper(action = routes.TotalUnderDeclaredDutyController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
-@if(form.errors.nonEmpty) {
-@govukErrorSummary(ErrorSummaryViewModel(form))
-}
+        @if(form.errors.nonEmpty) {
+            @govukErrorSummary(ErrorSummaryViewModel(form))
+        }
 
-<span class="govuk-caption-l">@messages(
+        <span class="govuk-caption-l">@messages(
             "totalUnderDeclaredDuty.caption",
             DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
             DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
         )</span>
 
-@govukInput(
-InputViewModel(
-field = form("value"),
-label = LabelViewModel(messages("totalUnderDeclaredDuty.heading")).asPageHeading(LabelSize.Large)
-)
-.withPrefix(PrefixOrSuffix(content = Text("£")))
-.withHint(HintViewModel(messages("totalUnderDeclaredDuty.hint")))
-.withWidth(Fixed20)
-)
+        @govukInput(
+            InputViewModel(
+                field = form("value"),
+                label = LabelViewModel(messages("totalUnderDeclaredDuty.heading")).asPageHeading(LabelSize.Large)
+            )
+            .withPrefix(PrefixOrSuffix(content = Text("£")))
+            .withHint(HintViewModel(messages("totalUnderDeclaredDuty.hint")))
+            .withWidth(Fixed20)
+        )
 
-@govukButton(
-ButtonViewModel(messages("site.continue"))
-)
-}
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+        )
+    }
 }
