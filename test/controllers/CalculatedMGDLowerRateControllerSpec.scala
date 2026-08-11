@@ -162,7 +162,7 @@ class CalculatedMGDLowerRateControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to JourneyRecoveryController on a GET when no SelectedReturn is found in the session" in {
+    "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
 
       val userAnswersWithoutSelectedReturn = emptyUserAnswers.set(NetTakingsLowerPage, netTakings).success.value
 
@@ -174,7 +174,7 @@ class CalculatedMGDLowerRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
 

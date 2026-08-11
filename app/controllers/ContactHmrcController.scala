@@ -35,38 +35,30 @@ class ContactHmrcController @Inject() (
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   requireMgd: MgdRegimeAction,
+  requireSelectReturn: SelectReturnRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   appConfig: FrontendAppConfig,
   view: ContactHmrcView
 ) extends BaseFilingController {
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (authorise andThen getData andThen requireMgd).async { implicit request =>
-      request.userAnswers
-        .flatMap(_.get(SelectReturnPage))
-        .fold(
-          Future.successful(
-            Redirect(
-              controllers.routes.SelectReturnController.onPageLoad()
-            )
-          )
-        ) { selectedReturn =>
-          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+    (authorise andThen getData andThen requireMgd andThen requireSelectReturn).async { implicit request =>
+      val selectedReturn = request.userAnswers.flatMap(_.get(SelectReturnPage)).get
+      val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 
-          Future.successful(
-            Ok(
-              view(
-                backLink = backNavigator.backPage(
-                  ContactHmrcPage,
-                  mode,
-                  request
-                ),
-                selectedReturn = selectedReturn,
-                contactHmrcUrl = appConfig.contactHmrcUrl,
-                continueUrl    = navigator.nextPage(ContactHmrcPage, mode, userAnswers).url
-              )
-            )
+      Future.successful(
+        Ok(
+          view(
+            backLink = backNavigator.backPage(
+              ContactHmrcPage,
+              mode,
+              request
+            ),
+            selectedReturn = selectedReturn,
+            contactHmrcUrl = appConfig.contactHmrcUrl,
+            continueUrl    = navigator.nextPage(ContactHmrcPage, mode, userAnswers).url
           )
-        }
+        )
+      )
     }
 }

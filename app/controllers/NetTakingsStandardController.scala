@@ -37,6 +37,7 @@ class NetTakingsStandardController @Inject() (
   backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
+  requireSelectReturn: SelectReturnRequiredAction,
   formProvider: NetTakingsStandardFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: NetTakingsStandardView
@@ -46,33 +47,27 @@ class NetTakingsStandardController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData) { implicit request =>
-    request.userAnswers
-      .flatMap(_.get(SelectReturnPage))
-      .fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
-        val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsStandardPage)).fold(form)(form.fill)
-        Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsStandardPage, mode, request), selectedReturn))
-      }
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireSelectReturn) { implicit request =>
+    val selectedReturn = request.userAnswers.flatMap(_.get(SelectReturnPage)).get
+    val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsStandardPage)).fold(form)(form.fill)
+    Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsStandardPage, mode, request), selectedReturn))
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
-    request.userAnswers
-      .flatMap(_.get(SelectReturnPage))
-      .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future
-                .successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(NetTakingsStandardPage, mode, request), selectedReturn))),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsStandardPage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(NetTakingsStandardPage, mode, updatedAnswers))
-            }
-          )
-      }
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireSelectReturn).async { implicit request =>
+    val selectedReturn = request.userAnswers.flatMap(_.get(SelectReturnPage)).get
+    form
+      .bindFromRequest()
+      .fold(
+        formWithErrors =>
+          Future
+            .successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(NetTakingsStandardPage, mode, request), selectedReturn))),
+        value => {
+          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+          for {
+            updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsStandardPage, value))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Redirect(navigator.nextPage(NetTakingsStandardPage, mode, updatedAnswers))
+        }
+      )
   }
 }

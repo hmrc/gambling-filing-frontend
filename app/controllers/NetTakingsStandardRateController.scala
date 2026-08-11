@@ -37,6 +37,7 @@ class NetTakingsStandardRateController @Inject() (
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   requireMgd: MgdRegimeAction,
+  requireSelectReturn: SelectReturnRequiredAction,
   formProvider: NetTakingsStandardRateFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: NetTakingsStandardRateView
@@ -45,38 +46,34 @@ class NetTakingsStandardRateController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
-    request.userAnswers
-      .flatMap(_.get(SelectReturnPage))
-      .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
-        val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsStandardRatePage)).fold(form)(form.fill)
-        Future.successful(
-          Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request), selectedReturn))
-        )
-      }
-  }
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen requireMgd andThen requireSelectReturn).async { implicit request =>
+      val selectedReturn = request.userAnswers.flatMap(_.get(SelectReturnPage)).get
+      val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsStandardRatePage)).fold(form)(form.fill)
+      Future.successful(
+        Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request), selectedReturn))
+      )
+    }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
-    request.userAnswers
-      .flatMap(_.get(SelectReturnPage))
-      .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future.successful(
-                BadRequest(
-                  view(formWithErrors, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request), selectedReturn)
-                )
-              ),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsStandardRatePage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(NetTakingsStandardRatePage, mode, updatedAnswers))
-            }
-          )
-      }
-  }
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen requireMgd andThen requireSelectReturn).async { implicit request =>
+      val selectedReturn = request.userAnswers.flatMap(_.get(SelectReturnPage)).get
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(
+                view(formWithErrors, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request), selectedReturn)
+              )
+            ),
+          value => {
+            val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+            for {
+              updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsStandardRatePage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(NetTakingsStandardRatePage, mode, updatedAnswers))
+          }
+        )
+    }
 }

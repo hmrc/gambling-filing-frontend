@@ -37,6 +37,7 @@ class MachinesAvailableController @Inject() (
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   requireMgd: MgdRegimeAction,
+  requireSelectReturn: SelectReturnRequiredAction,
   formProvider: MachinesAvailableFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: MachinesAvailableView
@@ -45,37 +46,29 @@ class MachinesAvailableController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-      case None =>
-        logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
-      case Some(selectedReturn) =>
-        val preparedForm = request.userAnswers.flatMap(_.get(MachinesAvailablePage)).fold(form)(form.fill)
-        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(MachinesAvailablePage, mode, request), selectedReturn)))
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen requireMgd andThen requireSelectReturn).async { implicit request =>
+      val selectedReturn = request.userAnswers.flatMap(_.get(SelectReturnPage)).get
+      val preparedForm = request.userAnswers.flatMap(_.get(MachinesAvailablePage)).fold(form)(form.fill)
+      Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(MachinesAvailablePage, mode, request), selectedReturn)))
     }
-  }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-      case None =>
-        logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
-      case Some(selectedReturn) =>
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future
-                .successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(MachinesAvailablePage, mode, request), selectedReturn))),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(MachinesAvailablePage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(MachinesAvailablePage, mode, updatedAnswers))
-            }
-          )
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen requireMgd andThen requireSelectReturn).async { implicit request =>
+      val selectedReturn = request.userAnswers.flatMap(_.get(SelectReturnPage)).get
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future
+              .successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(MachinesAvailablePage, mode, request), selectedReturn))),
+          value => {
+            val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+            for {
+              updatedAnswers <- Future.fromTry(userAnswers.set(MachinesAvailablePage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(MachinesAvailablePage, mode, updatedAnswers))
+          }
+        )
     }
-  }
 }

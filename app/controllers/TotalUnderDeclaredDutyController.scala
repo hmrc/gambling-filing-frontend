@@ -38,6 +38,7 @@ class TotalUnderDeclaredDutyController @Inject() (
   backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
+  requireSelectReturn: SelectReturnRequiredAction,
   formProvider: TotalUnderDeclaredDutyFormProvider,
   appConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
@@ -46,46 +47,40 @@ class TotalUnderDeclaredDutyController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData) { implicit request =>
-    request.userAnswers
-      .flatMap(_.get(SelectReturnPage))
-      .fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireSelectReturn) { implicit request =>
+    val selectedReturn = request.userAnswers.flatMap(_.get(SelectReturnPage)).get
 
-        val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-        val maximumAllowed = calculateMaximumAllowed(userAnswers)
-        val form = formProvider(maximumAllowed)
+    val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+    val maximumAllowed = calculateMaximumAllowed(userAnswers)
+    val form = formProvider(maximumAllowed)
 
-        val preparedForm =
-          userAnswers.get(TotalUnderDeclaredDutyPage).fold(form)(form.fill)
+    val preparedForm =
+      userAnswers.get(TotalUnderDeclaredDutyPage).fold(form)(form.fill)
 
-        Ok(
-          view(preparedForm, mode, backNavigator.backPage(TotalUnderDeclaredDutyPage, mode, request), selectedReturn)
-        )
-      }
+    Ok(
+      view(preparedForm, mode, backNavigator.backPage(TotalUnderDeclaredDutyPage, mode, request), selectedReturn)
+    )
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
-    request.userAnswers
-      .flatMap(_.get(SelectReturnPage))
-      .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireSelectReturn).async { implicit request =>
+    val selectedReturn = request.userAnswers.flatMap(_.get(SelectReturnPage)).get
 
-        val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-        val maximumAllowed = calculateMaximumAllowed(userAnswers)
+    val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+    val maximumAllowed = calculateMaximumAllowed(userAnswers)
 
-        formProvider(maximumAllowed)
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future.successful(
-                BadRequest(view(formWithErrors, mode, backNavigator.backPage(TotalUnderDeclaredDutyPage, mode, request), selectedReturn))
-              ),
-            value =>
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(TotalUnderDeclaredDutyPage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(TotalUnderDeclaredDutyPage, mode, updatedAnswers))
-          )
-      }
+    formProvider(maximumAllowed)
+      .bindFromRequest()
+      .fold(
+        formWithErrors =>
+          Future.successful(
+            BadRequest(view(formWithErrors, mode, backNavigator.backPage(TotalUnderDeclaredDutyPage, mode, request), selectedReturn))
+          ),
+        value =>
+          for {
+            updatedAnswers <- Future.fromTry(userAnswers.set(TotalUnderDeclaredDutyPage, value))
+            _              <- sessionRepository.set(updatedAnswers)
+          } yield Redirect(navigator.nextPage(TotalUnderDeclaredDutyPage, mode, updatedAnswers))
+      )
   }
 
   private def calculateMaximumAllowed(userAnswers: UserAnswers): BigDecimal = {
