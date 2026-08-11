@@ -78,7 +78,7 @@ class NegativeDutyBroughtForwardInputController @Inject() (
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 
               for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(NegativeDutyBroughtForwardInputPage, value))
+                updatedAnswers <- Future.fromTry(userAnswers.set(NegativeDutyBroughtForwardInputPage, value.abs))
                 _              <- sessionRepository.set(updatedAnswers)
               } yield Redirect(navigator.nextPage(NegativeDutyBroughtForwardInputPage, mode, updatedAnswers))
             }
