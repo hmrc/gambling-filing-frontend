@@ -16,7 +16,7 @@
 
 package forms
 
-import config.CurrencyFormatter
+import views.CurrencyFormatter
 import forms.mappings.Mappings
 import play.api.data.Form
 import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
