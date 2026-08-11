@@ -17,7 +17,6 @@
 package views
 
 import base.SpecBase
-import config.CurrencyFormatter
 import forms.CalculatedMGDLowerRateFormProvider
 import models.{NormalMode, SelectedReturn}
 import org.jsoup.Jsoup
