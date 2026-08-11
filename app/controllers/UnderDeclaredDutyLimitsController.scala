@@ -37,6 +37,7 @@ class UnderDeclaredDutyLimitsController @Inject() (
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   requireMgd: MgdRegimeAction,
+  requireSelectReturn: SelectReturnRequiredAction,
   formProvider: UnderDeclaredDutyLimitsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: UnderDeclaredDutyLimitsView
@@ -45,40 +46,32 @@ class UnderDeclaredDutyLimitsController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-      case None =>
-        logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-      case Some(selectedReturn) =>
-        val preparedForm = request.userAnswers.flatMap(_.get(UnderDeclaredDutyLimitsPage)).fold(form)(value => form.fill(value))
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen requireMgd andThen requireSelectReturn).async { implicit request =>
+      val selectedReturn = request.userAnswers.flatMap(_.get(SelectReturnPage)).get
+      val preparedForm = request.userAnswers.flatMap(_.get(UnderDeclaredDutyLimitsPage)).fold(form)(value => form.fill(value))
 
-        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(UnderDeclaredDutyLimitsPage, mode, request), selectedReturn)))
+      Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(UnderDeclaredDutyLimitsPage, mode, request), selectedReturn)))
     }
-  }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-      case None =>
-        logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-      case Some(selectedReturn) =>
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future.successful(
-                BadRequest(view(formWithErrors, mode, backNavigator.backPage(UnderDeclaredDutyLimitsPage, mode, request), selectedReturn))
-              ),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen requireMgd andThen requireSelectReturn).async { implicit request =>
+      val selectedReturn = request.userAnswers.flatMap(_.get(SelectReturnPage)).get
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(view(formWithErrors, mode, backNavigator.backPage(UnderDeclaredDutyLimitsPage, mode, request), selectedReturn))
+            ),
+          value => {
+            val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(UnderDeclaredDutyLimitsPage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(UnderDeclaredDutyLimitsPage, mode, updatedAnswers))
-            }
-          )
+            for {
+              updatedAnswers <- Future.fromTry(userAnswers.set(UnderDeclaredDutyLimitsPage, value))
+              _              <- sessionRepository.set(updatedAnswers)
+            } yield Redirect(navigator.nextPage(UnderDeclaredDutyLimitsPage, mode, updatedAnswers))
+          }
+        )
     }
-  }
 }

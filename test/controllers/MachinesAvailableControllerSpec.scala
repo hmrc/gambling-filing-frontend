@@ -155,7 +155,7 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to PageNotFoundController on a GET when no SelectedReturn is found in the session" in {
+    "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 
@@ -165,7 +165,7 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.PageNotFoundController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
 
@@ -205,7 +205,7 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to PageNotFoundController on a POST when no SelectedReturn is found in the session" in {
+    "must redirect to SelectReturnController on a POST when no SelectedReturn is found in the session" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 
@@ -217,7 +217,7 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.PageNotFoundController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
   }
