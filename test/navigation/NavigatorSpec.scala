@@ -378,6 +378,36 @@ class NavigatorSpec extends SpecBase {
           emptyUserAnswers
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
+
+      "must go from NegativeDutyPage  to NegativeDutyBroughtForwardInputPage when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(NegativeDutyPage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          NegativeDutyPage,
+          NormalMode,
+          answers
+        ) mustBe routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode)
+      }
+
+      "must go from NegativeDutyPage  to CheckYourAnswersPage when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(NegativeDutyPage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          NegativeDutyPage,
+          NormalMode,
+          answers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+
     }
 
     "in Check mode" - {
@@ -686,6 +716,34 @@ class NavigatorSpec extends SpecBase {
           NegativeDutyBroughtForwardInputPage,
           CheckMode,
           emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from NegativeDutyPage  to NegativeDutyBroughtForwardInputPage when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(NegativeDutyPage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          NegativeDutyPage,
+          CheckMode,
+          answers
+        ) mustBe routes.NegativeDutyBroughtForwardInputController.onPageLoad(CheckMode)
+      }
+
+      "must go from NegativeDutyPage  to CheckYourAnswersPage when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(NegativeDutyPage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          NegativeDutyPage,
+          CheckMode,
+          answers
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
     }
