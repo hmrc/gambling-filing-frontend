@@ -20,8 +20,9 @@ import base.SpecBase
 import forms.NegativeDutyBroughtForwardInputFormProvider
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{NegativeDutyBroughtForwardInputPage, SelectReturnPage}
 import play.api.inject.bind
@@ -106,6 +107,34 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must store the absolute value when a negative amount is submitted" in {
+      val negativeAmount = BigDecimal("-100.50")
+      val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
+
+        val result = route(application, request).value
+        status(result) mustEqual SEE_OTHER
+
+        val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository).set(userAnswersCaptor.capture())
+
+        userAnswersCaptor.getValue.get(NegativeDutyBroughtForwardInputPage).value mustEqual negativeAmount.abs
       }
     }
 
