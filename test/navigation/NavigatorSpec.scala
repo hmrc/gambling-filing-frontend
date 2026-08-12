@@ -407,7 +407,6 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
-
     }
 
     "in Check mode" - {
