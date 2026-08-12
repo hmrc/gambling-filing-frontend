@@ -403,6 +403,22 @@ class BackNavigatorSpec extends SpecBase {
         )
       }
 
+      "NegativeDutyBroughtForwardInputPage" - {
+
+        "must go from NegativeDutyBroughtForwardInputPage to NegativeDutyController" in {
+
+          navigator.backPage(
+            NegativeDutyBroughtForwardInputPage,
+            NormalMode,
+            optionalDataRequest
+          ) mustBe Some(
+            routes.NegativeDutyController
+              .onPageLoad(NormalMode)
+              .url
+          )
+        }
+      }
+
       "ContactHmrcPage" - {
 
         "must go to UnderDeclaredDutyReasonableCareController in NormalMode when reasonable care is true" in {
@@ -595,6 +611,13 @@ class BackNavigatorSpec extends SpecBase {
             CheckMode,
             request
           ) mustBe Some(routes.NetTakingsHigherRateController.onPageLoad(CheckMode).url)
+        }
+
+        "must go from NegativeDutyBroughtForwardInputPage to CheckYourAnswersController" in {
+          val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(emptyUserAnswers))
+
+          val result = navigator.backPage(NegativeDutyBroughtForwardInputPage, CheckMode, request)
+          result mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
         }
 
         "must go from UnderDeclaredDutyLimitsPage to CheckYourAnswer" in {

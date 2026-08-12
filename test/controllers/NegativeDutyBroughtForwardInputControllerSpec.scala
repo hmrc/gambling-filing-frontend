@@ -43,7 +43,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
   def onwardRoute: Call = Call("GET", "/foo")
 
   val validAnswer: BigDecimal = BigDecimal("-100.50")
-  val backUrl: Some[String] = Some("/manage-gambling-tax/returns/")
+  val backUrl: Some[String] = Some("/manage-gambling-tax/returns/duty-brought-forward")
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 

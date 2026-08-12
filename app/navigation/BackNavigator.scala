@@ -124,6 +124,9 @@ class BackNavigator @Inject() () {
     case TotalUnderDeclaredDutyPage =>
       _ => routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
 
+    case NegativeDutyBroughtForwardInputPage =>
+      _ => routes.NegativeDutyController.onPageLoad(NormalMode)
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }
@@ -222,6 +225,9 @@ class BackNavigator @Inject() () {
         }
 
     case TotalUnderDeclaredDutyPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case NegativeDutyBroughtForwardInputPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case _ =>
