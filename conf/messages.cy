@@ -251,4 +251,4 @@ totalUnderDeclaredDuty.caption = File a return for {0} to {1}
 totalUnderDeclaredDuty.hint = Enter pounds and pence, like £1,510.72
 totalUnderDeclaredDuty.error.required = Enter your under-declared duty
 totalUnderDeclaredDuty.error.invalid = Enter your under-declared duty in pounds and pence
-totalUnderDeclaredDuty.error.maximum = Your under-declared duty must be less than {0}
+totalUnderDeclaredDuty.error.maximum = The value you have declared is outside the limits allowed in this return. Your under-declared duty must be less than or equal to {0}
