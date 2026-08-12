@@ -156,13 +156,13 @@ class Navigator @Inject() () {
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case NegativeDutyPage =>
-        _.get(NegativeDutyPage) match {
-          case Some(true) => routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode)
+      _.get(NegativeDutyPage) match {
+        case Some(true) => routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode)
 
-          case Some(false) => routes.CheckYourAnswersController.onPageLoad()
+        case Some(false) => routes.CheckYourAnswersController.onPageLoad()
 
-          case None => routes.IndexController.onPageLoad()
-        }
+        case None => routes.IndexController.onPageLoad()
+      }
 
     case _ =>
       _ => routes.IndexController.onPageLoad()
@@ -294,9 +294,9 @@ class Navigator @Inject() () {
 
     case NegativeDutyPage =>
       _.get(NegativeDutyPage) match {
-        case Some(true) => routes.NegativeDutyBroughtForwardInputController.onPageLoad(CheckMode)
+        case Some(true)  => routes.NegativeDutyBroughtForwardInputController.onPageLoad(CheckMode)
         case Some(false) => routes.CheckYourAnswersController.onPageLoad()
-        case None => routes.IndexController.onPageLoad()
+        case None        => routes.IndexController.onPageLoad()
       }
 
     case _ =>
