@@ -69,7 +69,7 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
             backLink       = backUrl,
             selectedReturn = selectedReturn,
             contactHmrcUrl = appConfig.contactHmrcUrl,
-            continueUrl    = controllers.routes.IndexController.onPageLoad().url
+            continueUrl    = controllers.routes.NegativeDutyController.onPageLoad(NormalMode).url
           )(
             request,
             messages(application)
