@@ -37,7 +37,6 @@ class CalculatedMGDLowerRateController @Inject() (
   backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
-  requireMgd: MgdRegimeAction,
   formProvider: CalculatedMGDLowerRateFormProvider,
   frontendAppConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
@@ -47,7 +46,7 @@ class CalculatedMGDLowerRateController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     val radioAnswer = request.userAnswers.flatMap(_.get(CalculatedMGDLowerRatePage)) match {
       case None        => form
       case Some(value) => form.fill(value)
@@ -72,7 +71,7 @@ class CalculatedMGDLowerRateController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     (request.userAnswers.flatMap(_.get(NetTakingsLowerPage)), request.userAnswers.flatMap(_.get(SelectReturnPage))) match {
       case (Some(netTakings), Some(selectedReturn)) =>
         val duty = netTakings * frontendAppConfig.lowerRateDutyPercentage

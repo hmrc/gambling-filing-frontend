@@ -37,7 +37,6 @@ class CalculatedMGDHigherRateController @Inject() (
   backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
-  requireMgd: MgdRegimeAction,
   formProvider: CalculatedMGDHigherRateFormProvider,
   frontendAppConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
@@ -48,7 +47,7 @@ class CalculatedMGDHigherRateController @Inject() (
   private val form = formProvider()
   private val ratePercentage = frontendAppConfig.higherRateDutyPercentage * 100
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     val radioAnswer = request.userAnswers.flatMap(_.get(CalculatedMGDHigherRatePage)).fold(form)(form.fill)
 
     request.userAnswers
@@ -74,7 +73,7 @@ class CalculatedMGDHigherRateController @Inject() (
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.userAnswers
       .flatMap(_.get(SelectReturnPage))
       .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>

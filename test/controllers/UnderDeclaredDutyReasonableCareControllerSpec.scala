@@ -165,43 +165,5 @@ class UnderDeclaredDutyReasonableCareControllerSpec extends SpecBase with Mockit
       }
     }
 
-    "must redirect to AccessDeniedController on GET when regime is not MGD" in {
-
-      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
-
-      regimesExcludingMGD.foreach { code =>
-        val application =
-          applicationBuilder(regime = Regime.fromString(code).get).build()
-
-        running(application) {
-          val request = FakeRequest(GET, underDeclaredDutyReasonableCareRoute)
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
-        }
-      }
-    }
-
-    "must redirect to AccessDeniedController on POST when regime is not MGD" in {
-
-      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
-
-      regimesExcludingMGD.foreach { code =>
-        val application =
-          applicationBuilder(regime = Regime.fromString(code).get).build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, underDeclaredDutyReasonableCareRoute)
-              .withFormUrlEncodedBody("value" -> validAnswer.toString)
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
-        }
-      }
-    }
   }
 }

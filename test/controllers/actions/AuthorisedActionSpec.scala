@@ -96,7 +96,7 @@ class AuthorisedActionSpec extends SpecBase {
       contentAsString(result) mustBe "1234567890"
     }
 
-    "create AuthorisedRequest when Organisation has HMRC-GTS-GBD enrolment" in {
+    "redirect to access denied page when Organisation has a non-MGD HMRC-GTS-GBD enrolment" in {
       val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
       (mockAuthConnector
@@ -120,11 +120,13 @@ class AuthorisedActionSpec extends SpecBase {
 
       val controller = new Harness(authorisedAction)
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
-      status(result) mustBe OK
-      contentAsString(result) mustBe "GBD123"
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(
+        controllers.routes.AccessDeniedController.onPageLoad().url
+      )
     }
 
-    "create AuthorisedRequest when Organisation has HMRC-GTS-PBD enrolment" in {
+    "redirect to access denied page when Organisation has a non-MGD HMRC-GTS-PBD enrolment" in {
       val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
       (mockAuthConnector
@@ -148,11 +150,13 @@ class AuthorisedActionSpec extends SpecBase {
 
       val controller = new Harness(authorisedAction)
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
-      status(result) mustBe OK
-      contentAsString(result) mustBe "PBD123"
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(
+        controllers.routes.AccessDeniedController.onPageLoad().url
+      )
     }
 
-    "create AuthorisedRequest when Organisation has HMRC-GTS-RGD enrolment" in {
+    "redirect to access denied page when Organisation has a non-MGD HMRC-GTS-RGD enrolment" in {
       val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
       (mockAuthConnector
@@ -176,11 +180,13 @@ class AuthorisedActionSpec extends SpecBase {
 
       val controller = new Harness(authorisedAction)
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
-      status(result) mustBe OK
-      contentAsString(result) mustBe "RGD123"
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(
+        controllers.routes.AccessDeniedController.onPageLoad().url
+      )
     }
 
-    "create AuthorisedRequest when Agent has HMRC-GTS-AGNT enrolment" in {
+    "redirect to access denied page when Agent has a non-MGD HMRC-GTS-AGNT enrolment" in {
       val mockAuthConnector: AuthConnector = mock[AuthConnector]
 
       (mockAuthConnector
@@ -205,8 +211,10 @@ class AuthorisedActionSpec extends SpecBase {
 
       val controller = new Harness(authorisedAction)
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
-      status(result) mustBe OK
-      contentAsString(result) mustBe "AGENT789"
+      status(result) mustBe SEE_OTHER
+      redirectLocation(result) mustBe Some(
+        controllers.routes.AccessDeniedController.onPageLoad().url
+      )
     }
 
     "redirect to access denied page when user has no affinity group" in {

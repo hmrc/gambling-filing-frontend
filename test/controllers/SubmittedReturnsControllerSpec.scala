@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import models.SubmittedReturnsTestData.{validResponseSubmittedReturns, zeroResponseSubmittedReturns}
-import models.{Regime, SubmittedReturnSingle}
+import models.SubmittedReturnSingle
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
@@ -79,28 +79,6 @@ class SubmittedReturnsControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view(regNumber, validResponseSubmittedReturns)(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to AccessDeniedController when regime is not MGD" in {
-
-      val mockService = mock[GamblingService]
-      when(
-        mockService.getSubmittedReturns(any[String], any[Int], any[String])(any[HeaderCarrier])
-      ).thenReturn(Future.successful(validResponseSubmittedReturns))
-
-      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
-      regimesExcludingMGD.foreach { code =>
-        val application = applicationBuilder(regime = Regime.fromString(code).get).overrides(bind[GamblingService].toInstance(mockService)).build()
-
-        running(application) {
-          val request = FakeRequest(GET, SubmittedReturnsRoute).withSession("regNum" -> regNumber)
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
-        }
       }
     }
 
@@ -175,28 +153,6 @@ class SubmittedReturnsControllerSpec extends SpecBase with MockitoSugar {
         content must include(s"£${filedReturn.negativeAmountCarriedForward}")
         content must include("Net MGD payable on this return")
         content must include(s"£${filedReturn.totalNetDutyPayable}")
-      }
-    }
-
-    "must redirect to AccessDeniedController when regime is not MGD" in {
-
-      val mockService = mock[GamblingService]
-      when(
-        mockService.getSubmittedReturn(any[String], any[Int])(any[HeaderCarrier])
-      ).thenReturn(Future.successful(filedReturn))
-
-      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
-      regimesExcludingMGD.foreach { code =>
-        val application = applicationBuilder(regime = Regime.fromString(code).get).overrides(bind[GamblingService].toInstance(mockService)).build()
-
-        running(application) {
-          val request = FakeRequest(GET, ViewFiledReturnRoute).withSession("regNum" -> regNumber)
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
-        }
       }
     }
 

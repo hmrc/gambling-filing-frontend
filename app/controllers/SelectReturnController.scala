@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.SelectReturnController.SortBy
-import controllers.actions.{AuthorisedAction, DataRetrievalAction, MgdRegimeAction}
+import controllers.actions.{AuthorisedAction, DataRetrievalAction}
 
 import models.{NormalMode, SelectedReturn, UserAnswers}
 import navigation.BackNavigator
@@ -37,7 +37,6 @@ class SelectReturnController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
-  requireMgd: MgdRegimeAction,
   backNavigator: BackNavigator,
   sessionRepository: SessionRepository,
   gamblingService: GamblingService,
@@ -46,7 +45,7 @@ class SelectReturnController @Inject() (
     extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen getData andThen requireMgd).async { implicit request =>
+    (authorise andThen getData).async { implicit request =>
       val regNum = request.regNum
       val logTxt = s"[onPageLoad] for regNum=$regNum"
 
@@ -77,7 +76,7 @@ class SelectReturnController @Inject() (
     }
 
   def selectOpenPeriod(consecNo: Int): Action[AnyContent] =
-    (authorise andThen getData andThen requireMgd).async { implicit request =>
+    (authorise andThen getData).async { implicit request =>
       request.userAnswers
         .flatMap(_.get(OpenReturnPeriodsPage))
         .flatMap(_.openPeriods.find(_.consecNo == consecNo))
