@@ -127,6 +127,30 @@ class BackNavigator @Inject() () {
     case NegativeDutyBroughtForwardInputPage =>
       _ => routes.NegativeDutyController.onPageLoad(NormalMode)
 
+    case NegativeDutyPage =>
+      userAnswers =>
+        userAnswers.get(UnderDeclaredDutyPage) match {
+
+          case Some(false) =>
+            routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
+
+          case Some(true) =>
+            (userAnswers.get(UnderDeclaredDutyReasonableCarePage), userAnswers.get(UnderDeclaredDutyLimitsPage)) match {
+
+              case (Some(false), Some(true)) =>
+                routes.TotalUnderDeclaredDutyController.onPageLoad(NormalMode)
+
+              case (Some(true), _) | (_, Some(false)) =>
+                routes.ContactHmrcController.onPageLoad(NormalMode)
+
+              case _ =>
+                routes.IndexController.onPageLoad()
+            }
+
+          case None =>
+            routes.IndexController.onPageLoad()
+        }
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }
@@ -228,6 +252,9 @@ class BackNavigator @Inject() () {
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case NegativeDutyBroughtForwardInputPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case NegativeDutyPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case _ =>

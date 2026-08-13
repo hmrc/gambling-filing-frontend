@@ -231,7 +231,6 @@ class NavigatorSpec extends SpecBase {
       }
 
       "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in {
-        // TODO: /manage-gambling-tax/returns/duty-brought-forward (FAR-NEG-SCR) 20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
         val answers =
           emptyUserAnswers
             .set(UnderDeclaredDutyPage, false)
@@ -242,7 +241,7 @@ class NavigatorSpec extends SpecBase {
           UnderDeclaredDutyPage,
           NormalMode,
           answers
-        ) mustBe routes.PageNotFoundController.onPageLoad()
+        ) mustBe routes.NegativeDutyController.onPageLoad(NormalMode)
       }
 
       "must go from CalculatedMGDHigherRatePage to UnderDeclaredDutyController when answer is Yes" in {
@@ -364,13 +363,12 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.JourneyRecoveryController.onPageLoad()
       }
 
-      // TODO Update this test once duty-brought-forward page(FAR-NEG-SCR) is added
       "must go from ContactHmrcPage to DutyBroughtForwardPage" in {
         navigator.nextPage(
           ContactHmrcPage,
           NormalMode,
           emptyUserAnswers
-        ) mustBe routes.IndexController.onPageLoad()
+        ) mustBe routes.NegativeDutyController.onPageLoad(NormalMode)
       }
 
       "must go from NegativeDutyBroughtForwardInputPage to CheckYourAnswersPage" in {
@@ -380,6 +378,35 @@ class NavigatorSpec extends SpecBase {
           emptyUserAnswers
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
+
+      "must go from NegativeDutyPage  to NegativeDutyBroughtForwardInputPage when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(NegativeDutyPage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          NegativeDutyPage,
+          NormalMode,
+          answers
+        ) mustBe routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode)
+      }
+
+      "must go from NegativeDutyPage  to CheckYourAnswersPage when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(NegativeDutyPage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          NegativeDutyPage,
+          NormalMode,
+          answers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
     }
 
     "in Check mode" - {
@@ -578,7 +605,6 @@ class NavigatorSpec extends SpecBase {
       }
 
       "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in {
-        // TODO: /manage-gambling-tax/returns/duty-brought-forward   20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
         val answers =
           emptyUserAnswers
             .set(UnderDeclaredDutyPage, false)
@@ -589,7 +615,7 @@ class NavigatorSpec extends SpecBase {
           UnderDeclaredDutyPage,
           CheckMode,
           answers
-        ) mustBe routes.PageNotFoundController.onPageLoad()
+        ) mustBe routes.NegativeDutyController.onPageLoad(CheckMode)
       }
 
       "must go from CalculatedMGDHigherRatePage to UnderDeclaredDutyController when answer is Yes" in {
@@ -689,6 +715,34 @@ class NavigatorSpec extends SpecBase {
           NegativeDutyBroughtForwardInputPage,
           CheckMode,
           emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from NegativeDutyPage  to NegativeDutyBroughtForwardInputPage when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(NegativeDutyPage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          NegativeDutyPage,
+          CheckMode,
+          answers
+        ) mustBe routes.NegativeDutyBroughtForwardInputController.onPageLoad(CheckMode)
+      }
+
+      "must go from NegativeDutyPage  to CheckYourAnswersPage when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(NegativeDutyPage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          NegativeDutyPage,
+          CheckMode,
+          answers
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
     }

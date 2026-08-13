@@ -498,6 +498,130 @@ class BackNavigatorSpec extends SpecBase {
         }
       }
 
+      "NegativeDutyPage" - {
+
+        "must go from NegativeDutyPage to UnderDeclaredDutyController when under-declared duty is No" in {
+
+          val userAnswers =
+            emptyUserAnswers
+              .set(UnderDeclaredDutyReasonableCarePage, false)
+              .success
+              .value
+              .set(UnderDeclaredDutyLimitsPage, false)
+              .success
+              .value
+
+          val request: OptionalDataRequest[AnyContent] =
+            OptionalDataRequest(
+              FakeRequest(),
+              "reg123",
+              Regime.MGD,
+              Some(userAnswers)
+            )
+
+          navigator.backPage(
+            ContactHmrcPage,
+            NormalMode,
+            request
+          ) mustBe Some(
+            routes.UnderDeclaredDutyLimitsController
+              .onPageLoad(NormalMode)
+              .url
+          )
+        }
+
+        "must go from NegativeDutyPage to TotalUnderDeclaredDutyController when reasonable care is No and limits is Yes" in {
+          val userAnswers =
+            emptyUserAnswers
+              .set(UnderDeclaredDutyPage, true)
+              .success
+              .value
+              .set(UnderDeclaredDutyReasonableCarePage, false)
+              .success
+              .value
+              .set(UnderDeclaredDutyLimitsPage, true)
+              .success
+              .value
+
+          val request =
+            OptionalDataRequest[AnyContent](
+              FakeRequest(),
+              "reg123",
+              Regime.MGD,
+              Some(userAnswers)
+            )
+
+          navigator.backPage(
+            NegativeDutyPage,
+            NormalMode,
+            request
+          ) mustBe Some(
+            routes.TotalUnderDeclaredDutyController.onPageLoad(NormalMode).url
+          )
+        }
+
+        "must go from NegativeDutyPage to ContactHmrcController when reasonable care is Yes" in {
+          val userAnswers =
+            emptyUserAnswers
+              .set(UnderDeclaredDutyPage, true)
+              .success
+              .value
+              .set(UnderDeclaredDutyReasonableCarePage, true)
+              .success
+              .value
+
+          val request: OptionalDataRequest[AnyContent] =
+            OptionalDataRequest(
+              FakeRequest(),
+              "reg123",
+              Regime.MGD,
+              Some(userAnswers)
+            )
+
+          navigator.backPage(
+            NegativeDutyPage,
+            NormalMode,
+            request
+          ) mustBe Some(
+            routes.ContactHmrcController.onPageLoad(NormalMode).url
+          )
+        }
+
+        "must go from NegativeDutyPage to ContactHmrcController when limits is No" in {
+          val userAnswers =
+            emptyUserAnswers
+              .set(UnderDeclaredDutyPage, true)
+              .success
+              .value
+              .set(UnderDeclaredDutyReasonableCarePage, false)
+              .success
+              .value
+              .set(UnderDeclaredDutyLimitsPage, false)
+              .success
+              .value
+
+          val request: OptionalDataRequest[AnyContent] =
+            OptionalDataRequest(
+              FakeRequest(),
+              "reg123",
+              Regime.MGD,
+              Some(userAnswers)
+            )
+
+          navigator.backPage(
+            NegativeDutyPage,
+            NormalMode,
+            request
+          ) mustBe Some(
+            routes.ContactHmrcController.onPageLoad(NormalMode).url
+          )
+        }
+
+
+
+      }
+
+
       "in Check mode" - {
 
         "must go from a page that doesn't exist in the edit route map to CheckYourAnswers" in {
