@@ -87,16 +87,14 @@ class DefaultAuthorisedAction @Inject() (
 
 object AuthorisedAction {
 
+  // This service is MGD-only, so only the MGD regime enrolment grants access.
+  // Any other gambling regime enrolment (GBD/PBD/RGD) must fail authorisation here.
   private val organisationEnrolments: Seq[(String, String, Regime)] = Seq(
-    ("HMRC-MGD-ORG", "HMRCMGDRN", Regime.MGD),
-    ("HMRC-GTS-GBD", "HMRCGTSGBRN", Regime.GBD),
-    ("HMRC-GTS-PBD", "HMRCGTSGBRN", Regime.PBD),
-    ("HMRC-GTS-RGD", "HMRCGTSGBRN", Regime.RGD)
+    ("HMRC-MGD-ORG", "HMRCMGDRN", Regime.MGD)
   )
 
   private val agentEnrolments: Seq[(String, String, Regime)] = Seq(
-    ("HMRC-MGD-AGNT", "HMRCMGDAGENTREF", Regime.MGD),
-    ("HMRC-GTS-AGNT", "HMRCGTSAGENTREF", Regime.GBD)
+    ("HMRC-MGD-AGNT", "HMRCMGDAGENTREF", Regime.MGD)
   )
 
   private def getEnrolmentIdentifier(
