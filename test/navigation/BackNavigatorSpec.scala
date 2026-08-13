@@ -617,10 +617,7 @@ class BackNavigatorSpec extends SpecBase {
           )
         }
 
-
-
       }
-
 
       "in Check mode" - {
 

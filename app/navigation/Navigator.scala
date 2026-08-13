@@ -18,7 +18,7 @@ package navigation
 
 import controllers.routes
 import models.*
-import pages.{TotalUnderDeclaredDutyPage, *}
+import pages.*
 import play.api.mvc.Call
 
 import javax.inject.{Inject, Singleton}
@@ -108,9 +108,9 @@ class Navigator @Inject() () {
     case UnderDeclaredDutyPage =>
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyPage) match {
-          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
+          case Some(true)  => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
           case Some(false) => routes.NegativeDutyController.onPageLoad(NormalMode)
-          case None => routes.IndexController.onPageLoad()
+          case None        => routes.IndexController.onPageLoad()
         }
 
     case CalculatedMGDHigherRatePage =>
@@ -256,9 +256,9 @@ class Navigator @Inject() () {
     case UnderDeclaredDutyPage =>
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyPage) match {
-          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
+          case Some(true)  => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
           case Some(false) => routes.NegativeDutyController.onPageLoad(CheckMode)
-          case None => routes.CheckYourAnswersController.onPageLoad()
+          case None        => routes.CheckYourAnswersController.onPageLoad()
         }
 
     case CalculatedMGDHigherRatePage =>
