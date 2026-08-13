@@ -36,7 +36,6 @@ class NetTakingsLowerRateController @Inject() (
   backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
-  requireMgd: MgdRegimeAction,
   formProvider: NetTakingsLowerRateFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: NetTakingsLowerRateView
@@ -45,7 +44,7 @@ class NetTakingsLowerRateController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.userAnswers
       .flatMap(_.get(SelectReturnPage))
       .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
@@ -54,7 +53,7 @@ class NetTakingsLowerRateController @Inject() (
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")

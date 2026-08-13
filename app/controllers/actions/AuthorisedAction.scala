@@ -89,13 +89,8 @@ object AuthorisedAction {
 
   // This service is MGD-only, so only the MGD regime enrolment grants access.
   // Any other gambling regime enrolment (GBD/PBD/RGD) must fail authorisation here.
-  private val organisationEnrolments: Seq[(String, String, Regime)] = Seq(
-    ("HMRC-MGD-ORG", "HMRCMGDRN", Regime.MGD)
-  )
-
-  private val agentEnrolments: Seq[(String, String, Regime)] = Seq(
-    ("HMRC-MGD-AGNT", "HMRCMGDAGENTREF", Regime.MGD)
-  )
+  private val organisationEnrolment: (String, String) = ("HMRC-MGD-ORG", "HMRCMGDRN")
+  private val agentEnrolment: (String, String) = ("HMRC-MGD-AGNT", "HMRCMGDAGENTREF")
 
   private def getEnrolmentIdentifier(
     enrolments: Enrolments,
@@ -111,18 +106,16 @@ object AuthorisedAction {
         .filter(_.nonEmpty)
     }
 
-  private def findActiveEnrolment(enrolments: Enrolments, candidates: Seq[(String, String, Regime)]): Option[(String, Regime)] =
-    candidates.view.flatMap { case (key, identifier, regime) =>
-      getEnrolmentIdentifier(enrolments, key, identifier).map(_ -> regime)
-    }.headOption
+  private def findActiveMgdEnrolment(enrolments: Enrolments, enrolment: (String, String)): Option[(String, Regime)] =
+    getEnrolmentIdentifier(enrolments, enrolment._1, enrolment._2).map(_ -> Regime.MGD)
 
   object HasActiveAgentEnrolment {
     def unapply(enrolments: Enrolments): Option[(String, Regime)] =
-      findActiveEnrolment(enrolments, agentEnrolments)
+      findActiveMgdEnrolment(enrolments, agentEnrolment)
   }
 
   object HasActiveOrganisationEnrolment {
     def unapply(enrolments: Enrolments): Option[(String, Regime)] =
-      findActiveEnrolment(enrolments, organisationEnrolments)
+      findActiveMgdEnrolment(enrolments, organisationEnrolment)
   }
 }

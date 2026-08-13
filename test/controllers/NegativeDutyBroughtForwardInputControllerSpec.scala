@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import forms.NegativeDutyBroughtForwardInputFormProvider
-import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
+import models.{NormalMode, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
@@ -223,45 +223,6 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to AccessDeniedController on GET when regime is not MGD" in {
-
-      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
-
-      regimesExcludingMGD.foreach { code =>
-        val application =
-          applicationBuilder(regime = Regime.fromString(code).get).build()
-
-        running(application) {
-          val request = FakeRequest(GET, negativeDutyBroughtForwardInputRoute)
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
-        }
-      }
-    }
-
-    "must redirect to AccessDeniedController on POST when regime is not MGD" in {
-
-      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
-
-      regimesExcludingMGD.foreach { code =>
-        val application =
-          applicationBuilder(regime = Regime.fromString(code).get).build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
-              .withFormUrlEncodedBody(("value", validAnswer.toString))
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
-        }
       }
     }
 
