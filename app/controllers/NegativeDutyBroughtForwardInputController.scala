@@ -36,7 +36,6 @@ class NegativeDutyBroughtForwardInputController @Inject() (
   backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
-  requireMgd: MgdRegimeAction,
   formProvider: NegativeDutyBroughtForwardInputFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: NegativeDutyBroughtForwardInputView
@@ -45,7 +44,7 @@ class NegativeDutyBroughtForwardInputController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
@@ -59,7 +58,7 @@ class NegativeDutyBroughtForwardInputController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen requireMgd).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
@@ -78,7 +77,7 @@ class NegativeDutyBroughtForwardInputController @Inject() (
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 
               for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(NegativeDutyBroughtForwardInputPage, value))
+                updatedAnswers <- Future.fromTry(userAnswers.set(NegativeDutyBroughtForwardInputPage, value.abs))
                 _              <- sessionRepository.set(updatedAnswers)
               } yield Redirect(navigator.nextPage(NegativeDutyBroughtForwardInputPage, mode, updatedAnswers))
             }

@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import models.SelectReturnTestData.{validResponseOpenReturns, zeroResponseOpenReturns}
-import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
+import models.{NormalMode, SelectedReturn, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -81,28 +81,6 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
         verify(mockSessionRepository).set(captor.capture())
 
         captor.getValue.get(OpenReturnPeriodsPage).value mustEqual validResponseOpenReturns
-      }
-    }
-
-    "must redirect to AccessDeniedController when regime is not MGD" in {
-
-      val mockService = mock[GamblingService]
-      when(
-        mockService.getOpenReturnPeriods(any[String], any[String], any[Int], any[String])(any[HeaderCarrier])
-      ).thenReturn(scala.concurrent.Future.successful(validResponseOpenReturns))
-
-      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
-      regimesExcludingMGD.foreach { code =>
-        val application = applicationBuilder(regime = Regime.fromString(code).get).overrides(bind[GamblingService].toInstance(mockService)).build()
-
-        running(application) {
-          val request = FakeRequest(GET, OpenReturnsRoute).withSession("regNum" -> regNumber)
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
-        }
       }
     }
 

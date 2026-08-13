@@ -18,7 +18,7 @@ package navigation
 
 import controllers.routes
 import models.*
-import pages.*
+import pages.{TotalUnderDeclaredDutyPage, *}
 import play.api.mvc.Call
 
 import javax.inject.{Inject, Singleton}
@@ -109,9 +109,7 @@ class Navigator @Inject() () {
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyPage) match {
           case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
-          case Some(false) =>
-            routes.PageNotFoundController
-              .onPageLoad() // TODO: /manage-gambling-tax/returns/duty-brought-forward (FAR-NEG-SCR) NormalMode  20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
+          case Some(false) => routes.NegativeDutyController.onPageLoad(NormalMode)
           case None => routes.IndexController.onPageLoad()
         }
 
@@ -130,7 +128,7 @@ class Navigator @Inject() () {
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyLimitsPage) match {
           case Some(true) =>
-            routes.IndexController.onPageLoad() // TODO: TotalUnderDeclaredDutyController
+            routes.TotalUnderDeclaredDutyController.onPageLoad(NormalMode)
 
           case Some(false) =>
             routes.ContactHmrcController.onPageLoad(NormalMode)
@@ -146,11 +144,23 @@ class Navigator @Inject() () {
         case None        => routes.SelectReturnController.onPageLoad()
       }
 
-    case ContactHmrcPage => // TODO: /manage-gambling-tax/returns/duty-brought-forward
+    case ContactHmrcPage =>
+      _ => routes.NegativeDutyController.onPageLoad(NormalMode)
+
+    case TotalUnderDeclaredDutyPage =>
       _ => routes.IndexController.onPageLoad()
 
     case NegativeDutyBroughtForwardInputPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case NegativeDutyPage =>
+      _.get(NegativeDutyPage) match {
+        case Some(true) => routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode)
+
+        case Some(false) => routes.CheckYourAnswersController.onPageLoad()
+
+        case None => routes.IndexController.onPageLoad()
+      }
 
     case _ =>
       _ => routes.IndexController.onPageLoad()
@@ -247,9 +257,7 @@ class Navigator @Inject() () {
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyPage) match {
           case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
-          case Some(false) =>
-            routes.PageNotFoundController
-              .onPageLoad() // TODO: /manage-gambling-tax/returns/duty-brought-forward (FAR-NEG-SCR)                   CheckMode  20. FAR-NEG-SCR - File a Return - Negative duty brought forward (screener)
+          case Some(false) => routes.NegativeDutyController.onPageLoad(CheckMode)
           case None => routes.CheckYourAnswersController.onPageLoad()
         }
 
@@ -276,6 +284,16 @@ class Navigator @Inject() () {
 
     case ContactHmrcPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case TotalUnderDeclaredDutyPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case NegativeDutyPage =>
+      _.get(NegativeDutyPage) match {
+        case Some(true)  => routes.NegativeDutyBroughtForwardInputController.onPageLoad(CheckMode)
+        case Some(false) => routes.CheckYourAnswersController.onPageLoad()
+        case None        => routes.IndexController.onPageLoad()
+      }
 
     case _ =>
       _ => routes.CheckYourAnswersController.onPageLoad()

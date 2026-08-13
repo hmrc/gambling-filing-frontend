@@ -18,10 +18,11 @@ package controllers
 
 import base.SpecBase
 import forms.NegativeDutyBroughtForwardInputFormProvider
-import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
+import models.{NormalMode, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{NegativeDutyBroughtForwardInputPage, SelectReturnPage}
 import play.api.inject.bind
@@ -42,7 +43,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
   def onwardRoute: Call = Call("GET", "/foo")
 
   val validAnswer: BigDecimal = BigDecimal("-100.50")
-  val backUrl: Some[String] = Some("/manage-gambling-tax/returns/")
+  val backUrl: Some[String] = Some("/manage-gambling-tax/returns/duty-brought-forward")
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
@@ -109,6 +110,34 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       }
     }
 
+    "must store the absolute value when a negative amount is submitted" in {
+      val negativeAmount = BigDecimal("-100.50")
+      val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
+
+        val result = route(application, request).value
+        status(result) mustEqual SEE_OTHER
+
+        val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository).set(userAnswersCaptor.capture())
+
+        userAnswersCaptor.getValue.get(NegativeDutyBroughtForwardInputPage).value mustEqual negativeAmount.abs
+      }
+    }
+
     "must return a Bad Request and errors when no data is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
@@ -145,7 +174,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       }
     }
 
-    "must return a Bad Request and errors when a positive amount is submitted" in {
+    "must redirect to next page when a valid positive amount is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
 
@@ -154,25 +183,23 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
           FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
             .withFormUrlEncodedBody(("value", "100.00"))
 
-        val boundForm = form.bind(Map("value" -> "100.00"))
-        val view = application.injector.instanceOf[NegativeDutyBroughtForwardInputView]
         val result = route(application, request).value
 
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.CheckYourAnswersController.onPageLoad().url
       }
     }
 
-    "must return a Bad Request and errors when an amount below -£1 billion is submitted" in {
+    "must return a Bad Request and errors when an amount of £1 billion is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
 
       running(application) {
         val request =
           FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
-            .withFormUrlEncodedBody(("value", "-1000000000.01"))
+            .withFormUrlEncodedBody(("value", "1000000000"))
 
-        val boundForm = form.bind(Map("value" -> "-1000000000.01"))
+        val boundForm = form.bind(Map("value" -> "1000000000"))
         val view = application.injector.instanceOf[NegativeDutyBroughtForwardInputView]
         val result = route(application, request).value
 
@@ -181,42 +208,21 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       }
     }
 
-    "must redirect to AccessDeniedController on GET when regime is not MGD" in {
+    "must return a Bad Request and errors when an amount of -£1 billion is submitted" in {
 
-      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
 
-      regimesExcludingMGD.foreach { code =>
-        val application =
-          applicationBuilder(regime = Regime.fromString(code).get).build()
+      running(application) {
+        val request =
+          FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
+            .withFormUrlEncodedBody(("value", "-1000000000"))
 
-        running(application) {
-          val request = FakeRequest(GET, negativeDutyBroughtForwardInputRoute)
-          val result = route(application, request).value
+        val boundForm = form.bind(Map("value" -> "-1000000000"))
+        val view = application.injector.instanceOf[NegativeDutyBroughtForwardInputView]
+        val result = route(application, request).value
 
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
-        }
-      }
-    }
-
-    "must redirect to AccessDeniedController on POST when regime is not MGD" in {
-
-      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
-
-      regimesExcludingMGD.foreach { code =>
-        val application =
-          applicationBuilder(regime = Regime.fromString(code).get).build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
-              .withFormUrlEncodedBody(("value", validAnswer.toString))
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
-        }
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
       }
     }
 

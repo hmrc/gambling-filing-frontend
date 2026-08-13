@@ -69,7 +69,7 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
             backLink       = backUrl,
             selectedReturn = selectedReturn,
             contactHmrcUrl = appConfig.contactHmrcUrl,
-            continueUrl    = controllers.routes.IndexController.onPageLoad().url
+            continueUrl    = controllers.routes.NegativeDutyController.onPageLoad(NormalMode).url
           )(
             request,
             messages(application)
@@ -103,26 +103,6 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
-      }
-    }
-
-    "must redirect to AccessDeniedController on a GET when regime is not MGD" in {
-
-      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
-
-      regimesExcludingMGD.foreach { code =>
-        val application =
-          applicationBuilder(
-            regime = Regime.fromString(code).get
-          ).build()
-
-        running(application) {
-          val request = FakeRequest(GET, contactHmrcRoute)
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
-        }
       }
     }
 

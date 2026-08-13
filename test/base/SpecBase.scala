@@ -97,6 +97,9 @@ trait SpecBase extends AnyFreeSpec with Matchers with TryValues with OptionValue
                                               | lower-rate-duty-percentage = 0.05
                                               | standard-rate-duty-percentage = 0.2
                                               | higher-rate-duty-percentage = 0.25
+                                              | under-declared-duty-minimum-limit = 10000
+                                              | under-declared-duty-maximum-limit = 50000
+                                              | under-declared-duty-percentage = 0.01
                                               |}
                                               |features {
                                               |  welsh-translation = false

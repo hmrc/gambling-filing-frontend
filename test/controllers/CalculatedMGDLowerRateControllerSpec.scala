@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import forms.CalculatedMGDLowerRateFormProvider
-import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
+import models.{NormalMode, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
@@ -178,40 +178,5 @@ class CalculatedMGDLowerRateControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to AccessDeniedController on GET when regime is not MGD" in {
-
-      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
-      regimesExcludingMGD.foreach { code =>
-        val application = applicationBuilder(regime = Regime.fromString(code).get).build()
-
-        running(application) {
-          val request = FakeRequest(GET, calculatedMgdLowerRateRoute)
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
-        }
-      }
-    }
-
-    "must redirect to AccessDeniedController on POST when regime is not MGD" in {
-
-      val regimesExcludingMGD = Seq("gbd", "pbd", "rgd")
-      regimesExcludingMGD.foreach { code =>
-        val application = applicationBuilder(regime = Regime.fromString(code).get).build()
-
-        running(application) {
-          val request =
-            FakeRequest(POST, calculatedMgdLowerRateRoute)
-              .withFormUrlEncodedBody(("value", validAnswer.toString))
-
-          val result = route(application, request).value
-
-          status(result) mustEqual SEE_OTHER
-          redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
-        }
-      }
-    }
   }
 }
