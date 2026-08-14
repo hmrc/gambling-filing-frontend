@@ -393,6 +393,14 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode)
       }
 
+      "must go from TotalUnderDeclaredDutyPage to NegativeDutyPage" in {
+        navigator.nextPage(
+          TotalUnderDeclaredDutyPage,
+          NormalMode,
+          emptyUserAnswers
+        ) mustBe routes.NegativeDutyController.onPageLoad(NormalMode)
+      }
+
       "must go from NegativeDutyPage  to CheckYourAnswersPage when answer is No" in {
         val answers =
           emptyUserAnswers
@@ -713,6 +721,14 @@ class NavigatorSpec extends SpecBase {
       "must go from NegativeDutyBroughtForwardInputPage to CheckYourAnswersPage" in {
         navigator.nextPage(
           NegativeDutyBroughtForwardInputPage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from TotalUnderDeclaredDutyPage to CheckYourAnswersController" in {
+        navigator.nextPage(
+          TotalUnderDeclaredDutyPage,
           CheckMode,
           emptyUserAnswers
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
