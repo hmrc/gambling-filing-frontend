@@ -56,6 +56,7 @@ class DefaultAuthorisedAction @Inject() (
               regime
             ) =>
           block(AuthorisedRequest(request, affinityGroup, regNum, regime))
+
         case Some(AffinityGroup.Agent) ~ _ =>
           logger.warn(s"Agent auth failed: enrolment missing or not activated for ${request.path}")
           Future.failed(InsufficientEnrolments("Agent enrolment missing or not activated"))
@@ -65,6 +66,7 @@ class DefaultAuthorisedAction @Inject() (
               regime
             ) =>
           block(AuthorisedRequest(request, affinityGroup, regNum, regime))
+
         case Some(AffinityGroup.Organisation) ~ _ =>
           logger.warn(s"Organisation auth failed: enrolment missing or not activated for ${request.path}")
           Future.failed(InsufficientEnrolments("Organisation enrolment missing or not activated"))
@@ -118,4 +120,5 @@ object AuthorisedAction {
     def unapply(enrolments: Enrolments): Option[(String, Regime)] =
       findActiveMgdEnrolment(enrolments, organisationEnrolment)
   }
+
 }

@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import forms.CalculatedMGDStandardRateFormProvider
-import models.{NormalMode, SelectedReturn, UserAnswers}
+import models.{NormalMode, SelectedReturn}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when

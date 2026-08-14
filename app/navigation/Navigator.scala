@@ -18,7 +18,7 @@ package navigation
 
 import controllers.routes
 import models.*
-import pages.{TotalUnderDeclaredDutyPage, *}
+import pages.*
 import play.api.mvc.Call
 
 import javax.inject.{Inject, Singleton}

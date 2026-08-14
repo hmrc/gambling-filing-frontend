@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions.AuthorisedAction
+import controllers.actions.{AuthorisedAction, ValidateAction}
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -26,17 +26,19 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.{JourneyRecoveryContinueView, JourneyRecoveryStartAgainView}
 
 import javax.inject.Inject
+import scala.concurrent.Future
 
 class JourneyRecoveryController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
+  validate: ValidateAction,
   continueView: JourneyRecoveryContinueView,
   startAgainView: JourneyRecoveryStartAgainView
 ) extends FrontendBaseController
     with I18nSupport
     with Logging {
 
-  def onPageLoad(continueUrl: Option[RedirectUrl] = None): Action[AnyContent] = authorise { implicit request =>
+  def onPageLoad(continueUrl: Option[RedirectUrl] = None): Action[AnyContent] = (authorise andThen validate).async { implicit request =>
 
     val safeUrl: Option[String] = continueUrl.flatMap { unsafeUrl =>
       unsafeUrl.getEither(OnlyRelative) match {
@@ -49,7 +51,7 @@ class JourneyRecoveryController @Inject() (
     }
 
     safeUrl
-      .map(url => Ok(continueView(url)))
-      .getOrElse(Ok(startAgainView()))
+      .map(url => Future.successful(Ok(continueView(url))))
+      .getOrElse(Future.successful(Ok(startAgainView())))
   }
 }

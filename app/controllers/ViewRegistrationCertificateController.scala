@@ -31,6 +31,7 @@ import scala.concurrent.ExecutionContext
 class ViewRegistrationCertificateController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedAction,
+  validate: ValidateAction,
   getData: DataRetrievalAction,
   appConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
@@ -42,7 +43,7 @@ class ViewRegistrationCertificateController @Inject() (
     with Logging {
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen getData).async { implicit request =>
+    (authorise andThen validate andThen getData).async { implicit request =>
 
       val regNum = request.regNum
 

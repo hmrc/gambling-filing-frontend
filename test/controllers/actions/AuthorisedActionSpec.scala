@@ -53,7 +53,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Organisation),
               Enrolments(
-                Set(Enrolment("HMRC-MGD-ORG", Seq(EnrolmentIdentifier("HMRCMGDRN", "1234567890")), "Activated"))
+                Set(Enrolment("HMRC-MGD-ORG", Seq(EnrolmentIdentifier("HMRCMGDRN", "XGM00003122200")), "Activated"))
               )
             )
           )
@@ -64,7 +64,7 @@ class AuthorisedActionSpec extends SpecBase {
       val controller = new Harness(authorisedAction)
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe OK
-      contentAsString(result) mustBe "1234567890"
+      contentAsString(result) mustBe "XGM00003122200"
     }
 
     "create AuthorisedRequest when user has an Agent affinity group" in {
@@ -81,7 +81,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Agent),
               Enrolments(
-                Set(Enrolment("HMRC-MGD-AGNT", Seq(EnrolmentIdentifier("HMRCMGDAGENTREF", "1234567890")), "Activated"))
+                Set(Enrolment("HMRC-MGD-AGNT", Seq(EnrolmentIdentifier("HMRCMGDAGENTREF", "XWA00003000000")), "Activated"))
               )
             )
           )
@@ -93,7 +93,7 @@ class AuthorisedActionSpec extends SpecBase {
       val controller = new Harness(authorisedAction)
       val result = controller.onPageLoad(FakeRequest("GET", "/test"))
       status(result) mustBe OK
-      contentAsString(result) mustBe "1234567890"
+      contentAsString(result) mustBe "XWA00003000000"
     }
 
     "redirect to access denied page when Organisation has a non-MGD HMRC-GTS-GBD enrolment" in {
@@ -110,7 +110,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Organisation),
               Enrolments(
-                Set(Enrolment("HMRC-GTS-GBD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "GBD123")), "Activated"))
+                Set(Enrolment("HMRC-GTS-GBD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "XWA00003000000")), "Activated"))
               )
             )
           )
@@ -140,7 +140,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Organisation),
               Enrolments(
-                Set(Enrolment("HMRC-GTS-PBD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "PBD123")), "Activated"))
+                Set(Enrolment("HMRC-GTS-PBD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "XNA00003200000")), "Activated"))
               )
             )
           )
@@ -170,7 +170,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Organisation),
               Enrolments(
-                Set(Enrolment("HMRC-GTS-RGD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "RGD123")), "Activated"))
+                Set(Enrolment("HMRC-GTS-RGD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "XEA00003400000")), "Activated"))
               )
             )
           )
@@ -200,7 +200,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Agent),
               Enrolments(
-                Set(Enrolment("HMRC-GTS-AGNT", Seq(EnrolmentIdentifier("HMRCGTSAGENTREF", "AGENT789")), "Activated"))
+                Set(Enrolment("HMRC-GTS-AGNT", Seq(EnrolmentIdentifier("HMRCGTSAGENTREF", "XWA00003000000")), "Activated"))
               )
             )
           )

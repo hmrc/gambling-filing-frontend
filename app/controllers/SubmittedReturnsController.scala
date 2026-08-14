@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions.{AuthorisedAction, DataRetrievalAction}
+import controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidateAction}
 import models.SortBy
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -30,6 +30,7 @@ import scala.concurrent.ExecutionContext
 class SubmittedReturnsController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   authorise: AuthorisedAction,
+  validate: ValidateAction,
   getData: DataRetrievalAction,
   gamblingService: GamblingService,
   submittedReturnsView: SubmittedReturnsView,
@@ -38,7 +39,7 @@ class SubmittedReturnsController @Inject() (
     extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen getData).async { implicit request =>
+    (authorise andThen validate andThen getData).async { implicit request =>
       val regNum = request.regNum
       val logTxt = s"[onPageLoad] for regNum=$regNum"
 
@@ -52,7 +53,7 @@ class SubmittedReturnsController @Inject() (
     }
 
   def viewFiledReturn(consecNo: Int): Action[AnyContent] =
-    (authorise andThen getData).async { implicit request =>
+    (authorise andThen validate andThen getData).async { implicit request =>
       val regNum = request.regNum
       val logTxt = s"[viewFiledReturn] for regNum=$regNum"
 
