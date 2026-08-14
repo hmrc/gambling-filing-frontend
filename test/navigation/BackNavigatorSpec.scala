@@ -498,6 +498,20 @@ class BackNavigatorSpec extends SpecBase {
         }
       }
 
+      "TotalUnderDeclaredDutyPage" - {
+
+        "must go from TotalUnderDeclaredDutyPage to UnderDeclaredDutyLimitsPage" in {
+
+          navigator.backPage(
+            TotalUnderDeclaredDutyPage,
+            NormalMode,
+            optionalDataRequest
+          ) mustBe Some(
+            routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode).url
+          )
+        }
+      }
+
       "NegativeDutyPage" - {
 
         "must go from NegativeDutyPage to UnderDeclaredDutyController when under-declared duty is No" in {
@@ -617,10 +631,7 @@ class BackNavigatorSpec extends SpecBase {
           )
         }
 
-
-
       }
-
 
       "in Check mode" - {
 
@@ -841,6 +852,13 @@ class BackNavigatorSpec extends SpecBase {
       val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(emptyUserAnswers))
 
       val result = navigator.backPage(MgdHigherRatePage, CheckMode, request)
+      result mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+    }
+
+    "must go from TotalUnderDeclaredDutyPage to CheckYourAnswersController" in {
+      val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(emptyUserAnswers))
+
+      val result = navigator.backPage(TotalUnderDeclaredDutyPage, CheckMode, request)
       result mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
     }
 
