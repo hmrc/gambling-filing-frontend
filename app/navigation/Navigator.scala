@@ -108,9 +108,9 @@ class Navigator @Inject() () {
     case UnderDeclaredDutyPage =>
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyPage) match {
-          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
+          case Some(true)  => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
           case Some(false) => routes.NegativeDutyController.onPageLoad(NormalMode)
-          case None => routes.IndexController.onPageLoad()
+          case None        => routes.IndexController.onPageLoad()
         }
 
     case CalculatedMGDHigherRatePage =>
