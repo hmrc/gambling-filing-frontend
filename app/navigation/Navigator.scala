@@ -148,7 +148,7 @@ class Navigator @Inject() () {
       _ => routes.NegativeDutyController.onPageLoad(NormalMode)
 
     case TotalUnderDeclaredDutyPage =>
-      _ => routes.IndexController.onPageLoad()
+      _ => routes.NegativeDutyController.onPageLoad(NormalMode)
 
     case NegativeDutyBroughtForwardInputPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()

@@ -110,6 +110,9 @@ class BackNavigator @Inject() () {
     case UnderDeclaredDutyLimitsPage =>
       _ => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
 
+    case TotalUnderDeclaredDutyPage =>
+      _ => routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
+
     case ContactHmrcPage =>
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyReasonableCarePage) match {
@@ -120,9 +123,6 @@ class BackNavigator @Inject() () {
               case _           => routes.IndexController.onPageLoad()
             }
         }
-
-    case TotalUnderDeclaredDutyPage =>
-      _ => routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
 
     case NegativeDutyBroughtForwardInputPage =>
       _ => routes.NegativeDutyController.onPageLoad(NormalMode)
@@ -268,7 +268,4 @@ class BackNavigator @Inject() () {
       case CheckMode  => Some(checkBackRouteMap(page)(userAnswers).url)
     }
   }
-
-  def backPage(page: Page, request: OptionalDataRequest[AnyContent]): Option[String] =
-    backPage(page, NormalMode, request)
 }
