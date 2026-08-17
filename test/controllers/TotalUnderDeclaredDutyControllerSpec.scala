@@ -96,9 +96,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request = FakeRequest(GET, totalUnderDeclaredDutyRoute)
         val result = route(application, request).value
-
         val view = application.injector.instanceOf[TotalUnderDeclaredDutyView]
-
         val form = formProvider(maximumAllowed)
 
         status(result) mustEqual OK
@@ -179,9 +177,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
 
-        val request =
-          FakeRequest(POST, totalUnderDeclaredDutyRoute).withFormUrlEncodedBody("value" -> maximumAllowed.toString)
-
+        val request = FakeRequest(POST, totalUnderDeclaredDutyRoute).withFormUrlEncodedBody("value" -> maximumAllowed.toString)
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -196,19 +192,37 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
       val application = configuredApplicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
 
       running(application) {
-
         val request = FakeRequest(POST, totalUnderDeclaredDutyRoute).withFormUrlEncodedBody("value" -> invalidAnswer.toString)
-
         val form = formProvider(maximumAllowed)
-
         val boundForm = form.bind(Map("value" -> invalidAnswer.toString))
+        val view = application.injector.instanceOf[TotalUnderDeclaredDutyView]
+        val result = route(application, request).value
 
-        val view =
-          application.injector
-            .instanceOf[TotalUnderDeclaredDutyView]
+        status(result) mustEqual BAD_REQUEST
 
-        val result =
-          route(application, request).value
+        contentAsString(result) mustEqual
+          view(
+            boundForm,
+            NormalMode,
+            backUrl,
+            selectedReturn
+          )(
+            request,
+            messages(application)
+          ).toString
+      }
+    }
+
+    "must return a Bad Request when the submitted value is zero" in {
+
+      val application = configuredApplicationBuilder(userAnswers = Some(userAnswersWithNetTakings)).build()
+
+      running(application) {
+        val request = FakeRequest(POST, totalUnderDeclaredDutyRoute).withFormUrlEncodedBody("value" -> "0")
+        val form = formProvider(maximumAllowed)
+        val boundForm = form.bind(Map("value" -> "0"))
+        val view = application.injector.instanceOf[TotalUnderDeclaredDutyView]
+        val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
 
@@ -232,13 +246,9 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
 
         val request = FakeRequest(POST, totalUnderDeclaredDutyRoute).withFormUrlEncodedBody("value" -> "invalid value")
-
         val form = formProvider(maximumAllowed)
-
         val boundForm = form.bind(Map("value" -> "invalid value"))
-
         val view = application.injector.instanceOf[TotalUnderDeclaredDutyView]
-
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
@@ -289,15 +299,10 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
 
-        val request =
-          FakeRequest(POST, totalUnderDeclaredDutyRoute).withFormUrlEncodedBody("value" -> "10001")
-
+        val request = FakeRequest(POST, totalUnderDeclaredDutyRoute).withFormUrlEncodedBody("value" -> "10001")
         val form = formProvider(BigDecimal("10000"))
-
         val boundForm = form.bind(Map("value" -> "10001"))
-
         val view = application.injector.instanceOf[TotalUnderDeclaredDutyView]
-
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
@@ -366,12 +371,8 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
             )
           )
 
-        val view =
-          application.injector
-            .instanceOf[TotalUnderDeclaredDutyView]
-
-        val result =
-          route(application, request).value
+        val view = application.injector.instanceOf[TotalUnderDeclaredDutyView]
+        val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
 

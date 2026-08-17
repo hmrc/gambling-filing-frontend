@@ -19,7 +19,7 @@ package forms
 import views.CurrencyFormatter
 import forms.mappings.Mappings
 import play.api.data.Form
-import play.api.data.validation.{Constraint, Invalid, Valid, ValidationError}
+import play.api.data.validation.{Constraint, Invalid, Valid}
 
 import javax.inject.Inject
 
@@ -34,23 +34,21 @@ class TotalUnderDeclaredDutyFormProvider @Inject() extends Mappings with Currenc
           "totalUnderDeclaredDuty.error.maximum",
           Seq(currencyFormat(maximumAllowed))
         ).verifying(
-          maximumValue(maximumAllowed)
+          validAmount(maximumAllowed)
         )
     )
 
-  private def maximumValue(
-    maximumAllowed: BigDecimal
-  ): Constraint[BigDecimal] =
-    Constraint[BigDecimal]("totalUnderDeclaredDuty.maximum") { value =>
-      if (value <= maximumAllowed) {
-        Valid
-      } else {
+  private def validAmount(maximumAllowed: BigDecimal): Constraint[BigDecimal] =
+    Constraint { value =>
+      if (value <= 0) {
+        Invalid("totalUnderDeclaredDuty.error.greaterThanZero")
+      } else if (value > maximumAllowed) {
         Invalid(
-          ValidationError(
-            "totalUnderDeclaredDuty.error.maximum",
-            currencyFormat(maximumAllowed)
-          )
+          "totalUnderDeclaredDuty.error.maximum",
+          currencyFormat(maximumAllowed)
         )
+      } else {
+        Valid
       }
     }
 }
