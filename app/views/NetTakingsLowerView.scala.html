@@ -49,6 +49,7 @@
                 label = LabelViewModel(messages("netTakingsLower.heading")).asPageHeading(LabelSize.Large)
             )
             .withPrefix(PrefixOrSuffix(content = Text("£")))
+            .withHint(HintViewModel(messages("netTakingsLower.hint")))
             .withWidth(Fixed20)
         )
 

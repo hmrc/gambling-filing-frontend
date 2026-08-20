@@ -32,7 +32,6 @@ class NetTakingsLowerViewSpec extends SpecBase {
 
     "must render the page with correct heading, caption and input" in new Setup {
 
-      val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
       val html = view(form, NormalMode, None, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
@@ -40,6 +39,7 @@ class NetTakingsLowerViewSpec extends SpecBase {
       doc.select("h1").text mustBe messages("netTakingsLower.heading")
       doc.select(".govuk-caption-l").text mustBe messages("netTakingsLower.caption", "1 Jan 2025", "31 Mar 2025")
       doc.select(".govuk-input__prefix").text mustBe "£"
+      doc.select(".govuk-hint").text mustBe messages("netTakingsLower.hint")
       doc.select("input.govuk-input").hasClass("govuk-input--width-20") mustBe true
       doc.select("button").text mustBe messages("site.continue")
     }
@@ -47,7 +47,7 @@ class NetTakingsLowerViewSpec extends SpecBase {
     "must render error summary when form has errors" in new Setup {
 
       val boundForm = form.bind(Map("value" -> ""))
-      val html = view(boundForm, NormalMode, None, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, None, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
@@ -57,7 +57,7 @@ class NetTakingsLowerViewSpec extends SpecBase {
     "must populate the input when form has a value" in new Setup {
 
       val boundForm = form.fill(BigDecimal("123.45"))
-      val html = view(boundForm, NormalMode, None, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, None, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select("#value").`val` mustBe "123.45"
@@ -68,6 +68,7 @@ class NetTakingsLowerViewSpec extends SpecBase {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[NetTakingsLowerView]
     val form = new NetTakingsLowerFormProvider()()
+    val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 
