@@ -49,6 +49,7 @@
                 label = LabelViewModel(messages("mgdStandardRate.heading")).asPageHeading(LabelSize.Large)
             )
             .withPrefix(PrefixOrSuffix(content = Text("£")))
+            .withHint(HintViewModel(messages("mgdStandardRate.hint")))
             .withWidth(Fixed20)
         )
 
