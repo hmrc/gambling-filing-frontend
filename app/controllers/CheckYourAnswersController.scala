@@ -42,12 +42,12 @@ class CheckYourAnswersController @Inject() (
     val answers = request.userAnswers
 
     answers.get(SelectReturnPage).fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
-      val machines = SummaryListViewModel(rows = MachinesAvailableSummary.rows(answers)).withCssClass("govuk-!-margin-bottom-9")
-      val lowerRate = SummaryListViewModel(rows = LowerRateSummary.rows(answers)).withCssClass("govuk-!-margin-bottom-9")
-      val standardRate = SummaryListViewModel(rows = StandardRateSummary.rows(answers)).withCssClass("govuk-!-margin-bottom-9")
-      val higherRate = SummaryListViewModel(rows = HigherRateSummary.rows(answers)).withCssClass("govuk-!-margin-bottom-9")
-      val underDeclaredDuty = SummaryListViewModel(rows = UnderDeclaredDutySummary.rows(answers)).withCssClass("govuk-!-margin-bottom-9")
-      val dutyBroughtForward = SummaryListViewModel(rows = DutyBroughtForwardSummary.rows(answers)).withCssClass("govuk-!-margin-bottom-9")
+      val machines = SummaryListViewModel(rows = MachinesAvailableSummary.rows(answers))
+      val lowerRate = SummaryListViewModel(rows = LowerRateSummary.rows(answers))
+      val standardRate = SummaryListViewModel(rows = StandardRateSummary.rows(answers))
+      val higherRate = SummaryListViewModel(rows = HigherRateSummary.rows(answers))
+      val underDeclaredDuty = SummaryListViewModel(rows = UnderDeclaredDutySummary.rows(answers))
+      val dutyBroughtForward = SummaryListViewModel(rows = DutyBroughtForwardSummary.rows(answers))
 
       Ok(view(selectedReturn, machines, lowerRate, standardRate, higherRate, underDeclaredDuty, dutyBroughtForward))
     }

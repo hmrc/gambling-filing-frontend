@@ -46,20 +46,20 @@
     </span>
     @h1(messages("checkYourAnswers.heading"))
 
-    @govukSummaryList(machines)
+    @govukSummaryList(machines.withCssClass("govuk-!-margin-bottom-9"))
 
     @h2(messages("checkYourAnswers.lowerRate.heading"))
-    @govukSummaryList(lowerRate)
+    @govukSummaryList(lowerRate.withCssClass("govuk-!-margin-bottom-9"))
 
     @h2(messages("checkYourAnswers.standardRate.heading"))
-    @govukSummaryList(standardRate)
+    @govukSummaryList(standardRate.withCssClass("govuk-!-margin-bottom-9"))
 
     @h2(messages("checkYourAnswers.higherRate.heading"))
-    @govukSummaryList(higherRate)
+    @govukSummaryList(higherRate.withCssClass("govuk-!-margin-bottom-9"))
 
     @h2(messages("checkYourAnswers.underDeclaredDuty.heading"))
-    @govukSummaryList(underDeclaredDuty)
+    @govukSummaryList(underDeclaredDuty.withCssClass("govuk-!-margin-bottom-9"))
 
     @h2(messages("checkYourAnswers.dutyBroughtForward.heading"))
-    @govukSummaryList(dutyBroughtForward)
+    @govukSummaryList(dutyBroughtForward.withCssClass("govuk-!-margin-bottom-9"))
 }
