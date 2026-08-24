@@ -14,16 +14,52 @@
  * limitations under the License.
  *@
 
+@import views.html.components._
+@import models.SelectedReturn
+@import utils.DateTimeFormats
+
 @this(
-    layout: templates.Layout,
-    govukSummaryList: GovukSummaryList
+        layout: templates.Layout,
+        govukSummaryList: GovukSummaryList,
+        h1: H1,
+        h2: H2
 )
 
-@(list: SummaryList)(implicit request: Request[_], messages: Messages)
+@(
+        selectedReturn: SelectedReturn,
+        machines: SummaryList,
+        lowerRate: SummaryList,
+        standardRate: SummaryList,
+        higherRate: SummaryList,
+        underDeclaredDuty: SummaryList,
+        dutyBroughtForward: SummaryList
+)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("checkYourAnswers.title"))) {
 
-    <h1 class="govuk-heading-xl">@messages("checkYourAnswers.heading")</h1>
+    <span class="govuk-caption-l">
+        @messages(
+            "checkYourAnswers.caption",
+            DateTimeFormats.formatDateMMM(Some(selectedReturn.periodStart)),
+            DateTimeFormats.formatDateMMM(Some(selectedReturn.periodEnd))
+        )
+    </span>
+    @h1(messages("checkYourAnswers.heading"))
 
-    @govukSummaryList(list)
+    @govukSummaryList(machines.withCssClass("govuk-!-margin-bottom-9"))
+
+    @h2(messages("checkYourAnswers.lowerRate.heading"))
+    @govukSummaryList(lowerRate.withCssClass("govuk-!-margin-bottom-9"))
+
+    @h2(messages("checkYourAnswers.standardRate.heading"))
+    @govukSummaryList(standardRate.withCssClass("govuk-!-margin-bottom-9"))
+
+    @h2(messages("checkYourAnswers.higherRate.heading"))
+    @govukSummaryList(higherRate.withCssClass("govuk-!-margin-bottom-9"))
+
+    @h2(messages("checkYourAnswers.underDeclaredDuty.heading"))
+    @govukSummaryList(underDeclaredDuty.withCssClass("govuk-!-margin-bottom-9"))
+
+    @h2(messages("checkYourAnswers.dutyBroughtForward.heading"))
+    @govukSummaryList(dutyBroughtForward.withCssClass("govuk-!-margin-bottom-9"))
 }

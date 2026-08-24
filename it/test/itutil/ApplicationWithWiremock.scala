@@ -27,7 +27,7 @@ trait ApplicationWithWiremock extends AnyWordSpec with GuiceOneServerPerSuite wi
 
   lazy val wireMock = new WireMock
 
-  val extraConfig: Map[String, Any] = {
+  def extraConfig: Map[String, Any] = {
     Map(
       "microservice.services.gambling.protocol" -> "http",
       "microservice.services.gambling.host"     -> WireMockConstants.stubHost,
