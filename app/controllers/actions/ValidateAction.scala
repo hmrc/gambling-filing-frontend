@@ -44,7 +44,6 @@ object GRNValidator extends Logging {
   private val regNumberPatternGTR: Pattern = "^X[A-Z]{1}[A-Z]{1}[0-9]{11}$".r.pattern
   private val regNumberPatternMGD: Pattern = "^X[A-Za-z]M[0-9]{11}$".r.pattern
 
-  private val WEIGHT_0 = 0
   private val WEIGHT_9 = 9
   private val WEIGHT_10 = 10
   private val WEIGHT_11 = 11
