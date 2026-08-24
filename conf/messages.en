@@ -113,6 +113,20 @@ machinesAvailable.error.maximum = The number of machines must be less than 10 mi
 machinesAvailable.error.nonNumeric = The number of machines must be a number
 machinesAvailable.error.wholeNumber = The number of machines must be a whole number
 
+introduction.title = File a return
+introduction.heading = File a return for {0} to {1}
+introduction.p1 = To file your return, you will need:
+introduction.bullet.1 = the number of machines available for play at the end of the return period
+introduction.bullet.2 = the total net takings from machine games liable to lower rate of duty
+introduction.bullet.3 = the total net takings from machine games liable to standard rate of duty
+introduction.bullet.4 = the total net takings from machine games liable to higher rate of duty
+introduction.bullet.5 = the amount of under-declared duty from previous returns
+introduction.bullet.6 = the negative amount of duty brought forward from previous returns
+introduction.underDeclared.h3 = Under-declared duty
+introduction.underDeclared.p.before = If you have under-declared duty from a previous return to declare, refer to the
+introduction.underDeclared.p.link = Machine Games Duty guidance page (opens in new tab)
+introduction.underDeclared.p.after = before you begin. There are limits on how much under-declared duty you can declare online in any return.
+
 mgdLowerRate.title = How much MGD at the lower rate do you owe?
 mgdLowerRate.heading = How much MGD at the lower rate do you owe?
 mgdLowerRate.caption = File a return for {0} to {1}

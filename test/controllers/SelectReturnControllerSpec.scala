@@ -136,7 +136,7 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
 
   "selectOpenPeriod" - {
 
-    "must resolve the consecNo to a cached period, store it under fileReturn and redirect to MachinesAvailableController.onPageLoad" in {
+    "must resolve the consecNo to a cached period, store it under fileReturn and redirect to IntroductionController.onPageLoad" in {
 
       val mockSessionRepository = mock[SessionRepository]
       when(mockSessionRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
@@ -153,7 +153,7 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.MachinesAvailableController.onPageLoad(NormalMode).url
+        redirectLocation(result).value mustEqual routes.IntroductionController.onPageLoad().url
 
         val captor = org.mockito.ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository).set(captor.capture())
