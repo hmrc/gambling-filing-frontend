@@ -86,7 +86,7 @@ class SelectReturnController @Inject() (
           Future
             .fromTry(userAnswers.selectPeriod(SelectedReturn(periodStart, periodEnd)))
             .flatMap(sessionRepository.set)
-            .map(_ => Redirect(routes.MachinesAvailableController.onPageLoad(NormalMode)))
+            .map(_ => Redirect(routes.IntroductionController.onPageLoad()))
         }
     }
 }
