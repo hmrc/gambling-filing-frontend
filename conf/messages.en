@@ -33,6 +33,12 @@ index.guidance = Welcome to your new frontend. Please see the README file for a 
 
 checkYourAnswers.title = Check your answers
 checkYourAnswers.heading = Check your answers
+checkYourAnswers.caption = File a return for {0} to {1}
+checkYourAnswers.lowerRate.heading = Lower rate of duty
+checkYourAnswers.standardRate.heading = Standard rate of duty
+checkYourAnswers.higherRate.heading = Higher rate of duty
+checkYourAnswers.underDeclaredDuty.heading = Under-declared duty
+checkYourAnswers.dutyBroughtForward.heading = Duty brought forward
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service

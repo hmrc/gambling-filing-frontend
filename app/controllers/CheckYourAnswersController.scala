@@ -18,9 +18,11 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.actions.{AuthorisedAction, DataRequiredAction, DataRetrievalAction, ValidateAction}
+import pages.SelectReturnPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import viewmodels.checkAnswers.*
 import viewmodels.govuk.summarylist.*
 import views.html.CheckYourAnswersView
 
@@ -37,10 +39,17 @@ class CheckYourAnswersController @Inject() (
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData andThen requireData) { implicit request =>
 
-    val list = SummaryListViewModel(
-      rows = Seq.empty
-    )
+    val answers = request.userAnswers
 
-    Ok(view(list))
+    answers.get(SelectReturnPage).fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
+      val machines = SummaryListViewModel(rows = MachinesAvailableSummary.rows(answers)).withCssClass("govuk-!-margin-bottom-9")
+      val lowerRate = SummaryListViewModel(rows = LowerRateSummary.rows(answers)).withCssClass("govuk-!-margin-bottom-9")
+      val standardRate = SummaryListViewModel(rows = StandardRateSummary.rows(answers)).withCssClass("govuk-!-margin-bottom-9")
+      val higherRate = SummaryListViewModel(rows = HigherRateSummary.rows(answers)).withCssClass("govuk-!-margin-bottom-9")
+      val underDeclaredDuty = SummaryListViewModel(rows = UnderDeclaredDutySummary.rows(answers)).withCssClass("govuk-!-margin-bottom-9")
+      val dutyBroughtForward = SummaryListViewModel(rows = DutyBroughtForwardSummary.rows(answers)).withCssClass("govuk-!-margin-bottom-9")
+
+      Ok(view(selectedReturn, machines, lowerRate, standardRate, higherRate, underDeclaredDuty, dutyBroughtForward))
+    }
   }
 }
