@@ -17,6 +17,7 @@
 package controllers
 
 import base.SpecBase
+import config.FrontendAppConfig
 import models.{NormalMode, SelectedReturn, UserAnswers}
 import pages.SelectReturnPage
 import play.api.test.FakeRequest
@@ -45,10 +46,14 @@ class IntroductionControllerSpec extends SpecBase {
         val result = route(application, request).value
 
         val view = application.injector.instanceOf[IntroductionView]
+        val appConfig = application.injector.instanceOf[FrontendAppConfig]
         val backUrl = Some(routes.SelectReturnController.onPageLoad().url)
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(selectedReturn, backUrl)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(selectedReturn, appConfig.machineGamesDutyGuidanceUrl, backUrl)(
+          request,
+          messages(application)
+        ).toString
       }
     }
 

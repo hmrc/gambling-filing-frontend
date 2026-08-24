@@ -32,7 +32,7 @@ class IntroductionViewSpec extends SpecBase {
     "must render the heading with the selected return period, intro content and continue button" in new Setup {
 
       val selectedReturn = SelectedReturn(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31))
-      val html = view(selectedReturn, Some("/back"))
+      val html = view(selectedReturn, guidanceUrl, Some("/back"))
       val doc = Jsoup.parse(html.body)
 
       doc.title must include(messages("introduction.title"))
@@ -51,10 +51,10 @@ class IntroductionViewSpec extends SpecBase {
     "must render the guidance link opening in a new tab" in new Setup {
 
       val selectedReturn = SelectedReturn(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31))
-      val html = view(selectedReturn, None)
+      val html = view(selectedReturn, guidanceUrl, None)
       val doc = Jsoup.parse(html.body)
 
-      val guidanceLink = doc.select("a.govuk-link[href=https://www.gov.uk/guidance/machine-games-duty-excise-notice-452]")
+      val guidanceLink = doc.select(s"a.govuk-link[href=$guidanceUrl]")
       guidanceLink.isEmpty mustBe false
       guidanceLink.text mustBe messages("introduction.underDeclared.p.link")
       guidanceLink.attr("target") mustBe "_blank"
@@ -64,7 +64,7 @@ class IntroductionViewSpec extends SpecBase {
     "must render the back link" in new Setup {
 
       val selectedReturn = SelectedReturn(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31))
-      val html = view(selectedReturn, Some("/back"))
+      val html = view(selectedReturn, guidanceUrl, Some("/back"))
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-back-link").attr("href") mustBe "/back"
@@ -74,6 +74,7 @@ class IntroductionViewSpec extends SpecBase {
   trait Setup {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[IntroductionView]
+    val guidanceUrl = "https://www.gov.uk/guidance/machine-games-duty-excise-notice-452#underpayment-of-duty"
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 

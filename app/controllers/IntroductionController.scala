@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import controllers.actions.*
 import models.Mode
 import navigation.BackNavigator
@@ -31,6 +32,7 @@ class IntroductionController @Inject() (
   validate: ValidateAction,
   getData: DataRetrievalAction,
   backNavigator: BackNavigator,
+  appConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
   view: IntroductionView
 )(implicit ec: ExecutionContext)
@@ -42,7 +44,9 @@ class IntroductionController @Inject() (
         logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
         Future.successful(Redirect(routes.SelectReturnController.onPageLoad()))
       case Some(selectedReturn) =>
-        Future.successful(Ok(view(selectedReturn, backNavigator.backPage(IntroductionPage, mode, request))))
+        Future.successful(
+          Ok(view(selectedReturn, appConfig.machineGamesDutyGuidanceUrl, backNavigator.backPage(IntroductionPage, mode, request)))
+        )
     }
   }
 

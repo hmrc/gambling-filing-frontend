@@ -29,7 +29,7 @@
     link: Link
 )
 
-@(selectedReturn: SelectedReturn, backLink: Option[String])(implicit request: Request[_], messages: Messages)
+@(selectedReturn: SelectedReturn, guidanceUrl: String, backLink: Option[String])(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("introduction.title")), backLink = backLink) {
 
@@ -53,7 +53,7 @@
 
     @link(
         linkTextKey = "introduction.underDeclared.p.link",
-        linkUrl = "https://www.gov.uk/guidance/machine-games-duty-excise-notice-452",
+        linkUrl = guidanceUrl,
         isNewTab = true,
         prefixTextKey = "introduction.underDeclared.p.before",
         suffixTextKey = "introduction.underDeclared.p.after"
