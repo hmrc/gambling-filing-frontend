@@ -59,21 +59,7 @@ object GRNValidator extends Logging {
   private val WEIGHT_2 = 2
 
   private val weights =
-    List(WEIGHT_0,
-         WEIGHT_0,
-         WEIGHT_9,
-         WEIGHT_10,
-         WEIGHT_11,
-         WEIGHT_12,
-         WEIGHT_13,
-         WEIGHT_8,
-         WEIGHT_7,
-         WEIGHT_6,
-         WEIGHT_5,
-         WEIGHT_4,
-         WEIGHT_3,
-         WEIGHT_2
-        )
+    List(WEIGHT_10, WEIGHT_11, WEIGHT_12, WEIGHT_13, WEIGHT_8, WEIGHT_7, WEIGHT_6, WEIGHT_5, WEIGHT_4, WEIGHT_3, WEIGHT_2)
   private val checkChars = "ABCDEFGHXJKLMNYPQRSTZVW"
 
   def validateRegNoRegime(regime: Regime, regNum: String): Boolean =
@@ -119,12 +105,14 @@ object GRNValidator extends Logging {
 
   private def expectedCheckChar(regNum: String): Char = {
     val char3 = (regNum.charAt(2).toInt - 32) * WEIGHT_9
-    val sum = List.range(3, 14).map(x => weights(x) * regNum.charAt(x).asDigit).sum + char3
+    val sum = List.range(3, 14).map(x => weights(x - 3) * regNum.charAt(x).asDigit).sum + char3
     checkChars.charAt(sum % 23)
   }
 
   private def ensure(condition: Boolean, warning: => String): Either[String, Unit] =
-    if (condition) Right(()) else Left(warning)
+    if (condition) Right(()) else {
+      Left(warning)
+    }
 
   private def logInvalid(result: Either[String, Unit]): Boolean = {
     result.left.foreach(warning => logger.warn(warning))
