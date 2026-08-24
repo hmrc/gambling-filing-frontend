@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.*
-import models.NormalMode
+import models.Mode
 import navigation.BackNavigator
 import pages.{IntroductionPage, SelectReturnPage}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -36,23 +36,23 @@ class IntroductionController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseFilingController {
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.PageNotFoundController.onPageLoad()))
+        Future.successful(Redirect(routes.SelectReturnController.onPageLoad()))
       case Some(selectedReturn) =>
-        Future.successful(Ok(view(selectedReturn, backNavigator.backPage(IntroductionPage, NormalMode, request))))
+        Future.successful(Ok(view(selectedReturn, backNavigator.backPage(IntroductionPage, mode, request))))
     }
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
         Future.successful(Redirect(routes.SelectReturnController.onPageLoad()))
       case Some(_) =>
-        Future.successful(Redirect(routes.MachinesAvailableController.onPageLoad(NormalMode)))
+        Future.successful(Redirect(routes.MachinesAvailableController.onPageLoad(mode)))
     }
   }
 }

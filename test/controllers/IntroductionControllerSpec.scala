@@ -52,7 +52,7 @@ class IntroductionControllerSpec extends SpecBase {
       }
     }
 
-    "must redirect to PageNotFoundController on a GET when no SelectedReturn is found in the session" in {
+    "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 
@@ -62,7 +62,7 @@ class IntroductionControllerSpec extends SpecBase {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.PageNotFoundController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
 

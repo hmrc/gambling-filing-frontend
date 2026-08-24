@@ -25,8 +25,8 @@ GET        /page-not-found                               controllers.PageNotFoun
 
 GET        /registration-certificate                     controllers.ViewRegistrationCertificateController.onPageLoad()
 
-GET        /introduction                                controllers.IntroductionController.onPageLoad()
-POST       /introduction                                controllers.IntroductionController.onSubmit()
+GET        /introduction                                controllers.IntroductionController.onPageLoad(mode: Mode = NormalMode)
+POST       /introduction                                controllers.IntroductionController.onSubmit(mode: Mode = NormalMode)
 
 GET        /machines-available                          controllers.MachinesAvailableController.onPageLoad(mode: Mode = NormalMode)
 POST       /machines-available                          controllers.MachinesAvailableController.onSubmit(mode: Mode = NormalMode)
