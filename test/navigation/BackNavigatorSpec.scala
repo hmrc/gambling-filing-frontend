@@ -64,16 +64,32 @@ class BackNavigatorSpec extends SpecBase {
         }
       }
 
+      "IntroductionPage" - {
+
+        "must go from IntroductionPage to the SelectReturn page" in {
+
+          navigator.backPage(
+            IntroductionPage,
+            NormalMode,
+            optionalDataRequest
+          ) mustBe Some(
+            routes.SelectReturnController
+              .onPageLoad()
+              .url
+          )
+        }
+      }
+
       "MachinesAvailablePage" - {
 
-        "must go from MachinesAvailablePage to SelectReturnPage" in {
+        "must go from MachinesAvailablePage to the Introduction page" in {
 
           navigator.backPage(
             MachinesAvailablePage,
             NormalMode,
             optionalDataRequest
           ) mustBe Some(
-            routes.SelectReturnController
+            routes.IntroductionController
               .onPageLoad()
               .url
           )
@@ -640,6 +656,14 @@ class BackNavigatorSpec extends SpecBase {
 
           val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(UserAnswers("id")))
           navigator.backPage(UnknownPage, CheckMode, request) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+        }
+
+        "must go from IntroductionPage to CheckYourAnswers" in {
+          navigator.backPage(IntroductionPage, CheckMode, optionalDataRequest) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
+        }
+
+        "must go from MachinesAvailablePage to CheckYourAnswers" in {
+          navigator.backPage(MachinesAvailablePage, CheckMode, optionalDataRequest) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
         }
 
         "must go from NetTakingsHigherRatePage to CalculatedMGDStandardRateController when answer is Yes" in {

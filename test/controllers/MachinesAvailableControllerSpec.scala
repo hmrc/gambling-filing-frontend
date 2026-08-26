@@ -46,7 +46,7 @@ class MachinesAvailableControllerSpec extends SpecBase with MockitoSugar {
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
   val backUrl = Some(
-    routes.SelectReturnController.onPageLoad().url
+    routes.IntroductionController.onPageLoad().url
   )
 
   def userAnswersWithSelectedReturn: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value

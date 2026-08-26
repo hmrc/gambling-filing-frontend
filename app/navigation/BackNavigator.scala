@@ -32,8 +32,11 @@ class BackNavigator @Inject() () {
     case OpenReturnPeriodsPage =>
       _ => routes.IndexController.onPageLoad()
 
-    case MachinesAvailablePage =>
+    case IntroductionPage =>
       _ => routes.SelectReturnController.onPageLoad()
+
+    case MachinesAvailablePage =>
+      _ => routes.IntroductionController.onPageLoad()
 
     case NetTakingsLowerRatePage =>
       _ => routes.MachinesAvailableController.onPageLoad(NormalMode)
@@ -160,8 +163,11 @@ class BackNavigator @Inject() () {
     case OpenReturnPeriodsPage =>
       _ => routes.IndexController.onPageLoad()
 
+    case IntroductionPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
     case MachinesAvailablePage =>
-      _ => routes.SelectReturnController.onPageLoad()
+      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case NetTakingsLowerRatePage =>
       _ => routes.MachinesAvailableController.onPageLoad(CheckMode)

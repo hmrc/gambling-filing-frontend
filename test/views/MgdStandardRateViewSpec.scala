@@ -39,6 +39,7 @@ class MgdStandardRateViewSpec extends SpecBase {
       doc.select("h1").text mustBe "How much MGD at the standard rate do you owe?"
       doc.select(".govuk-caption-l").text mustBe "File a return for 1 Jan 2025 to 31 Mar 2025"
       doc.select(".govuk-input__prefix").text mustBe "£"
+      doc.select(".govuk-hint").text mustBe messages("Enter pounds and pence, like £1,150.72")
       doc.select("input.govuk-input").hasClass("govuk-input--width-20") mustBe true
       doc.select("button").text mustBe "Continue"
     }
