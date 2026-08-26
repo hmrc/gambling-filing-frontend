@@ -53,4 +53,4 @@ trait ApplicationWithWiremock extends AnyWordSpec with GuiceOneServerPerSuite wi
     wireMock.stop()
     super.afterAll()
 
-  val baseUrl: String = s"http://localhost:$port/gambling-filing"
+  val baseUrl: String = s"http://localhost:$port/manage-gambling-tax/returns"
