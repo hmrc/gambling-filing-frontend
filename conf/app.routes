@@ -129,3 +129,6 @@ GET        /total-under-declared-duty                 controllers.TotalUnderDecl
 POST       /total-under-declared-duty                 controllers.TotalUnderDeclaredDutyController.onSubmit(mode: Mode = NormalMode)
 GET        /change-total-under-declared-duty          controllers.TotalUnderDeclaredDutyController.onPageLoad(mode: Mode = CheckMode)
 POST       /change-total-under-declared-duty          controllers.TotalUnderDeclaredDutyController.onSubmit(mode: Mode = CheckMode)
+
+GET        /declare-submit                              controllers.DeclareAndSubmitController.onPageLoad(mode: Mode = NormalMode)
+POST       /declare-submit                              controllers.DeclareAndSubmitController.onSubmit(mode: Mode = NormalMode)
