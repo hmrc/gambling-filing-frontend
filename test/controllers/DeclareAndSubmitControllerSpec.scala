@@ -20,10 +20,8 @@ import base.SpecBase
 import models.DeclaredSubmissionTestData.validResponseDeclaredSubmission
 import models.{NormalMode, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
-import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{DeclareAndSubmitPage, MgdHigherRatePage, MgdLowerRatePage, MgdStandardRatePage, NegativeDutyBroughtForwardInputPage, SelectReturnPage, TotalUnderDeclaredDutyPage}
+import pages.*
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -32,19 +30,14 @@ import repositories.SessionRepository
 import views.html.DeclareAndSubmitView
 
 import java.time.LocalDate
-import scala.concurrent.Future
 
 class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val validAnswer: Long = 10
-
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
-
-  val backUrl = Some(
-    routes.SelectReturnController.onPageLoad().url
-  )
+  
+  val backUrl = Some("/manage-gambling-tax/returns/check-your-answers")
 
   def userAnswersWithData: UserAnswers = UserAnswers(userAnswersId)
     .set(SelectReturnPage, selectedReturn)
@@ -82,38 +75,15 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[DeclareAndSubmitView]
 
         status(result) mustEqual OK
-//        System.out.println("JBS11:"+contentAsString(result))
         contentAsString(result) mustEqual view(NormalMode, backUrl, selectedReturn, validResponseDeclaredSubmission)(request,
                                                                                                                      messages(application)
                                                                                                                     ).toString
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
-
-      val userAnswers = userAnswersWithData.set(DeclareAndSubmitPage, validAnswer).success.value
-
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, declareAndSubmitRoute)
-
-        val view = application.injector.instanceOf[DeclareAndSubmitView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(NormalMode, backUrl, selectedReturn, validResponseDeclaredSubmission)(request,
-                                                                                                                     messages(application)
-                                                                                                                    ).toString
-      }
-    }
-
-    "must redirect to the next page when valid data is submitted" in {
+    "must redirect to the next page when page is submitted" in {
 
       val mockSessionRepository = mock[SessionRepository]
-
-      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithData))
@@ -126,7 +96,6 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, declareAndSubmitRoute)
-            .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
 
@@ -135,47 +104,7 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must return a Bad Request and errors when a negative number is submitted" in {
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, declareAndSubmitRoute)
-            .withFormUrlEncodedBody(("value", "-1"))
-
-        val view = application.injector.instanceOf[DeclareAndSubmitView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(NormalMode, backUrl, selectedReturn, validResponseDeclaredSubmission)(request,
-                                                                                                                     messages(application)
-                                                                                                                    ).toString
-      }
-    }
-
-    "must return a Bad Request and errors when invalid data is submitted" in {
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, declareAndSubmitRoute)
-            .withFormUrlEncodedBody(("value", "invalid value"))
-
-        val view = application.injector.instanceOf[DeclareAndSubmitView]
-
-        val result = route(application, request).value
-
-        status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(NormalMode, backUrl, selectedReturn, validResponseDeclaredSubmission)(request,
-                                                                                                                     messages(application)
-                                                                                                                    ).toString
-      }
-    }
-
-    "must redirect to PageNotFoundController on a GET when no SelectedReturn is found in the session" in {
+    "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 
@@ -185,23 +114,22 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.PageNotFoundController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
 
-    "must redirect to PageNotFoundController on a POST when no SelectedReturn is found in the session" in {
+    "must redirect to SelectReturnController on a POST when no SelectedReturn is found in the session" in {
 
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
         val request =
           FakeRequest(POST, declareAndSubmitRoute)
-            .withFormUrlEncodedBody(("value", validAnswer.toString))
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.PageNotFoundController.onPageLoad().url
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
   }

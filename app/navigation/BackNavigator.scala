@@ -154,6 +154,9 @@ class BackNavigator @Inject() () {
             routes.IndexController.onPageLoad()
         }
 
+    case DeclareAndSubmitPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
     case _ =>
       _ => routes.IndexController.onPageLoad()
   }
