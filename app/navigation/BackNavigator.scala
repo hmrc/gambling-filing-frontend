@@ -220,25 +220,33 @@ class BackNavigator @Inject() () {
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case UnderDeclaredDutyPage =>
-      userAnswers =>
-        userAnswers.get(NetTakingsHigherRatePage) match {
-          case Some(true) =>
-            userAnswers.get(CalculatedMGDHigherRatePage) match {
-              case Some(true)  => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
-              case Some(false) => routes.MgdHigherRateController.onPageLoad(CheckMode)
-              case None        => routes.CheckYourAnswersController.onPageLoad()
-            }
-          case Some(false) => routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
-          case None        => routes.CheckYourAnswersController.onPageLoad()
-        }
-
-    case MgdHigherRatePage =>
-      _ => routes.CheckYourAnswersController.onPageLoad()
-
-    case UnderDeclaredDutyLimitsPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case UnderDeclaredDutyReasonableCarePage =>
+      userAnswers =>
+        if (userAnswers.get(UnderDeclaredDutyReasonableCarePage).isEmpty) {
+          routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
+        } else {
+          routes.CheckYourAnswersController.onPageLoad()
+        }
+
+    case UnderDeclaredDutyLimitsPage =>
+      userAnswers =>
+        if (userAnswers.get(UnderDeclaredDutyLimitsPage).isEmpty) {
+          routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
+        } else {
+          routes.CheckYourAnswersController.onPageLoad()
+        }
+
+    case TotalUnderDeclaredDutyPage =>
+      userAnswers =>
+        if (userAnswers.get(TotalUnderDeclaredDutyPage).isEmpty) {
+          routes.UnderDeclaredDutyLimitsController.onPageLoad(CheckMode)
+        } else {
+          routes.CheckYourAnswersController.onPageLoad()
+        }
+
+    case MgdHigherRatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case ContactHmrcPage =>
@@ -253,9 +261,6 @@ class BackNavigator @Inject() () {
               case _ => routes.CheckYourAnswersController.onPageLoad()
             }
         }
-
-    case TotalUnderDeclaredDutyPage =>
-      _ => routes.CheckYourAnswersController.onPageLoad()
 
     case NegativeDutyBroughtForwardInputPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()

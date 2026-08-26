@@ -598,34 +598,6 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
       }
 
-      "must go from UnderDeclaredDutyPage to UnderDeclaredDutyReasonableCare when answer is Yes" in {
-        val answers =
-          emptyUserAnswers
-            .set(UnderDeclaredDutyPage, true)
-            .success
-            .value
-
-        navigator.nextPage(
-          UnderDeclaredDutyPage,
-          CheckMode,
-          answers
-        ) mustBe routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
-      }
-
-      "must go from UnderDeclaredDutyPage to duty-brought-forward page when answer is No" in {
-        val answers =
-          emptyUserAnswers
-            .set(UnderDeclaredDutyPage, false)
-            .success
-            .value
-
-        navigator.nextPage(
-          UnderDeclaredDutyPage,
-          CheckMode,
-          answers
-        ) mustBe routes.NegativeDutyController.onPageLoad(CheckMode)
-      }
-
       "must go from CalculatedMGDHigherRatePage to UnderDeclaredDutyController when answer is Yes" in {
         val answers =
           emptyUserAnswers
@@ -682,6 +654,34 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
+      "must go from UnderDeclaredDutyPage to UnderDeclaredDutyReasonableCare when answer is Yes" in {
+        val answers =
+          emptyUserAnswers
+            .set(UnderDeclaredDutyPage, true)
+            .success
+            .value
+
+        navigator.nextPage(
+          UnderDeclaredDutyPage,
+          CheckMode,
+          answers
+        ) mustBe routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
+      }
+
+      "must go from UnderDeclaredDutyPage to CheckYourAnswersController page when answer is No" in {
+        val answers =
+          emptyUserAnswers
+            .set(UnderDeclaredDutyPage, false)
+            .success
+            .value
+
+        navigator.nextPage(
+          UnderDeclaredDutyPage,
+          CheckMode,
+          answers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
       "must go from UnderDeclaredDutyReasonableCarePage to ContactHmrcController when answer is Yes" in {
         val answers = emptyUserAnswers.set(UnderDeclaredDutyReasonableCarePage, true).success.value
 
@@ -710,6 +710,42 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
+      "must go from UnderDeclaredDutyLimitsPage to ContactHmrcController when answer is Yes" in {
+        val answers = emptyUserAnswers.set(UnderDeclaredDutyLimitsPage, true).success.value
+
+        navigator.nextPage(
+          UnderDeclaredDutyLimitsPage,
+          CheckMode,
+          answers
+        ) mustBe routes.TotalUnderDeclaredDutyController.onPageLoad(CheckMode)
+      }
+
+      "must go from UnderDeclaredDutyLimitsPage to UnderDeclaredDutyLimitsController when answer is No" in {
+        val answers = emptyUserAnswers.set(UnderDeclaredDutyLimitsPage, false).success.value
+
+        navigator.nextPage(
+          UnderDeclaredDutyLimitsPage,
+          CheckMode,
+          answers
+        ) mustBe routes.ContactHmrcController.onPageLoad(CheckMode)
+      }
+
+      "must go from UnderDeclaredDutyLimitsPage to CheckYourAnswersPage when no answer exists" in {
+        navigator.nextPage(
+          UnderDeclaredDutyLimitsPage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
+      "must go from TotalUnderDeclaredDutyPage to CheckYourAnswersController" in {
+        navigator.nextPage(
+          TotalUnderDeclaredDutyPage,
+          CheckMode,
+          emptyUserAnswers
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+      }
+
       "must go from ContactHmrcPage to CYA" in {
         navigator.nextPage(
           ContactHmrcPage,
@@ -721,14 +757,6 @@ class NavigatorSpec extends SpecBase {
       "must go from NegativeDutyBroughtForwardInputPage to CheckYourAnswersPage" in {
         navigator.nextPage(
           NegativeDutyBroughtForwardInputPage,
-          CheckMode,
-          emptyUserAnswers
-        ) mustBe routes.CheckYourAnswersController.onPageLoad()
-      }
-
-      "must go from TotalUnderDeclaredDutyPage to CheckYourAnswersController" in {
-        navigator.nextPage(
-          TotalUnderDeclaredDutyPage,
           CheckMode,
           emptyUserAnswers
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
