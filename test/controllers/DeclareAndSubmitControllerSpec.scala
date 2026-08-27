@@ -37,7 +37,7 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
-  val backUrl = Some("/manage-gambling-tax/returns/check-your-answers")
+  lazy val backUrl = Some(routes.CheckYourAnswersController.onPageLoad().url)
 
   def userAnswersWithData: UserAnswers = UserAnswers(userAnswersId)
     .set(SelectReturnPage, selectedReturn)
