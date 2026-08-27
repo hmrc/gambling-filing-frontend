@@ -49,7 +49,7 @@ class CalculatedMGDLowerRateControllerSpec extends SpecBase with MockitoSugar {
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
-  val backUrl = Some(
+  lazy val backUrl = Some(
     routes.NetTakingsLowerController
       .onPageLoad(NormalMode)
       .url

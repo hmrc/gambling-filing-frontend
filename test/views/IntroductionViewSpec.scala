@@ -44,7 +44,7 @@ class IntroductionViewSpec extends SpecBase {
       bullets.get(0).text mustBe messages("introduction.bullet.1")
       bullets.get(5).text mustBe messages("introduction.bullet.6")
 
-      doc.select("h3").text mustBe messages("introduction.underDeclared.h3")
+      doc.select("h2").get(0).text mustBe messages("introduction.underDeclared.h2")
       doc.select("button").text mustBe messages("site.continue")
     }
 
