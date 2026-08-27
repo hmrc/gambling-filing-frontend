@@ -16,11 +16,24 @@
 
 package pages
 
+import models.UserAnswers
 import play.api.libs.json.JsPath
+
+import scala.util.Try
 
 case object UnderDeclaredDutyPage extends QuestionPage[Boolean] {
 
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = "underDeclaredDuty"
+
+  override def cleanup(value: Option[Boolean], userAnswers: UserAnswers): Try[UserAnswers] =
+    value match {
+      case Some(false) =>
+        userAnswers
+          .remove(UnderDeclaredDutyReasonableCarePage)
+          .flatMap(_.remove(UnderDeclaredDutyLimitsPage))
+          .flatMap(_.remove(TotalUnderDeclaredDutyPage))
+      case _ => super.cleanup(value, userAnswers)
+    }
 }

@@ -17,7 +17,7 @@
 package viewmodels.checkAnswers
 
 import play.api.i18n.Messages
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{Content, HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Actions, SummaryListRow}
 import viewmodels.govuk.summarylist.*
 import views.CurrencyFormatter
@@ -75,4 +75,79 @@ object CheckYourAnswersHelpers {
         )
       case _ => summary
   }
+
+  private def valueOrActionLinkRow(
+    keyMsg: String,
+    normalValueContent: Content,
+    showValueLink: Boolean,
+    linkTextMsg: String,
+    url: String,
+    hiddenMsg: String
+  )(implicit messages: Messages): SummaryListRow =
+    if (showValueLink)
+      SummaryListRowViewModel(
+        key = KeyViewModel(Text(messages(keyMsg))).withCssClass("govuk-!-width-one-half"),
+        value = ValueViewModel(HtmlContent(s"""<a class="govuk-link" href="$url">${messages(linkTextMsg)}</a>"""))
+          .withCssClass("govuk-!-text-align-right")
+      )
+    else
+      SummaryListRowViewModel(
+        key   = KeyViewModel(Text(messages(keyMsg))).withCssClass("govuk-!-width-one-half"),
+        value = ValueViewModel(normalValueContent).withCssClass("govuk-!-text-align-right"),
+        actions = Seq(
+          ActionItemViewModel(Text(messages("site.change")), url)
+            .withVisuallyHiddenText(messages(hiddenMsg))
+        )
+      )
+
+  def currencyOrActionLinkRow(
+    keyMsg: String,
+    amount: BigDecimal,
+    showValueLink: Boolean,
+    linkTextMsg: String,
+    url: String,
+    hiddenMsg: String
+  )(implicit messages: Messages): SummaryListRow =
+    valueOrActionLinkRow(
+      keyMsg,
+      HtmlContent(CurrencyFormatter.formattedAmountHtml(amount)),
+      showValueLink,
+      linkTextMsg,
+      url,
+      hiddenMsg
+    )
+
+  def yesNoOrActionLinkRow(
+    keyMsg: String,
+    answer: Option[Boolean],
+    showValueLink: Boolean,
+    linkTextMsg: String,
+    url: String,
+    hiddenMsg: String
+  )(implicit messages: Messages): SummaryListRow =
+    valueOrActionLinkRow(
+      keyMsg,
+      Text(answer.map(a => messages(if (a) "site.yes" else "site.no")).getOrElse("")),
+      showValueLink,
+      linkTextMsg,
+      url,
+      hiddenMsg
+    )
+
+  def textOrActionLinkRow(
+    keyMsg: String,
+    answer: Option[String],
+    showValueLink: Boolean,
+    linkTextMsg: String,
+    url: String,
+    hiddenMsg: String
+  )(implicit messages: Messages): SummaryListRow =
+    valueOrActionLinkRow(
+      keyMsg,
+      Text(answer.getOrElse("")),
+      showValueLink,
+      linkTextMsg,
+      url,
+      hiddenMsg
+    )
 }

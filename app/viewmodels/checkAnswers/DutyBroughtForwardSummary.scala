@@ -25,23 +25,35 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 object DutyBroughtForwardSummary {
 
   def rows(answers: UserAnswers)(implicit messages: Messages): Seq[SummaryListRow] = {
-    val hasNegativeDuty = answers.get(NegativeDutyPage).map { answer =>
-      CheckYourAnswersHelpers.yesNoRow(
-        keyMsg    = "negativeDuty.question",
-        answer    = answer,
-        changeUrl = routes.NegativeDutyController.onPageLoad(CheckMode).url,
-        hiddenMsg = "negativeDuty.question"
-      )
-    }
+    val negativeDutyAnswer = answers.get(NegativeDutyPage)
 
-    val amountBroughtForward = answers.get(NegativeDutyBroughtForwardInputPage).map { answer =>
-      CheckYourAnswersHelpers.currencyRow(
-        keyMsg    = "submittedReturn.previousReturnAmount",
-        amount    = answer,
-        changeUrl = Some(routes.NegativeDutyBroughtForwardInputController.onPageLoad(CheckMode).url),
-        hiddenMsg = Some("submittedReturn.previousReturnAmount")
+    val hasNegativeDuty = Some(
+      CheckYourAnswersHelpers.yesNoOrActionLinkRow(
+        keyMsg        = "negativeDuty.question",
+        answer        = negativeDutyAnswer,
+        showValueLink = negativeDutyAnswer.isEmpty,
+        linkTextMsg   = "checkYourAnswers.setValue",
+        url           = routes.NegativeDutyController.onPageLoad(CheckMode).url,
+        hiddenMsg     = "negativeDuty.question"
       )
-    }
+    )
+
+    val screenerYes = negativeDutyAnswer.contains(true)
+
+    val amountBroughtForwardAnswer = answers.get(NegativeDutyBroughtForwardInputPage)
+    val amountIsMissing = amountBroughtForwardAnswer.forall(_ == BigDecimal(0))
+
+    val amountBroughtForward =
+      Option(
+        CheckYourAnswersHelpers.currencyOrActionLinkRow(
+          keyMsg        = "submittedReturn.previousReturnAmount",
+          amount        = amountBroughtForwardAnswer.map(_ * -1).getOrElse(BigDecimal(0)),
+          showValueLink = amountIsMissing,
+          linkTextMsg   = "checkYourAnswers.enterAmount",
+          url           = routes.NegativeDutyBroughtForwardInputController.onPageLoad(CheckMode).url,
+          hiddenMsg     = "submittedReturn.previousReturnAmount"
+        )
+      ).filter(_ => screenerYes)
 
     Seq(hasNegativeDuty, amountBroughtForward).flatten
   }

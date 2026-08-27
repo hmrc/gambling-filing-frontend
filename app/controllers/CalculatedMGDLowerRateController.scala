@@ -21,7 +21,7 @@ import controllers.actions.*
 import forms.CalculatedMGDLowerRateFormProvider
 import models.{Mode, UserAnswers}
 import navigation.{BackNavigator, Navigator}
-import pages.{CalculatedMGDLowerRatePage, DutyLowerRatePage, NetTakingsLowerPage, SelectReturnPage}
+import pages.{CalculatedMGDLowerRatePage, MgdLowerRatePage, NetTakingsLowerPage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -101,7 +101,7 @@ class CalculatedMGDLowerRateController @Inject() (
                 updatedAnswers <- Future.fromTry(userAnswers.set(CalculatedMGDLowerRatePage, value))
 
                 finalAnswers <- if (value) {
-                                  Future.fromTry(updatedAnswers.set(DutyLowerRatePage, duty))
+                                  Future.fromTry(updatedAnswers.set(MgdLowerRatePage, duty))
                                 } else {
                                   Future.successful(updatedAnswers)
                                 }

@@ -33,7 +33,8 @@ class CheckYourAnswersHelpersSpec extends AnyFreeSpec with Matchers {
         "site.yes"    -> "Yes",
         "site.no"     -> "No",
         "some.key"    -> "Some key",
-        "some.hidden" -> "Some hidden text"
+        "some.hidden" -> "Some hidden text",
+        "some.link"   -> "Some link text"
       )
     )
   )
@@ -153,5 +154,123 @@ class CheckYourAnswersHelpersSpec extends AnyFreeSpec with Matchers {
         result.actions mustBe None
       }
     )
+  }
+
+  ".currencyOrActionLinkRow" - {
+    "must build a row with an action link in the value column and no change action when showValueLink is true" in {
+      val result = CheckYourAnswersHelpers.currencyOrActionLinkRow(
+        keyMsg        = "some.key",
+        amount        = BigDecimal(123.45),
+        showValueLink = true,
+        linkTextMsg   = "some.link",
+        url           = "/change-url",
+        hiddenMsg     = "some.hidden"
+      )
+
+      result.key.content mustBe Text("Some key")
+      result.value.content mustBe HtmlContent("""<a class="govuk-link" href="/change-url">Some link text</a>""")
+      result.actions mustBe None
+    }
+
+    "must build a row with the formatted amount and a change action when showValueLink is false" in {
+      val result = CheckYourAnswersHelpers.currencyOrActionLinkRow(
+        keyMsg        = "some.key",
+        amount        = BigDecimal(123.45),
+        showValueLink = false,
+        linkTextMsg   = "some.link",
+        url           = "/change-url",
+        hiddenMsg     = "some.hidden"
+      )
+
+      result.key.content mustBe Text("Some key")
+      result.value.content mustBe HtmlContent(CurrencyFormatter.formattedAmountHtml(BigDecimal(123.45)))
+      result.actions mustBe Some(
+        Actions(items = Seq(ActionItem(href = "/change-url", content = Text("Change"), visuallyHiddenText = Some("Some hidden text"))))
+      )
+    }
+  }
+
+  ".yesNoOrActionLinkRow" - {
+    "must build a row with an action link in the value column and no change action when showValueLink is true" in {
+      val result = CheckYourAnswersHelpers.yesNoOrActionLinkRow(
+        keyMsg        = "some.key",
+        answer        = None,
+        showValueLink = true,
+        linkTextMsg   = "some.link",
+        url           = "/change-url",
+        hiddenMsg     = "some.hidden"
+      )
+
+      result.key.content mustBe Text("Some key")
+      result.value.content mustBe HtmlContent("""<a class="govuk-link" href="/change-url">Some link text</a>""")
+      result.actions mustBe None
+    }
+
+    "must build a row with a Yes/No value and a change action when showValueLink is false" in {
+      val result = CheckYourAnswersHelpers.yesNoOrActionLinkRow(
+        keyMsg        = "some.key",
+        answer        = Some(true),
+        showValueLink = false,
+        linkTextMsg   = "some.link",
+        url           = "/change-url",
+        hiddenMsg     = "some.hidden"
+      )
+
+      result.key.content mustBe Text("Some key")
+      result.value.content mustBe Text("Yes")
+      result.actions mustBe Some(
+        Actions(items = Seq(ActionItem(href = "/change-url", content = Text("Change"), visuallyHiddenText = Some("Some hidden text"))))
+      )
+    }
+
+    "must build a row with an empty value and a change action when showValueLink is false and answer is None" in {
+      val result = CheckYourAnswersHelpers.yesNoOrActionLinkRow(
+        keyMsg        = "some.key",
+        answer        = None,
+        showValueLink = false,
+        linkTextMsg   = "some.link",
+        url           = "/change-url",
+        hiddenMsg     = "some.hidden"
+      )
+
+      result.value.content mustBe Text("")
+      result.actions mustBe Some(
+        Actions(items = Seq(ActionItem(href = "/change-url", content = Text("Change"), visuallyHiddenText = Some("Some hidden text"))))
+      )
+    }
+  }
+
+  ".textOrActionLinkRow" - {
+    "must build a row with an action link in the value column and no change action when showValueLink is true" in {
+      val result = CheckYourAnswersHelpers.textOrActionLinkRow(
+        keyMsg        = "some.key",
+        answer        = None,
+        showValueLink = true,
+        linkTextMsg   = "some.link",
+        url           = "/change-url",
+        hiddenMsg     = "some.hidden"
+      )
+
+      result.key.content mustBe Text("Some key")
+      result.value.content mustBe HtmlContent("""<a class="govuk-link" href="/change-url">Some link text</a>""")
+      result.actions mustBe None
+    }
+
+    "must build a row with the given text and a change action when showValueLink is false" in {
+      val result = CheckYourAnswersHelpers.textOrActionLinkRow(
+        keyMsg        = "some.key",
+        answer        = Some("10"),
+        showValueLink = false,
+        linkTextMsg   = "some.link",
+        url           = "/change-url",
+        hiddenMsg     = "some.hidden"
+      )
+
+      result.key.content mustBe Text("Some key")
+      result.value.content mustBe Text("10")
+      result.actions mustBe Some(
+        Actions(items = Seq(ActionItem(href = "/change-url", content = Text("Change"), visuallyHiddenText = Some("Some hidden text"))))
+      )
+    }
   }
 }

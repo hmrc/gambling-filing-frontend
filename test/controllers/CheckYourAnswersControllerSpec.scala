@@ -17,10 +17,11 @@
 package controllers
 
 import base.SpecBase
-import models.{SelectedReturn, UserAnswers}
-import pages.SelectReturnPage
+import models.{CheckMode, SelectedReturn, UserAnswers}
+import pages.{MachinesAvailablePage, SelectReturnPage}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import viewmodels.checkAnswers.CheckYourAnswersHelpers
 import viewmodels.govuk.SummaryListFluency
 import views.html.CheckYourAnswersView
 
@@ -32,9 +33,72 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
   def userAnswersWithSelectedReturn: UserAnswers = emptyUserAnswers.set(SelectReturnPage, selectedReturn).success.value
 
+  def userAnswersWithMachinesAvailable: UserAnswers =
+    userAnswersWithSelectedReturn.set(MachinesAvailablePage, 10).success.value
+
   "Check Your Answers Controller" - {
 
+    def setValueRow(keyMsg: String, url: String)(implicit msgs: play.api.i18n.Messages) = CheckYourAnswersHelpers.yesNoOrActionLinkRow(
+      keyMsg        = keyMsg,
+      answer        = None,
+      showValueLink = true,
+      linkTextMsg   = "checkYourAnswers.setValue",
+      url           = url,
+      hiddenMsg     = keyMsg
+    )
+
     "must return OK and the correct view for a GET" in {
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithMachinesAvailable)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[CheckYourAnswersView]
+        implicit val msgs: play.api.i18n.Messages = messages(application)
+        val machines = SummaryListViewModel(
+          Seq(
+            CheckYourAnswersHelpers.textRow(
+              keyMsg    = "submittedReturn.noOfMachines",
+              answer    = "10",
+              changeUrl = Some(routes.MachinesAvailableController.onPageLoad(CheckMode).url),
+              hiddenMsg = Some("submittedReturn.noOfMachines")
+            )
+          )
+        )
+
+        val lowerRate = SummaryListViewModel(
+          Seq(setValueRow("netTakingsLowerRate.question", routes.NetTakingsLowerRateController.onPageLoad(CheckMode).url))
+        )
+        val standardRate = SummaryListViewModel(
+          Seq(setValueRow("netTakingsStandardRate.question", routes.NetTakingsStandardRateController.onPageLoad(CheckMode).url))
+        )
+        val higherRate = SummaryListViewModel(
+          Seq(setValueRow("netTakingsHigherRate.question", routes.NetTakingsHigherRateController.onPageLoad(CheckMode).url))
+        )
+        val underDeclaredDuty = SummaryListViewModel(
+          Seq(setValueRow("underDeclaredDuty.heading", routes.UnderDeclaredDutyController.onPageLoad(CheckMode).url))
+        )
+        val dutyBroughtForward = SummaryListViewModel(
+          Seq(setValueRow("negativeDuty.question", routes.NegativeDutyController.onPageLoad(CheckMode).url))
+        )
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(
+          selectedReturn,
+          machines,
+          lowerRate,
+          standardRate,
+          higherRate,
+          underDeclaredDuty,
+          dutyBroughtForward
+        )(request, msgs).toString
+      }
+    }
+
+    "must return OK with a 'Set value' link for machines available when it is unanswered" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
 
@@ -43,11 +107,14 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[CheckYourAnswersView]
-        val list = SummaryListViewModel(Seq.empty)
+        implicit val msgs: play.api.i18n.Messages = messages(application)
+        val machinesUrl = routes.MachinesAvailableController.onPageLoad(CheckMode).url
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(selectedReturn, list, list, list, list, list, list)(request, messages(application)).toString
+
+        val doc = org.jsoup.Jsoup.parse(contentAsString(result))
+        val link = doc.select(s"""a[href="$machinesUrl"]""").first()
+        link.text() mustEqual msgs("checkYourAnswers.setValue")
       }
     }
 

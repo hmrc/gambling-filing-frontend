@@ -20,10 +20,11 @@ import base.SpecBase
 import forms.NegativeDutyFormProvider
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{NegativeDutyPage, SelectReturnPage}
+import pages.{NegativeDutyBroughtForwardInputPage, NegativeDutyPage, SelectReturnPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -112,6 +113,44 @@ class NegativeDutyControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must clear the amount brought forward answer when the answer changes to No" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val userAnswers = userAnswersWithSelectedReturn
+        .set(NegativeDutyPage, true)
+        .success
+        .value
+        .set(NegativeDutyBroughtForwardInputPage, BigDecimal(50))
+        .success
+        .value
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswers), regime = Regime.MGD)
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, negativeDutyRoute)
+            .withFormUrlEncodedBody("value" -> "false")
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository).set(userAnswersCaptor.capture())
+
+        userAnswersCaptor.getValue.get(NegativeDutyBroughtForwardInputPage) mustBe None
       }
     }
 

@@ -18,12 +18,13 @@ package controllers
 
 import base.SpecBase
 import forms.CalculatedMGDLowerRateFormProvider
-import models.{NormalMode, SelectedReturn}
+import models.{NormalMode, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentCaptor
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{CalculatedMGDLowerRatePage, NetTakingsLowerPage, SelectReturnPage}
+import pages.{CalculatedMGDLowerRatePage, MgdLowerRatePage, NetTakingsLowerPage, SelectReturnPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -136,6 +137,45 @@ class CalculatedMGDLowerRateControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+      }
+    }
+
+    "must overwrite a previously entered manual duty amount with the calculated duty when the answer changes to Yes" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
+
+      val userAnswersWithManualDuty =
+        userAnswersWithNetTakings
+          .set(CalculatedMGDLowerRatePage, false)
+          .success
+          .value
+          .set(MgdLowerRatePage, BigDecimal(999))
+          .success
+          .value
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswersWithManualDuty))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, calculatedMgdLowerRateRoute)
+            .withFormUrlEncodedBody(("value", "true"))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository).set(userAnswersCaptor.capture())
+
+        userAnswersCaptor.getValue.get(MgdLowerRatePage) mustBe Some(duty)
       }
     }
 

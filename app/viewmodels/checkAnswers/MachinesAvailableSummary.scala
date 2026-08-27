@@ -24,16 +24,18 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 
 object MachinesAvailableSummary {
 
-  def rows(answers: UserAnswers)(implicit messages: Messages): Seq[SummaryListRow] =
-    answers
-      .get(MachinesAvailablePage)
-      .map { answer =>
-        CheckYourAnswersHelpers.textRow(
-          keyMsg    = "submittedReturn.noOfMachines",
-          answer    = answer.toString,
-          changeUrl = Some(routes.MachinesAvailableController.onPageLoad(CheckMode).url),
-          hiddenMsg = Some("submittedReturn.noOfMachines")
-        )
-      }
-      .toSeq
+  def rows(answers: UserAnswers)(implicit messages: Messages): Seq[SummaryListRow] = {
+    val answer = answers.get(MachinesAvailablePage)
+
+    Seq(
+      CheckYourAnswersHelpers.textOrActionLinkRow(
+        keyMsg        = "submittedReturn.noOfMachines",
+        answer        = answer.map(_.toString),
+        showValueLink = answer.isEmpty,
+        linkTextMsg   = "checkYourAnswers.setValue",
+        url           = routes.MachinesAvailableController.onPageLoad(CheckMode).url,
+        hiddenMsg     = "submittedReturn.noOfMachines"
+      )
+    )
+  }
 }
