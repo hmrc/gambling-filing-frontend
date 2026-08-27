@@ -1,7 +1,5 @@
 # Add all the application routes to the app.routes file
 
-->         /gambling-filing                 app.Routes
-
 ->         /manage-gambling-tax/returns/    app.Routes
 
 ->         /                                health.Routes

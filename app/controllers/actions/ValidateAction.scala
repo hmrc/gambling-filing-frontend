@@ -109,7 +109,8 @@ object GRNValidator extends Logging {
   }
 
   private def ensure(condition: Boolean, warning: => String): Either[String, Unit] =
-    if (condition) Right(()) else {
+    if (condition) Right(())
+    else {
       Left(warning)
     }
 
