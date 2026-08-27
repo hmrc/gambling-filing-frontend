@@ -22,7 +22,8 @@
         layout: templates.Layout,
         govukSummaryList: GovukSummaryList,
         h1: H1,
-        h2: H2
+        h2: H2,
+        govukButton: GovukButton
 )
 
 @(
@@ -62,4 +63,11 @@
 
     @h2(messages("checkYourAnswers.dutyBroughtForward.heading"))
     @govukSummaryList(dutyBroughtForward.withCssClass("govuk-!-margin-bottom-9"))
+
+    <div class="govuk-clearfix">
+        @govukButton(
+            ButtonViewModel(messages("site.continue"))
+                .asLink(routes.SelectReturnController.onPageLoad().url)
+        )
+    </div>
 }

@@ -26,36 +26,70 @@ object StandardRateSummary {
 
   def rows(answers: UserAnswers)(implicit messages: Messages): Seq[SummaryListRow] = {
 
-    val netTakingsLiable = answers.get(NetTakingsStandardRatePage).map { answer =>
-      CheckYourAnswersHelpers.yesNoRow(
-        keyMsg    = "netTakingsStandardRate.question",
-        answer    = answer,
-        changeUrl = routes.NetTakingsStandardRateController.onPageLoad(CheckMode).url,
-        hiddenMsg = "netTakingsStandardRate.question"
-      )
-    }
+    val screenerAnswer = answers.get(NetTakingsStandardRatePage)
 
-    val netTakings = answers.get(NetTakingsStandardPage).map { answer =>
-      CheckYourAnswersHelpers.currencyRow(
-        keyMsg    = "submittedReturn.netTakingsStdRate",
-        amount    = answer,
-        changeUrl = Some(routes.NetTakingsStandardController.onPageLoad(CheckMode).url),
-        hiddenMsg = Some("submittedReturn.netTakingsStdRate")
+    val netTakingsLiable = Some(
+      CheckYourAnswersHelpers.yesNoOrActionLinkRow(
+        keyMsg        = "netTakingsStandardRate.question",
+        answer        = screenerAnswer,
+        showValueLink = screenerAnswer.isEmpty,
+        linkTextMsg   = "site.setValue",
+        url           = routes.NetTakingsStandardRateController.onPageLoad(CheckMode).url,
+        hiddenMsg     = "netTakingsStandardRate.question"
       )
-    }
+    )
 
-    val calculationCorrect = answers.get(CalculatedMGDStandardRatePage).map { answer =>
-      CheckYourAnswersHelpers.yesNoRow(
-        keyMsg    = "calculatedMGDStandardRate.question",
-        answer    = answer,
-        changeUrl = routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode).url,
-        hiddenMsg = "calculatedMGDStandardRate.question"
+    val screenerYes = screenerAnswer.contains(true)
+
+    val netTakingsAmount = answers.get(NetTakingsStandardPage)
+    val netTakingsIsMissing = netTakingsAmount.forall(_ == BigDecimal(0))
+
+    val netTakings =
+      Option(
+        CheckYourAnswersHelpers.currencyOrActionLinkRow(
+          keyMsg        = "submittedReturn.netTakingsStdRate",
+          amount        = netTakingsAmount.getOrElse(BigDecimal(0)),
+          showValueLink = netTakingsIsMissing,
+          linkTextMsg   = "site.enterNetTakings",
+          url           = routes.NetTakingsStandardController.onPageLoad(CheckMode).url,
+          hiddenMsg     = "submittedReturn.netTakingsStdRate"
+        )
+      ).filter(_ => screenerYes)
+
+    val calculatedMGDAnswer = answers.get(CalculatedMGDStandardRatePage)
+
+    val calculationCorrect =
+      netTakings.flatMap(_ =>
+        Option(
+          CheckYourAnswersHelpers.yesNoOrActionLinkRow(
+            keyMsg        = "checkYourAnswers.mgd.question",
+            answer        = calculatedMGDAnswer,
+            showValueLink = calculatedMGDAnswer.isEmpty && !netTakingsIsMissing,
+            linkTextMsg   = "site.setValue",
+            url           = routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode).url,
+            hiddenMsg     = "checkYourAnswers.mgd.question"
+          )
+        ).filter(_ => calculatedMGDAnswer.isDefined || !netTakingsIsMissing)
       )
-    }
 
-    val dutyDue = answers.get(MgdStandardRatePage).map { amount =>
-      CheckYourAnswersHelpers.currencyRow(keyMsg = "submittedReturn.totalDueStdRate", amount = amount)
-    }
+    val correctedDutyAmount = answers.get(MgdStandardRatePage)
+    val correctedDutyIsMissing = correctedDutyAmount.forall(_ == BigDecimal(0))
+
+    val dutyDue =
+      calculatedMGDAnswer.flatMap {
+        case true => correctedDutyAmount.map(amount => CheckYourAnswersHelpers.currencyRow("submittedReturn.totalDueStdRate", amount))
+        case false =>
+          Some(
+            CheckYourAnswersHelpers.currencyOrActionLinkRow(
+              keyMsg        = "submittedReturn.totalDueStdRate",
+              amount        = correctedDutyAmount.getOrElse(BigDecimal(0)),
+              showValueLink = correctedDutyIsMissing,
+              linkTextMsg   = "checkYourAnswers.enterMGD",
+              url           = routes.MgdStandardRateController.onPageLoad(CheckMode).url,
+              hiddenMsg     = "submittedReturn.totalDueStdRate"
+            )
+          )
+      }
 
     Seq(netTakingsLiable, netTakings, calculationCorrect, dutyDue).flatten
   }

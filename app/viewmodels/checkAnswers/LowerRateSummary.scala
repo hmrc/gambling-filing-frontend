@@ -26,35 +26,68 @@ object LowerRateSummary {
 
   def rows(answers: UserAnswers)(implicit messages: Messages): Seq[SummaryListRow] = {
 
-    val netTakingsLiable = answers.get(NetTakingsLowerRatePage).map { answer =>
-      CheckYourAnswersHelpers.yesNoRow(
-        keyMsg    = "netTakingsLowerRate.question",
-        answer    = answer,
-        changeUrl = routes.NetTakingsLowerRateController.onPageLoad(CheckMode).url,
-        hiddenMsg = "netTakingsLowerRate.question"
-      )
-    }
+    val screenerAnswer = answers.get(NetTakingsLowerRatePage)
 
-    val netTakings = answers.get(NetTakingsLowerPage).map { answer =>
-      CheckYourAnswersHelpers.currencyRow(
-        keyMsg    = "submittedReturn.netTakingsLowerRate",
-        amount    = answer,
-        changeUrl = Some(routes.NetTakingsLowerController.onPageLoad(CheckMode).url),
-        hiddenMsg = Some("submittedReturn.netTakingsLowerRate")
+    val netTakingsLiable = Some(
+      CheckYourAnswersHelpers.yesNoOrActionLinkRow(
+        keyMsg        = "netTakingsLowerRate.question",
+        answer        = screenerAnswer,
+        showValueLink = screenerAnswer.isEmpty,
+        linkTextMsg   = "site.setValue",
+        url           = routes.NetTakingsLowerRateController.onPageLoad(CheckMode).url,
+        hiddenMsg     = "netTakingsLowerRate.question"
       )
-    }
+    )
 
-    val calculationCorrect = answers.get(CalculatedMGDLowerRatePage).map { answer =>
-      CheckYourAnswersHelpers.yesNoRow(
-        keyMsg    = "calculatedMGDLowerRate.subheading",
-        answer    = answer,
-        changeUrl = routes.CalculatedMGDLowerRateController.onPageLoad(CheckMode).url,
-        hiddenMsg = "calculatedMGDLowerRate.subheading"
+    val screenerYes = screenerAnswer.contains(true)
+
+    val netTakingsAmount = answers.get(NetTakingsLowerPage)
+    val netTakingsIsMissing = netTakingsAmount.forall(_ == BigDecimal(0))
+
+    val netTakings =
+      Option(
+        CheckYourAnswersHelpers.currencyOrActionLinkRow(
+          keyMsg        = "submittedReturn.netTakingsLowerRate",
+          amount        = netTakingsAmount.getOrElse(BigDecimal(0)),
+          showValueLink = netTakingsIsMissing,
+          linkTextMsg   = "site.enterNetTakings",
+          url           = routes.NetTakingsLowerController.onPageLoad(CheckMode).url,
+          hiddenMsg     = "submittedReturn.netTakingsLowerRate"
+        )
+      ).filter(_ => screenerYes)
+
+    val calculatedMGDAnswer = answers.get(CalculatedMGDLowerRatePage)
+
+    val calculationCorrect =
+      netTakings.flatMap(_ =>
+        Option(
+          CheckYourAnswersHelpers.yesNoOrActionLinkRow(
+            keyMsg        = "checkYourAnswers.mgd.question",
+            answer        = calculatedMGDAnswer,
+            showValueLink = calculatedMGDAnswer.isEmpty && !netTakingsIsMissing,
+            linkTextMsg   = "site.setValue",
+            url           = routes.CalculatedMGDLowerRateController.onPageLoad(CheckMode).url,
+            hiddenMsg     = "checkYourAnswers.mgd.question"
+          )
+        ).filter(_ => calculatedMGDAnswer.isDefined || !netTakingsIsMissing)
       )
-    }
 
-    val dutyDue = answers.get(MgdLowerRatePage).map { amount =>
-      CheckYourAnswersHelpers.currencyRow(keyMsg = "submittedReturn.totalDueLowerRate", amount = amount)
+    val correctedDutyAmount = answers.get(MgdLowerRatePage)
+    val correctedDutyIsMissing = correctedDutyAmount.forall(_ == BigDecimal(0))
+
+    val dutyDue = calculatedMGDAnswer.flatMap {
+      case true => correctedDutyAmount.map(amount => CheckYourAnswersHelpers.currencyRow("submittedReturn.totalDueLowerRate", amount))
+      case false =>
+        Some(
+          CheckYourAnswersHelpers.currencyOrActionLinkRow(
+            keyMsg        = "submittedReturn.totalDueLowerRate",
+            amount        = correctedDutyAmount.getOrElse(BigDecimal(0)),
+            showValueLink = correctedDutyIsMissing,
+            linkTextMsg   = "checkYourAnswers.enterMGD",
+            url           = routes.MgdLowerRateController.onPageLoad(CheckMode).url,
+            hiddenMsg     = "submittedReturn.totalDueLowerRate"
+          )
+        )
     }
 
     Seq(netTakingsLiable, netTakings, calculationCorrect, dutyDue).flatten
