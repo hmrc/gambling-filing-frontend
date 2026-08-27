@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.IntroductionView
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 class IntroductionController @Inject() (
   authorise: AuthorisedAction,
@@ -35,8 +35,7 @@ class IntroductionController @Inject() (
   appConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
   view: IntroductionView
-)(implicit ec: ExecutionContext)
-    extends BaseFilingController {
+) extends BaseFilingController {
 
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
