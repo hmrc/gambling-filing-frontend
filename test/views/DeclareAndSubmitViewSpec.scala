@@ -60,7 +60,7 @@ class DeclareAndSubmitViewSpec extends SpecBase {
       rows.get(3).select("td").get(1).hasClass("govuk-!-font-weight-bold") mustBe true
 
       doc.select("main.govuk-main-wrapper div div p").hasClass("govuk-body") mustBe true
-      doc.select("main.govuk-main-wrapper div div p.govuk-body").text mustBe messages("declareAndSubmit.confirmation")
+      doc.select("main.govuk-main-wrapper div div p.govuk-body").text mustBe messages("declareAndSubmit.confirmation.p")
     }
   }
 

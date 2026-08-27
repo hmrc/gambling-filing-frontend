@@ -287,5 +287,5 @@ declareAndSubmit.underDeclaredTaxFromPreviousPeriods = Under-declared tax from p
 declareAndSubmit.amountBroughtForward = Amount brought forward
 declareAndSubmit.netMGDPayableOnThisReturn = Net MGD payable on this return
 declareAndSubmit.dutyToCarryForward = Amount of duty to carry forward to next return
-declareAndSubmit.confirmation = I confirm that the information in this Machine Games Duty return is correct and complete to the best of my knowledge.
+declareAndSubmit.confirmation.p = I confirm that the information in this Machine Games Duty return is correct and complete to the best of my knowledge.
 declareAndSubmit.button.submit = Confirm and submit

@@ -25,7 +25,7 @@
     govukButton: GovukButton,
     h1: H1,
     govukTable: GovukTable,
-    paragraph: Paragraph
+    p: Paragraph
 )
 
 @(mode: Mode, backLink: Option[String], selectedReturn: SelectedReturn, model: DeclaredSubmission)(implicit request: Request[_], messages: Messages)
@@ -62,7 +62,7 @@
         )
     ))
 
-    @paragraph(messages("declareAndSubmit.confirmation"))
+    @p(messages("declareAndSubmit.confirmation.p"))
 
     <div class="govuk-clearfix">
     @govukButton(

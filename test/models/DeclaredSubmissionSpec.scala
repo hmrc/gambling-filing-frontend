@@ -25,13 +25,20 @@ class DeclaredSubmissionSpec extends AnyWordSpec with Matchers {
 
   "DeclaredSubmission JSON format" should {
 
+    "apply method calculates netMGDPayableOnThisReturn correctly" in {
+      validResponseDeclaredSubmission.netMGDPayableOnThisReturn mustBe BigDecimal(-127.55)
+    }
+
+    "apply method reverses sign on amountBroughtForward correctly" in {
+      validResponseDeclaredSubmission.amountBroughtForward mustBe BigDecimal(-1.99)
+    }
+
     "serialize to JSON correctly" in {
       val json = Json.toJson(validResponseDeclaredSubmission)
       (json \ "dutyPayableBeforeAdjustments").as[BigDecimal] mustBe BigDecimal(-133.33)
       (json \ "underDeclaredTaxFromPreviousPeriods").as[BigDecimal] mustBe BigDecimal(7.77)
       (json \ "amountBroughtForward").as[BigDecimal] mustBe BigDecimal(-1.99)
       (json \ "netMGDPayableOnThisReturn").as[BigDecimal] mustBe BigDecimal(-127.55)
-
     }
 
     "deserialize from JSON correctly" in {
@@ -47,6 +54,7 @@ class DeclaredSubmissionSpec extends AnyWordSpec with Matchers {
       val result: JsResult[DeclaredSubmission] = json.validate[DeclaredSubmission]
 
       result mustBe JsSuccess(validResponseDeclaredSubmission)
+      result.get.netMGDPayableOnThisReturn mustBe BigDecimal(-127.55)
     }
 
     "round-trip write then read should return same object" in {
@@ -54,6 +62,7 @@ class DeclaredSubmissionSpec extends AnyWordSpec with Matchers {
       val parsed = json.as[DeclaredSubmission]
 
       parsed mustBe validResponseDeclaredSubmission
+      parsed.netMGDPayableOnThisReturn mustBe validResponseDeclaredSubmission.netMGDPayableOnThisReturn
     }
 
     "fail to deserialize when required fields are missing" in {
@@ -91,14 +100,6 @@ object DeclaredSubmissionTestData {
   val validResponseDeclaredSubmission = DeclaredSubmission(
     dutyPayableBeforeAdjustments        = -133.33,
     underDeclaredTaxFromPreviousPeriods = 7.77,
-    amountBroughtForward                = -1.99,
-    netMGDPayableOnThisReturn           = -127.55
-  )
-
-  val zeroResponseDeclaredSubmission = DeclaredSubmission(
-    dutyPayableBeforeAdjustments        = 0.00,
-    underDeclaredTaxFromPreviousPeriods = 0.00,
-    amountBroughtForward                = 0.00,
-    netMGDPayableOnThisReturn           = 0.00
+    amountBroughtForward                = 1.99
   )
 }

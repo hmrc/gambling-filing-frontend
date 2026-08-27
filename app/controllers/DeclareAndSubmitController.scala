@@ -54,15 +54,14 @@ class DeclareAndSubmitController @Inject() (
           } yield DeclaredSubmission(
             mgdLowerRate + mgdStandardRate + mgdHigherRate,
             underDeclaredTaxFromPreviousPeriods,
-            amountBroughtForward * -1,
-            (mgdLowerRate + mgdStandardRate + mgdHigherRate) + underDeclaredTaxFromPreviousPeriods + (amountBroughtForward * -1)
+            amountBroughtForward
           )
         } match {
           case Some(declaredSubmission) =>
             Future.successful(Ok(view(mode, backNavigator.backPage(DeclareAndSubmitPage, mode, request), selectedReturn, declaredSubmission)))
           case _ =>
             logger.info(s"[onPageLoad] Unable to calculate DeclaredSubmission for regNum=${request.regNum}")
-            Future.successful(Redirect(controllers.routes.IndexController.onPageLoad()))
+            Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
         }
     }
   }
@@ -73,6 +72,7 @@ class DeclareAndSubmitController @Inject() (
         logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
       case Some(selectedReturn) =>
+        // TODO:  should submit the form to the iForms and once we get a successful response we redirect to /confirmation page
         val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
         Future.successful(Redirect(navigator.nextPage(DeclareAndSubmitPage, mode, userAnswers)))
     }

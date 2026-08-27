@@ -27,4 +27,14 @@ case class DeclaredSubmission(
 
 object DeclaredSubmission {
   implicit val format: OFormat[DeclaredSubmission] = Json.format[DeclaredSubmission]
+
+  def apply(dutyPayableBeforeAdjustments: BigDecimal,
+            underDeclaredTaxFromPreviousPeriods: BigDecimal,
+            amountBroughtForward: BigDecimal
+           ): DeclaredSubmission = new DeclaredSubmission(
+    dutyPayableBeforeAdjustments,
+    underDeclaredTaxFromPreviousPeriods,
+    amountBroughtForward * -1, // always stored as a positive but always used as a negative amount
+    dutyPayableBeforeAdjustments + underDeclaredTaxFromPreviousPeriods + (amountBroughtForward * -1)
+  )
 }
