@@ -102,4 +102,11 @@ object DeclaredSubmissionTestData {
     underDeclaredTaxFromPreviousPeriods = 7.77,
     amountBroughtForward                = 1.99
   )
+
+  val zeroResponseDeclaredSubmission = DeclaredSubmission(
+    dutyPayableBeforeAdjustments        = 0.00,
+    underDeclaredTaxFromPreviousPeriods = 0.00,
+    amountBroughtForward                = 0.00,
+    netMGDPayableOnThisReturn           = 0.00
+  )
 }

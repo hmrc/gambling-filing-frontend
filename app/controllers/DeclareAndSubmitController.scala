@@ -45,16 +45,18 @@ class DeclareAndSubmitController @Inject() (
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
       case Some(selectedReturn) =>
         request.userAnswers.flatMap { ua =>
-          for {
-            mgdLowerRate                        <- ua.get(MgdLowerRatePage)
-            mgdStandardRate                     <- ua.get(MgdStandardRatePage)
-            mgdHigherRate                       <- ua.get(MgdHigherRatePage)
-            underDeclaredTaxFromPreviousPeriods <- ua.get(TotalUnderDeclaredDutyPage)
-            amountBroughtForward                <- ua.get(NegativeDutyBroughtForwardInputPage)
-          } yield DeclaredSubmission(
-            mgdLowerRate + mgdStandardRate + mgdHigherRate,
-            underDeclaredTaxFromPreviousPeriods,
-            amountBroughtForward
+          val mgdLowerRate = ua.get(MgdLowerRatePage).getOrElse(BigDecimal(0.00))
+          val mgdStandardRate = ua.get(MgdStandardRatePage).getOrElse(BigDecimal(0.00))
+          val mgdHigherRate = ua.get(MgdHigherRatePage).getOrElse(BigDecimal(0.00))
+          val underDeclaredTaxFromPreviousPeriods = ua.get(TotalUnderDeclaredDutyPage).getOrElse(BigDecimal(0.00))
+          val amountBroughtForward = ua.get(NegativeDutyBroughtForwardInputPage).getOrElse(BigDecimal(0.00))
+
+          Some(
+            DeclaredSubmission(
+              mgdLowerRate + mgdStandardRate + mgdHigherRate,
+              underDeclaredTaxFromPreviousPeriods,
+              amountBroughtForward
+            )
           )
         } match {
           case Some(declaredSubmission) =>

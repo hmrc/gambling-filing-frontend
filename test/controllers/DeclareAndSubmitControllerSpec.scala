@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.DeclaredSubmissionTestData.validResponseDeclaredSubmission
+import models.DeclaredSubmissionTestData.{validResponseDeclaredSubmission, zeroResponseDeclaredSubmission}
 import models.{NormalMode, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.scalatestplus.mockito.MockitoSugar
@@ -63,7 +63,7 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
 
   "DeclareAndSubmit Controller" - {
 
-    "must return OK and the correct view for a GET" in {
+    "must return OK and the correct view for a GET when all values have been entered" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
 
@@ -78,6 +78,26 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual view(NormalMode, backUrl, selectedReturn, validResponseDeclaredSubmission)(request,
                                                                                                                      messages(application)
                                                                                                                     ).toString
+      }
+    }
+
+    "must return OK and the correct view for a GET when NO values have been entered" in {
+
+      def userAnswersWithNoData: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithNoData)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, declareAndSubmitRoute)
+
+        val result = route(application, request).value
+
+        val view = application.injector.instanceOf[DeclareAndSubmitView]
+
+        status(result) mustEqual OK
+        contentAsString(result) mustEqual view(NormalMode, backUrl, selectedReturn, zeroResponseDeclaredSubmission)(request,
+                                                                                                                    messages(application)
+                                                                                                                   ).toString
       }
     }
 

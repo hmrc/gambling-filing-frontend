@@ -31,10 +31,16 @@ object DeclaredSubmission {
   def apply(dutyPayableBeforeAdjustments: BigDecimal,
             underDeclaredTaxFromPreviousPeriods: BigDecimal,
             amountBroughtForward: BigDecimal
-           ): DeclaredSubmission = new DeclaredSubmission(
-    dutyPayableBeforeAdjustments,
-    underDeclaredTaxFromPreviousPeriods,
-    amountBroughtForward * -1, // always stored as a positive but always used as a negative amount
-    dutyPayableBeforeAdjustments + underDeclaredTaxFromPreviousPeriods + (amountBroughtForward * -1)
-  )
+           ): DeclaredSubmission = {
+    def amountBroughtForwardAsNegativeValue = amountBroughtForward * -1
+    // user always enter positive value in the UI, we store the same in mongoDB,
+    // but we pass it as a -ve value to the Declare&Submit page and the iForms
+
+    new DeclaredSubmission(
+      dutyPayableBeforeAdjustments,
+      underDeclaredTaxFromPreviousPeriods,
+      amountBroughtForwardAsNegativeValue,
+      dutyPayableBeforeAdjustments + underDeclaredTaxFromPreviousPeriods + amountBroughtForwardAsNegativeValue
+    )
+  }
 }
