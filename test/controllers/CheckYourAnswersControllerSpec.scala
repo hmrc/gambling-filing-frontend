@@ -42,7 +42,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       keyMsg        = keyMsg,
       answer        = None,
       showValueLink = true,
-      linkTextMsg   = "site.setValue",
+      linkTextMsg   = "checkYourAnswers.setValue",
       url           = url,
       hiddenMsg     = keyMsg
     )
@@ -114,7 +114,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         val doc = org.jsoup.Jsoup.parse(contentAsString(result))
         val link = doc.select(s"""a[href="$machinesUrl"]""").first()
-        link.text() mustEqual msgs("site.setValue")
+        link.text() mustEqual msgs("checkYourAnswers.setValue")
       }
     }
 

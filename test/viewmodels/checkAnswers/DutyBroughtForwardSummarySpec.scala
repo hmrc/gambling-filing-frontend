@@ -40,7 +40,7 @@ class DutyBroughtForwardSummarySpec extends SpecBase {
       val rows = DutyBroughtForwardSummary.rows(emptyUserAnswers)
       val negativeDutyRow = rows.find(_.key.content == Text(msgs("negativeDuty.question"))).value
 
-      negativeDutyRow.value.content mustBe HtmlContent(s"""<a class="govuk-link" href="$negativeDutyUrl">${msgs("site.setValue")}</a>""")
+      negativeDutyRow.value.content mustBe HtmlContent(s"""<a class="govuk-link" href="$negativeDutyUrl">${msgs("checkYourAnswers.setValue")}</a>""")
       negativeDutyRow.actions mustBe None
 
       keys(rows) mustNot contain(msgs("submittedReturn.previousReturnAmount"))
@@ -98,7 +98,7 @@ class DutyBroughtForwardSummarySpec extends SpecBase {
       val amountRow = rows.find(_.key.content == Text(msgs("submittedReturn.previousReturnAmount"))).value
 
       amountRow.value.content mustBe HtmlContent(
-        s"""<a class="govuk-link" href="$amountBroughtForwardUrl">${msgs("site.enterAmount")}</a>"""
+        s"""<a class="govuk-link" href="$amountBroughtForwardUrl">${msgs("checkYourAnswers.enterAmount")}</a>"""
       )
       amountRow.actions mustBe None
     }
@@ -118,7 +118,7 @@ class DutyBroughtForwardSummarySpec extends SpecBase {
       val amountRow = rows.find(_.key.content == Text(msgs("submittedReturn.previousReturnAmount"))).value
 
       amountRow.value.content mustBe HtmlContent(
-        s"""<a class="govuk-link" href="$amountBroughtForwardUrl">${msgs("site.enterAmount")}</a>"""
+        s"""<a class="govuk-link" href="$amountBroughtForwardUrl">${msgs("checkYourAnswers.enterAmount")}</a>"""
       )
       amountRow.actions mustBe None
     }

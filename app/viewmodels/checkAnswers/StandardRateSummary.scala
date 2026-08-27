@@ -33,7 +33,7 @@ object StandardRateSummary {
         keyMsg        = "netTakingsStandardRate.question",
         answer        = screenerAnswer,
         showValueLink = screenerAnswer.isEmpty,
-        linkTextMsg   = "site.setValue",
+        linkTextMsg   = "checkYourAnswers.setValue",
         url           = routes.NetTakingsStandardRateController.onPageLoad(CheckMode).url,
         hiddenMsg     = "netTakingsStandardRate.question"
       )
@@ -50,7 +50,7 @@ object StandardRateSummary {
           keyMsg        = "submittedReturn.netTakingsStdRate",
           amount        = netTakingsAmount.getOrElse(BigDecimal(0)),
           showValueLink = netTakingsIsMissing,
-          linkTextMsg   = "site.enterNetTakings",
+          linkTextMsg   = "checkYourAnswers.enterNetTakings",
           url           = routes.NetTakingsStandardController.onPageLoad(CheckMode).url,
           hiddenMsg     = "submittedReturn.netTakingsStdRate"
         )
@@ -65,7 +65,7 @@ object StandardRateSummary {
             keyMsg        = "checkYourAnswers.mgd.question",
             answer        = calculatedMGDAnswer,
             showValueLink = calculatedMGDAnswer.isEmpty && !netTakingsIsMissing,
-            linkTextMsg   = "site.setValue",
+            linkTextMsg   = "checkYourAnswers.setValue",
             url           = routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode).url,
             hiddenMsg     = "checkYourAnswers.mgd.question"
           )

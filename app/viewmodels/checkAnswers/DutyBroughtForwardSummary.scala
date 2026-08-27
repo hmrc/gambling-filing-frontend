@@ -32,7 +32,7 @@ object DutyBroughtForwardSummary {
         keyMsg        = "negativeDuty.question",
         answer        = negativeDutyAnswer,
         showValueLink = negativeDutyAnswer.isEmpty,
-        linkTextMsg   = "site.setValue",
+        linkTextMsg   = "checkYourAnswers.setValue",
         url           = routes.NegativeDutyController.onPageLoad(CheckMode).url,
         hiddenMsg     = "negativeDuty.question"
       )
@@ -49,7 +49,7 @@ object DutyBroughtForwardSummary {
           keyMsg        = "submittedReturn.previousReturnAmount",
           amount        = amountBroughtForwardAnswer.map(_ * -1).getOrElse(BigDecimal(0)),
           showValueLink = amountIsMissing,
-          linkTextMsg   = "site.enterAmount",
+          linkTextMsg   = "checkYourAnswers.enterAmount",
           url           = routes.NegativeDutyBroughtForwardInputController.onPageLoad(CheckMode).url,
           hiddenMsg     = "submittedReturn.previousReturnAmount"
         )

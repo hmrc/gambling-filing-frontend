@@ -33,7 +33,7 @@ object LowerRateSummary {
         keyMsg        = "netTakingsLowerRate.question",
         answer        = screenerAnswer,
         showValueLink = screenerAnswer.isEmpty,
-        linkTextMsg   = "site.setValue",
+        linkTextMsg   = "checkYourAnswers.setValue",
         url           = routes.NetTakingsLowerRateController.onPageLoad(CheckMode).url,
         hiddenMsg     = "netTakingsLowerRate.question"
       )
@@ -50,7 +50,7 @@ object LowerRateSummary {
           keyMsg        = "submittedReturn.netTakingsLowerRate",
           amount        = netTakingsAmount.getOrElse(BigDecimal(0)),
           showValueLink = netTakingsIsMissing,
-          linkTextMsg   = "site.enterNetTakings",
+          linkTextMsg   = "checkYourAnswers.enterNetTakings",
           url           = routes.NetTakingsLowerController.onPageLoad(CheckMode).url,
           hiddenMsg     = "submittedReturn.netTakingsLowerRate"
         )
@@ -65,7 +65,7 @@ object LowerRateSummary {
             keyMsg        = "checkYourAnswers.mgd.question",
             answer        = calculatedMGDAnswer,
             showValueLink = calculatedMGDAnswer.isEmpty && !netTakingsIsMissing,
-            linkTextMsg   = "site.setValue",
+            linkTextMsg   = "checkYourAnswers.setValue",
             url           = routes.CalculatedMGDLowerRateController.onPageLoad(CheckMode).url,
             hiddenMsg     = "checkYourAnswers.mgd.question"
           )

@@ -33,7 +33,7 @@ object UnderDeclaredDutySummary {
         keyMsg        = "underDeclaredDuty.heading",
         answer        = hasUnderDeclaredDutyAnswer,
         showValueLink = hasUnderDeclaredDutyAnswer.isEmpty,
-        linkTextMsg   = "site.setValue",
+        linkTextMsg   = "checkYourAnswers.setValue",
         url           = routes.UnderDeclaredDutyController.onPageLoad(CheckMode).url,
         hiddenMsg     = "underDeclaredDuty.heading"
       )
@@ -49,7 +49,7 @@ object UnderDeclaredDutySummary {
           keyMsg        = "underDeclaredDutyReasonableCare.heading",
           answer        = reasonableCareAnswer,
           showValueLink = reasonableCareAnswer.isEmpty,
-          linkTextMsg   = "site.setValue",
+          linkTextMsg   = "checkYourAnswers.setValue",
           url           = routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode).url,
           hiddenMsg     = "underDeclaredDutyReasonableCare.heading"
         )
@@ -64,7 +64,7 @@ object UnderDeclaredDutySummary {
             keyMsg        = "underDeclaredDutyLimits.question",
             answer        = withinLimitsAnswer,
             showValueLink = withinLimitsAnswer.isEmpty,
-            linkTextMsg   = "site.setValue",
+            linkTextMsg   = "checkYourAnswers.setValue",
             url           = routes.UnderDeclaredDutyLimitsController.onPageLoad(CheckMode).url,
             hiddenMsg     = "underDeclaredDutyLimits.question"
           )
@@ -81,7 +81,7 @@ object UnderDeclaredDutySummary {
             keyMsg        = "totalUnderDeclaredDuty.heading",
             amount        = totalUnderDeclaredDutyAnswer.getOrElse(BigDecimal(0)),
             showValueLink = totalUnderDeclaredDutyIsMissing,
-            linkTextMsg   = "site.enterAmount",
+            linkTextMsg   = "checkYourAnswers.enterAmount",
             url           = routes.TotalUnderDeclaredDutyController.onPageLoad(CheckMode).url,
             hiddenMsg     = "totalUnderDeclaredDuty.heading"
           )

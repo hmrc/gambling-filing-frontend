@@ -43,7 +43,7 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
       val hasUnderDeclaredDutyRow = rows.find(_.key.content == Text(msgs("underDeclaredDuty.heading"))).value
 
       hasUnderDeclaredDutyRow.value.content mustBe HtmlContent(
-        s"""<a class="govuk-link" href="$hasUnderDeclaredDutyUrl">${msgs("site.setValue")}</a>"""
+        s"""<a class="govuk-link" href="$hasUnderDeclaredDutyUrl">${msgs("checkYourAnswers.setValue")}</a>"""
       )
       hasUnderDeclaredDutyRow.actions mustBe None
 
@@ -90,7 +90,9 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
         val rows = UnderDeclaredDutySummary.rows(answers)
         val reasonableCareRow = rows.find(_.key.content == Text(msgs("underDeclaredDutyReasonableCare.heading"))).value
 
-        reasonableCareRow.value.content mustBe HtmlContent(s"""<a class="govuk-link" href="$reasonableCareUrl">${msgs("site.setValue")}</a>""")
+        reasonableCareRow.value.content mustBe HtmlContent(
+          s"""<a class="govuk-link" href="$reasonableCareUrl">${msgs("checkYourAnswers.setValue")}</a>"""
+        )
         reasonableCareRow.actions mustBe None
 
         keys(rows) mustNot contain(msgs("underDeclaredDutyLimits.question"))
@@ -135,7 +137,9 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
         val rows = UnderDeclaredDutySummary.rows(answers)
         val withinLimitsRow = rows.find(_.key.content == Text(msgs("underDeclaredDutyLimits.question"))).value
 
-        withinLimitsRow.value.content mustBe HtmlContent(s"""<a class="govuk-link" href="$withinLimitsUrl">${msgs("site.setValue")}</a>""")
+        withinLimitsRow.value.content mustBe HtmlContent(
+          s"""<a class="govuk-link" href="$withinLimitsUrl">${msgs("checkYourAnswers.setValue")}</a>"""
+        )
         withinLimitsRow.actions mustBe None
       }
 
@@ -214,7 +218,7 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
         val amountRow = rows.find(_.key.content == Text(msgs("totalUnderDeclaredDuty.heading"))).value
 
         amountRow.value.content mustBe HtmlContent(
-          s"""<a class="govuk-link" href="$totalUnderDeclaredDutyUrl">${msgs("site.enterAmount")}</a>"""
+          s"""<a class="govuk-link" href="$totalUnderDeclaredDutyUrl">${msgs("checkYourAnswers.enterAmount")}</a>"""
         )
         amountRow.actions mustBe None
       }
@@ -240,7 +244,7 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
         val amountRow = rows.find(_.key.content == Text(msgs("totalUnderDeclaredDuty.heading"))).value
 
         amountRow.value.content mustBe HtmlContent(
-          s"""<a class="govuk-link" href="$totalUnderDeclaredDutyUrl">${msgs("site.enterAmount")}</a>"""
+          s"""<a class="govuk-link" href="$totalUnderDeclaredDutyUrl">${msgs("checkYourAnswers.enterAmount")}</a>"""
         )
         amountRow.actions mustBe None
       }

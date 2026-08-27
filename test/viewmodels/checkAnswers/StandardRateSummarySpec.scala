@@ -49,7 +49,7 @@ class StandardRateSummarySpec extends SpecBase {
       val rows = StandardRateSummary.rows(answers)
       val screenerRow = rows.find(_.key.content == Text(msgs("netTakingsStandardRate.question"))).value
 
-      screenerRow.value.content mustBe HtmlContent(s"""<a class="govuk-link" href="$screenerUrl">${msgs("site.setValue")}</a>""")
+      screenerRow.value.content mustBe HtmlContent(s"""<a class="govuk-link" href="$screenerUrl">${msgs("checkYourAnswers.setValue")}</a>""")
       screenerRow.actions mustBe None
 
       keys(rows) mustNot contain(msgs("submittedReturn.netTakingsStdRate"))
@@ -93,7 +93,9 @@ class StandardRateSummarySpec extends SpecBase {
         val rows = StandardRateSummary.rows(answers)
         val netTakingsRow = rows.find(_.key.content == Text(msgs("submittedReturn.netTakingsStdRate"))).value
 
-        netTakingsRow.value.content mustBe HtmlContent(s"""<a class="govuk-link" href="$netTakingsUrl">${msgs("site.enterNetTakings")}</a>""")
+        netTakingsRow.value.content mustBe HtmlContent(
+          s"""<a class="govuk-link" href="$netTakingsUrl">${msgs("checkYourAnswers.enterNetTakings")}</a>"""
+        )
         netTakingsRow.actions mustBe None
 
         rows.exists(_.key.content == Text(msgs("calculatedMGDStandardRate.question"))) mustBe false
@@ -119,7 +121,9 @@ class StandardRateSummarySpec extends SpecBase {
         val netTakingsRow = rows.find(_.key.content == Text(msgs("submittedReturn.netTakingsStdRate"))).value
         val calculationRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.mgd.question"))).value
 
-        netTakingsRow.value.content mustBe HtmlContent(s"""<a class="govuk-link" href="$netTakingsUrl">${msgs("site.enterNetTakings")}</a>""")
+        netTakingsRow.value.content mustBe HtmlContent(
+          s"""<a class="govuk-link" href="$netTakingsUrl">${msgs("checkYourAnswers.enterNetTakings")}</a>"""
+        )
         netTakingsRow.actions mustBe None
 
         calculationRow.value.content mustBe Text(msgs("site.yes"))
@@ -146,7 +150,9 @@ class StandardRateSummarySpec extends SpecBase {
 
         netTakingsRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
 
-        calculationRow.value.content mustBe HtmlContent(s"""<a class="govuk-link" href="$calculatedMGDUrl">${msgs("site.setValue")}</a>""")
+        calculationRow.value.content mustBe HtmlContent(
+          s"""<a class="govuk-link" href="$calculatedMGDUrl">${msgs("checkYourAnswers.setValue")}</a>"""
+        )
         calculationRow.actions mustBe None
       }
     }
