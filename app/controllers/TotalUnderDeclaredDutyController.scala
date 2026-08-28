@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import controllers.actions.*
 import forms.TotalUnderDeclaredDutyFormProvider
 import models.{Mode, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{NetTakingsHigherPage, NetTakingsLowerPage, NetTakingsStandardPage, SelectReturnPage, TotalUnderDeclaredDutyPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -35,7 +35,6 @@ class TotalUnderDeclaredDutyController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: TotalUnderDeclaredDutyFormProvider,
@@ -59,7 +58,7 @@ class TotalUnderDeclaredDutyController @Inject() (
           userAnswers.get(TotalUnderDeclaredDutyPage).fold(form)(form.fill)
 
         Ok(
-          view(preparedForm, mode, backNavigator.backPage(TotalUnderDeclaredDutyPage, mode, request), selectedReturn)
+          view(preparedForm, mode, selectedReturn)
         )
       }
   }
@@ -77,7 +76,7 @@ class TotalUnderDeclaredDutyController @Inject() (
           .fold(
             formWithErrors =>
               Future.successful(
-                BadRequest(view(formWithErrors, mode, backNavigator.backPage(TotalUnderDeclaredDutyPage, mode, request), selectedReturn))
+                BadRequest(view(formWithErrors, mode, selectedReturn))
               ),
             value =>
               for {

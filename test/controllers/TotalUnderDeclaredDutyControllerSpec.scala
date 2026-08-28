@@ -61,12 +61,6 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
-  val backUrl = Some(
-    routes.UnderDeclaredDutyLimitsController
-      .onPageLoad(NormalMode)
-      .url
-  )
-
   def userAnswersWithNetTakings: UserAnswers =
     UserAnswers(userAnswersId)
       .set(SelectReturnPage, selectedReturn)
@@ -102,7 +96,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual OK
 
         contentAsString(result) mustEqual
-          view(form, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+          view(form, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -121,7 +115,7 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual OK
 
         contentAsString(result) mustEqual
-          view(form.fill(validAnswer), NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+          view(form.fill(validAnswer), NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -204,7 +198,6 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
           view(
             boundForm,
             NormalMode,
-            backUrl,
             selectedReturn
           )(
             request,
@@ -230,7 +223,6 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
           view(
             boundForm,
             NormalMode,
-            backUrl,
             selectedReturn
           )(
             request,
@@ -257,7 +249,6 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
           view(
             boundForm,
             NormalMode,
-            backUrl,
             selectedReturn
           )(
             request,
@@ -311,7 +302,6 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
           view(
             boundForm,
             NormalMode,
-            backUrl,
             selectedReturn
           )(
             request,
@@ -380,7 +370,6 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
           view(
             boundForm,
             NormalMode,
-            backUrl,
             selectedReturn
           )(
             request,

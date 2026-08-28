@@ -42,7 +42,6 @@ class UnderDeclaredDutyReasonableCareControllerSpec extends SpecBase with Mockit
   def onwardRoute: Call = Call("GET", "/next-page")
 
   val validAnswer: Boolean = true
-  val backUrl = Some("/manage-gambling-tax/returns/under-declared-duty")
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
@@ -64,7 +63,7 @@ class UnderDeclaredDutyReasonableCareControllerSpec extends SpecBase with Mockit
         val view = application.injector.instanceOf[UnderDeclaredDutyReasonableCareView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -85,7 +84,7 @@ class UnderDeclaredDutyReasonableCareControllerSpec extends SpecBase with Mockit
         val view = application.injector.instanceOf[UnderDeclaredDutyReasonableCareView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -130,7 +129,7 @@ class UnderDeclaredDutyReasonableCareControllerSpec extends SpecBase with Mockit
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 

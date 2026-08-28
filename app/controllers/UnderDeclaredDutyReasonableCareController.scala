@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.UnderDeclaredDutyReasonableCareFormProvider
 import models.{Mode, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{SelectReturnPage, UnderDeclaredDutyReasonableCarePage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,7 +33,6 @@ class UnderDeclaredDutyReasonableCareController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: UnderDeclaredDutyReasonableCareFormProvider,
@@ -55,7 +54,7 @@ class UnderDeclaredDutyReasonableCareController @Inject() (
             .flatMap(_.get(UnderDeclaredDutyReasonableCarePage))
             .fold(form)(value => form.fill(value))
 
-          Ok(view(preparedForm, mode, backNavigator.backPage(UnderDeclaredDutyReasonableCarePage, mode, request), selectedReturn))
+          Ok(view(preparedForm, mode, selectedReturn))
       }
     }
   }
@@ -72,7 +71,7 @@ class UnderDeclaredDutyReasonableCareController @Inject() (
             formWithErrors =>
               Future.successful(
                 BadRequest(
-                  view(formWithErrors, mode, backNavigator.backPage(UnderDeclaredDutyReasonableCarePage, mode, request), selectedReturn)
+                  view(formWithErrors, mode, selectedReturn)
                 )
               ),
             value => {

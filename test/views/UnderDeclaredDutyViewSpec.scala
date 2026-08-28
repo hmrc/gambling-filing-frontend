@@ -34,7 +34,7 @@ class UnderDeclaredDutyViewSpec extends SpecBase {
 
     "must render the page with the correct content" in new Setup {
       val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
-      val html: HtmlFormat.Appendable = view(form, NormalMode, None, selectedReturn)
+      val html: HtmlFormat.Appendable = view(form, NormalMode, selectedReturn)
       val doc: Document = Jsoup.parse(html.body)
 
       doc.title must include(messages("underDeclaredDuty.title"))
@@ -52,7 +52,7 @@ class UnderDeclaredDutyViewSpec extends SpecBase {
     "must render an error summary when the form has errors" in new Setup {
 
       val boundForm = form.bind(Map("value" -> ""))
-      val html = view(boundForm, NormalMode, None, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
@@ -64,7 +64,7 @@ class UnderDeclaredDutyViewSpec extends SpecBase {
     "must select Yes when the form value is true" in new Setup {
 
       val boundForm = form.fill(true)
-      val html = view(boundForm, NormalMode, None, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
       val doc = Jsoup.parse(html.body)
 
       doc.select("input[value=true]").first().hasAttr("checked") mustBe true
@@ -73,7 +73,7 @@ class UnderDeclaredDutyViewSpec extends SpecBase {
     "must select No when the form value is false" in new Setup {
 
       val boundForm = form.fill(false)
-      val html = view(boundForm, NormalMode, None, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
       val doc = Jsoup.parse(html.body)
 
       doc.select("input[value=false]").first().hasAttr("checked") mustBe true

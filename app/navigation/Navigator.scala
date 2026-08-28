@@ -256,14 +256,6 @@ class Navigator @Inject() () {
         .map(_ => routes.NetTakingsHigherRateController.onPageLoad(CheckMode))
         .getOrElse(routes.CheckYourAnswersController.onPageLoad())
 
-    case UnderDeclaredDutyPage =>
-      userAnswers =>
-        userAnswers.get(UnderDeclaredDutyPage) match {
-          case Some(true)  => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
-          case Some(false) => routes.NegativeDutyController.onPageLoad(CheckMode)
-          case None        => routes.CheckYourAnswersController.onPageLoad()
-        }
-
     case CalculatedMGDHigherRatePage =>
       userAnswers =>
         userAnswers.get(CalculatedMGDHigherRatePage) match {
@@ -275,8 +267,13 @@ class Navigator @Inject() () {
     case MgdHigherRatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
-    case UnderDeclaredDutyLimitsPage =>
-      _ => routes.CheckYourAnswersController.onPageLoad()
+    case UnderDeclaredDutyPage =>
+      userAnswers =>
+        userAnswers.get(UnderDeclaredDutyPage) match {
+          case Some(true)  => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
+          case Some(false) => routes.CheckYourAnswersController.onPageLoad()
+          case None        => routes.CheckYourAnswersController.onPageLoad()
+        }
 
     case UnderDeclaredDutyReasonableCarePage =>
       _.get(UnderDeclaredDutyReasonableCarePage) match {
@@ -285,10 +282,18 @@ class Navigator @Inject() () {
         case None        => routes.CheckYourAnswersController.onPageLoad()
       }
 
-    case ContactHmrcPage =>
-      _ => routes.CheckYourAnswersController.onPageLoad()
+    case UnderDeclaredDutyLimitsPage =>
+      userAnswers =>
+        userAnswers.get(UnderDeclaredDutyLimitsPage) match {
+          case Some(true)  => routes.TotalUnderDeclaredDutyController.onPageLoad(CheckMode)
+          case Some(false) => routes.ContactHmrcController.onPageLoad(CheckMode)
+          case None        => routes.CheckYourAnswersController.onPageLoad()
+        }
 
     case TotalUnderDeclaredDutyPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case ContactHmrcPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case NegativeDutyPage =>

@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.UnderDeclaredDutyFormProvider
 import models.{Mode, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{SelectReturnPage, UnderDeclaredDutyPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,7 +33,6 @@ class UnderDeclaredDutyController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: UnderDeclaredDutyFormProvider,
@@ -52,7 +51,7 @@ class UnderDeclaredDutyController @Inject() (
       case Some(selectedReturn) =>
         val preparedForm = request.userAnswers.flatMap(_.get(UnderDeclaredDutyPage)).fold(form)(value => form.fill(value))
 
-        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(UnderDeclaredDutyPage, mode, request), selectedReturn)))
+        Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
     }
   }
 
@@ -67,7 +66,7 @@ class UnderDeclaredDutyController @Inject() (
           .fold(
             formWithErrors =>
               Future.successful(
-                BadRequest(view(formWithErrors, mode, backNavigator.backPage(UnderDeclaredDutyPage, mode, request), selectedReturn))
+                BadRequest(view(formWithErrors, mode, selectedReturn))
               ),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))

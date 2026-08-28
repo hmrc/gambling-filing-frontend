@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.UnderDeclaredDutyLimitsFormProvider
 import models.{Mode, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{SelectReturnPage, UnderDeclaredDutyLimitsPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,7 +33,6 @@ class UnderDeclaredDutyLimitsController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: UnderDeclaredDutyLimitsFormProvider,
@@ -52,7 +51,7 @@ class UnderDeclaredDutyLimitsController @Inject() (
       case Some(selectedReturn) =>
         val preparedForm = request.userAnswers.flatMap(_.get(UnderDeclaredDutyLimitsPage)).fold(form)(value => form.fill(value))
 
-        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(UnderDeclaredDutyLimitsPage, mode, request), selectedReturn)))
+        Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
     }
   }
 
@@ -67,7 +66,7 @@ class UnderDeclaredDutyLimitsController @Inject() (
           .fold(
             formWithErrors =>
               Future.successful(
-                BadRequest(view(formWithErrors, mode, backNavigator.backPage(UnderDeclaredDutyLimitsPage, mode, request), selectedReturn))
+                BadRequest(view(formWithErrors, mode, selectedReturn))
               ),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
