@@ -31,7 +31,7 @@ class TotalUnderDeclaredDutyViewSpec extends SpecBase {
   "TotalUnderDeclaredDutyView" - {
 
     "must render the page with correct heading, caption and input" in new Setup {
-      val html = view(form, NormalMode, None, selectedReturn)
+      val html = view(form, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.title must include(messages("totalUnderDeclaredDuty.title"))
@@ -46,7 +46,7 @@ class TotalUnderDeclaredDutyViewSpec extends SpecBase {
     "must render error summary when form has errors" in new Setup {
 
       val boundForm = form.bind(Map("value" -> ""))
-      val html = view(boundForm, NormalMode, None, selectedReturn)
+      val html = view(boundForm, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
@@ -57,7 +57,7 @@ class TotalUnderDeclaredDutyViewSpec extends SpecBase {
 
     "must render maximum value error when value exceeds maximum allowed" in new Setup {
       val boundForm = form.bind(Map("value" -> "27001"))
-      val html = view(boundForm, NormalMode, None, selectedReturn)
+      val html = view(boundForm, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
@@ -71,7 +71,7 @@ class TotalUnderDeclaredDutyViewSpec extends SpecBase {
 
     "must populate the input when form has a value" in new Setup {
       val boundForm = form.fill(BigDecimal("123.45"))
-      val html = view(boundForm, NormalMode, None, selectedReturn)
+      val html = view(boundForm, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select("#value").`val` mustBe "123.45"

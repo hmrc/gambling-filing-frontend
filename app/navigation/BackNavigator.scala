@@ -91,41 +91,8 @@ class BackNavigator @Inject() () {
     case CalculatedMGDHigherRatePage =>
       _ => routes.NetTakingsHigherController.onPageLoad(NormalMode)
 
-    case UnderDeclaredDutyPage =>
-      userAnswers =>
-        userAnswers.get(NetTakingsHigherRatePage) match {
-          case Some(true) =>
-            userAnswers.get(CalculatedMGDHigherRatePage) match {
-              case Some(true)  => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
-              case Some(false) => routes.MgdHigherRateController.onPageLoad(NormalMode)
-              case None        => routes.IndexController.onPageLoad()
-            }
-          case Some(false) => routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
-          case None        => routes.IndexController.onPageLoad()
-        }
-
     case MgdHigherRatePage =>
       _ => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
-
-    case UnderDeclaredDutyReasonableCarePage =>
-      _ => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
-
-    case UnderDeclaredDutyLimitsPage =>
-      _ => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
-
-    case TotalUnderDeclaredDutyPage =>
-      _ => routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
-
-    case ContactHmrcPage =>
-      userAnswers =>
-        userAnswers.get(UnderDeclaredDutyReasonableCarePage) match {
-          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
-          case _ =>
-            userAnswers.get(UnderDeclaredDutyLimitsPage) match {
-              case Some(false) => routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode)
-              case _           => routes.IndexController.onPageLoad()
-            }
-        }
 
     case NegativeDutyBroughtForwardInputPage =>
       _ => routes.NegativeDutyController.onPageLoad(NormalMode)
@@ -222,42 +189,7 @@ class BackNavigator @Inject() () {
     case NetTakingsHigherPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
-    case UnderDeclaredDutyPage =>
-      userAnswers =>
-        userAnswers.get(NetTakingsHigherRatePage) match {
-          case Some(true) =>
-            userAnswers.get(CalculatedMGDHigherRatePage) match {
-              case Some(true)  => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
-              case Some(false) => routes.MgdHigherRateController.onPageLoad(CheckMode)
-              case None        => routes.CheckYourAnswersController.onPageLoad()
-            }
-          case Some(false) => routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
-          case None        => routes.CheckYourAnswersController.onPageLoad()
-        }
-
     case MgdHigherRatePage =>
-      _ => routes.CheckYourAnswersController.onPageLoad()
-
-    case UnderDeclaredDutyLimitsPage =>
-      _ => routes.CheckYourAnswersController.onPageLoad()
-
-    case UnderDeclaredDutyReasonableCarePage =>
-      _ => routes.CheckYourAnswersController.onPageLoad()
-
-    case ContactHmrcPage =>
-      userAnswers =>
-        userAnswers.get(UnderDeclaredDutyReasonableCarePage) match {
-          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
-
-          case _ =>
-            userAnswers.get(UnderDeclaredDutyLimitsPage) match {
-              case Some(false) => routes.UnderDeclaredDutyLimitsController.onPageLoad(CheckMode)
-
-              case _ => routes.CheckYourAnswersController.onPageLoad()
-            }
-        }
-
-    case TotalUnderDeclaredDutyPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
     case NegativeDutyBroughtForwardInputPage =>
