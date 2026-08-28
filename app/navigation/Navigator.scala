@@ -270,9 +270,8 @@ class Navigator @Inject() () {
     case UnderDeclaredDutyPage =>
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyPage) match {
-          case Some(true)  => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
-          case Some(false) => routes.CheckYourAnswersController.onPageLoad()
-          case None        => routes.CheckYourAnswersController.onPageLoad()
+          case Some(true) => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode)
+          case _          => routes.CheckYourAnswersController.onPageLoad()
         }
 
     case UnderDeclaredDutyReasonableCarePage =>
@@ -287,7 +286,7 @@ class Navigator @Inject() () {
         userAnswers.get(UnderDeclaredDutyLimitsPage) match {
           case Some(true)  => routes.TotalUnderDeclaredDutyController.onPageLoad(CheckMode)
           case Some(false) => routes.ContactHmrcController.onPageLoad(CheckMode)
-          case None        => routes.CheckYourAnswersController.onPageLoad()
+          case _           => routes.CheckYourAnswersController.onPageLoad()
         }
 
     case TotalUnderDeclaredDutyPage =>
