@@ -56,8 +56,20 @@ class DeclareAndSubmitViewSpec extends SpecBase {
       rows.get(1).select("td").get(1).hasClass("govuk-!-font-weight-bold") mustBe false
       rows.get(2).select("td").get(0).text mustBe messages("declareAndSubmit.amountBroughtForward")
       rows.get(2).select("td").get(1).hasClass("govuk-!-font-weight-bold") mustBe false
-      rows.get(3).select("td").get(0).text mustBe messages("declareAndSubmit.netMGDPayableOnThisReturn")
+      rows.get(3).select("td").get(0).text mustBe messages("declareAndSubmit.dutyToCarryForward")
       rows.get(3).select("td").get(1).hasClass("govuk-!-font-weight-bold") mustBe true
+
+      Seq(
+        BigDecimal(0)    -> "declareAndSubmit.netMGDPayableOnThisReturn",
+        BigDecimal(-100) -> "declareAndSubmit.dutyToCarryForward"
+      ).foreach { case (amount, messageKey) =>
+        val response = validResponseDeclaredSubmission.copy(netMGDPayableOnThisReturn = amount)
+        val responseRows = Jsoup
+          .parse(view(NormalMode, None, selectedReturn, response).body)
+          .select("main.govuk-main-wrapper div div table tr.govuk-table__row")
+
+        responseRows.get(3).select("td").get(0).text mustBe messages(messageKey)
+      }
 
       doc.select("main.govuk-main-wrapper div div p").hasClass("govuk-body") mustBe true
       doc.select("main.govuk-main-wrapper div div p.govuk-body").text mustBe messages("declareAndSubmit.confirmation.p")
