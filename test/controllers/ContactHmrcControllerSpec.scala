@@ -29,8 +29,6 @@ import java.time.LocalDate
 
 class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
 
-  val backUrl: Option[String] = Some("/manage-gambling-tax/returns/")
-
   val selectedReturn: SelectedReturn =
     SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
@@ -66,7 +64,6 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
 
         contentAsString(result) mustEqual
           view(
-            backLink       = backUrl,
             selectedReturn = selectedReturn,
             contactHmrcUrl = appConfig.contactHmrcUrl,
             continueUrl    = controllers.routes.NegativeDutyController.onPageLoad(NormalMode).url
@@ -95,7 +92,6 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
 
         contentAsString(result) mustEqual
           view(
-            backLink       = Some(controllers.routes.CheckYourAnswersController.onPageLoad().url),
             selectedReturn = selectedReturn,
             contactHmrcUrl = appConfig.contactHmrcUrl,
             continueUrl    = controllers.routes.CheckYourAnswersController.onPageLoad().url

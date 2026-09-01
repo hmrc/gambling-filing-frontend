@@ -19,7 +19,7 @@ package controllers
 import config.FrontendAppConfig
 import controllers.actions.*
 import models.{Mode, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{ContactHmrcPage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -31,7 +31,6 @@ import scala.concurrent.Future
 class ContactHmrcController @Inject() (
   override val messagesApi: MessagesApi,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
@@ -55,11 +54,6 @@ class ContactHmrcController @Inject() (
           Future.successful(
             Ok(
               view(
-                backLink = backNavigator.backPage(
-                  ContactHmrcPage,
-                  mode,
-                  request
-                ),
                 selectedReturn = selectedReturn,
                 contactHmrcUrl = appConfig.contactHmrcUrl,
                 continueUrl    = navigator.nextPage(ContactHmrcPage, mode, userAnswers).url
