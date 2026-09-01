@@ -56,9 +56,27 @@
                 TableRow(content = HtmlContent(formattedAmountHtml(model.amountBroughtForward)), format = Some("numeric"), attributes = Map("data-testid" -> "declare-submit-amount-brought-forward"))
             ),
             Seq(
-                TableRow(content = Text(messages("declareAndSubmit.netMGDPayableOnThisReturn")), classes = "govuk-!-font-weight-bold"),
-                TableRow(content = HtmlContent(formattedAmountHtml(model.netMGDPayableOnThisReturn)), format = Some("numeric"), classes = "govuk-!-font-weight-bold", attributes = Map("data-testid" -> "declare-submit-net-mgd-ayable-on-this-return"))
+                TableRow(
+                    content = Text(
+                     messages(
+                        if (model.netMGDPayableOnThisReturn < 0) {
+                            "declareAndSubmit.dutyToCarryForward"
+                        } else {
+                            "declareAndSubmit.netMGDPayableOnThisReturn"
+                        }
+                    )
+                ),
+                classes = "govuk-!-font-weight-bold"
+            ),
+            TableRow(
+                content = HtmlContent(formattedAmountHtml(model.netMGDPayableOnThisReturn)),
+                format = Some("numeric"),
+                classes = "govuk-!-font-weight-bold",
+                attributes = Map(
+                    "data-testid" -> "declare-submit-net-mgd-payable-on-this-return"
+                )
             )
+        )
         )
     ))
 
