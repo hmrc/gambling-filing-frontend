@@ -28,9 +28,9 @@ govukButton: GovukButton,
 caption: components.Caption
 )
 
-@(backLink: Option[String], selectedReturn: SelectedReturn, contactHmrcUrl: String, continueUrl: String)(implicit request: Request[_], messages: Messages)
+@(selectedReturn: SelectedReturn, contactHmrcUrl: String, continueUrl: String)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("contactHmrc.title")),backLink = backLink) {
+@layout(pageTitle = titleNoForm(messages("contactHmrc.title"))) {
 
     @caption(
       messages(

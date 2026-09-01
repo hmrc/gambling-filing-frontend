@@ -31,7 +31,7 @@ class ContactHmrcViewSpec extends SpecBase {
   "ContactHmrcView" - {
     "must render the page with the correct content" in new Setup {
 
-      val html = view(None, selectedReturn, contactHmrcUrl, continueUrl)
+      val html = view(selectedReturn, contactHmrcUrl, continueUrl)
       val doc = Jsoup.parse(html.body)
 
       doc.title must include(messages("contactHmrc.title"))
