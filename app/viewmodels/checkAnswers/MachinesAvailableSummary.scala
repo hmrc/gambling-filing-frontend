@@ -32,7 +32,7 @@ object MachinesAvailableSummary {
         keyMsg        = "submittedReturn.noOfMachines",
         answer        = answer.map(_.toString),
         showValueLink = answer.isEmpty,
-        linkTextMsg   = "checkYourAnswers.setValue",
+        linkTextMsg   = "checkYourAnswers.enterNumber",
         url           = routes.MachinesAvailableController.onPageLoad(CheckMode).url,
         hiddenMsg     = "submittedReturn.noOfMachines"
       )

@@ -35,7 +35,7 @@ class MachinesAvailableSummarySpec extends SpecBase {
       val rows = MachinesAvailableSummary.rows(emptyUserAnswers)
       val row = rows.find(_.key.content == Text(msgs("submittedReturn.noOfMachines"))).value
 
-      row.value.content mustBe HtmlContent(s"""<a class="govuk-link" href="$machinesUrl">${msgs("checkYourAnswers.setValue")}</a>""")
+      row.value.content mustBe HtmlContent(s"""<a class="govuk-link" href="$machinesUrl">${msgs("checkYourAnswers.enterNumber")}</a>""")
       row.actions mustBe None
     }
 

@@ -98,7 +98,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
       }
     }
 
-    "must return OK with a 'Set value' link for machines available when it is unanswered" in {
+    "must return OK with a 'Enter number' link for machines available when it is unanswered" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
 
@@ -114,7 +114,7 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         val doc = org.jsoup.Jsoup.parse(contentAsString(result))
         val link = doc.select(s"""a[href="$machinesUrl"]""").first()
-        link.text() mustEqual msgs("checkYourAnswers.setValue")
+        link.text() mustEqual msgs("checkYourAnswers.enterNumber")
       }
     }
 
