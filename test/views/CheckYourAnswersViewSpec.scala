@@ -115,16 +115,16 @@ class CheckYourAnswersViewSpec extends SpecBase with SummaryListFluency {
             changeUrl = Some("/change-net-takings"),
             hiddenMsg = Some("submittedReturn.netTakingsLowerRate")
           ),
-          CheckYourAnswersHelpers.currencyRow(keyMsg = "submittedReturn.totalDueLowerRate", amount = BigDecimal(50))
+          CheckYourAnswersHelpers.currencyRow(keyMsg = "checkYourAnswers.totalDueLowerRate", amount = BigDecimal(50))
         )
       )
 
       val standardRate = SummaryListViewModel(
-        Seq(CheckYourAnswersHelpers.currencyRow(keyMsg = "submittedReturn.totalDueStdRate", amount = BigDecimal(600)))
+        Seq(CheckYourAnswersHelpers.currencyRow(keyMsg = "checkYourAnswers.totalDueStdRate", amount = BigDecimal(600)))
       )
 
       val higherRate = SummaryListViewModel(
-        Seq(CheckYourAnswersHelpers.currencyRow(keyMsg = "submittedReturn.totalDueHigherRate", amount = BigDecimal(1500)))
+        Seq(CheckYourAnswersHelpers.currencyRow(keyMsg = "checkYourAnswers.totalDueHigherRate", amount = BigDecimal(1500)))
       )
 
       val underDeclaredDuty = SummaryListViewModel(
@@ -162,9 +162,9 @@ class CheckYourAnswersViewSpec extends SpecBase with SummaryListFluency {
       valueFor(msgs("submittedReturn.noOfMachines")) mustEqual "10"
       valueFor(msgs("netTakingsLowerRate.question")) mustEqual "Yes"
       valueFor(msgs("submittedReturn.netTakingsLowerRate")) mustEqual "£1,000"
-      valueFor(msgs("submittedReturn.totalDueLowerRate")) mustEqual "£50"
-      valueFor(msgs("submittedReturn.totalDueStdRate")) mustEqual "£600"
-      valueFor(msgs("submittedReturn.totalDueHigherRate")) mustEqual "£1,500"
+      valueFor(msgs("checkYourAnswers.totalDueLowerRate")) mustEqual "£50"
+      valueFor(msgs("checkYourAnswers.totalDueStdRate")) mustEqual "£600"
+      valueFor(msgs("checkYourAnswers.totalDueHigherRate")) mustEqual "£1,500"
       valueFor(msgs("submittedReturn.underDeclaredDuty")) mustEqual "£1.99"
       valueFor(msgs("submittedReturn.previousReturnAmount")) mustEqual "£2.90"
     }

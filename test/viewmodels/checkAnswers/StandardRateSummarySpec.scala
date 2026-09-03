@@ -174,7 +174,7 @@ class StandardRateSummarySpec extends SpecBase {
 
         val rows = StandardRateSummary.rows(answers)
         val calculationRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.mgd.question"))).value
-        val dutyDueRow = rows.find(_.key.content == Text(msgs("submittedReturn.totalDueStdRate"))).value
+        val dutyDueRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueStdRate"))).value
 
         calculationRow.value.content mustBe Text(msgs("site.no"))
         calculationRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
@@ -206,7 +206,7 @@ class StandardRateSummarySpec extends SpecBase {
         val rows = StandardRateSummary.rows(answers)
         val netTakingsRow = rows.find(_.key.content == Text(msgs("submittedReturn.netTakingsStdRate"))).value
         val calculationRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.mgd.question"))).value
-        val dutyDueRow = rows.find(_.key.content == Text(msgs("submittedReturn.totalDueStdRate"))).value
+        val dutyDueRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueStdRate"))).value
 
         netTakingsRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
         calculationRow.value.content mustBe Text(msgs("site.no"))
@@ -219,7 +219,7 @@ class StandardRateSummarySpec extends SpecBase {
           msgs("netTakingsStandardRate.question"),
           msgs("submittedReturn.netTakingsStdRate"),
           msgs("checkYourAnswers.mgd.question"),
-          msgs("submittedReturn.totalDueStdRate")
+          msgs("checkYourAnswers.totalDueStdRate")
         )
       }
     }
@@ -243,7 +243,7 @@ class StandardRateSummarySpec extends SpecBase {
           .value
 
         val rows = StandardRateSummary.rows(answers)
-        val dutyDueRow = rows.find(_.key.content == Text(msgs("submittedReturn.totalDueStdRate"))).value
+        val dutyDueRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueStdRate"))).value
 
         dutyDueRow.value.content mustBe HtmlContent(views.CurrencyFormatter.formattedAmountHtml(BigDecimal(50)))
         dutyDueRow.actions mustBe None

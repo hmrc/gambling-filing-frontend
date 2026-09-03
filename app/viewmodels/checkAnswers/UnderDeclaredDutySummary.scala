@@ -46,12 +46,12 @@ object UnderDeclaredDutySummary {
     val reasonableCare =
       Option(
         CheckYourAnswersHelpers.yesNoOrActionLinkRow(
-          keyMsg        = "underDeclaredDutyReasonableCare.heading",
+          keyMsg        = "checkYourAnswers.underDeclaredDutyReasonableCare.question",
           answer        = reasonableCareAnswer,
           showValueLink = reasonableCareAnswer.isEmpty,
           linkTextMsg   = "checkYourAnswers.setValue",
           url           = routes.UnderDeclaredDutyReasonableCareController.onPageLoad(CheckMode).url,
-          hiddenMsg     = "underDeclaredDutyReasonableCare.heading"
+          hiddenMsg     = "checkYourAnswers.underDeclaredDutyReasonableCare.question"
         )
       ).filter(_ => screenerYes)
 
@@ -61,12 +61,12 @@ object UnderDeclaredDutySummary {
       reasonableCare.flatMap(_ =>
         Option(
           CheckYourAnswersHelpers.yesNoOrActionLinkRow(
-            keyMsg        = "underDeclaredDutyLimits.question",
+            keyMsg        = "checkYourAnswers.underDeclaredDutyLimits.question",
             answer        = withinLimitsAnswer,
             showValueLink = withinLimitsAnswer.isEmpty,
             linkTextMsg   = "checkYourAnswers.setValue",
             url           = routes.UnderDeclaredDutyLimitsController.onPageLoad(CheckMode).url,
-            hiddenMsg     = "underDeclaredDutyLimits.question"
+            hiddenMsg     = "checkYourAnswers.underDeclaredDutyLimits.question"
           )
         ).filter(_ => reasonableCareAnswer.contains(false))
       )
@@ -78,12 +78,12 @@ object UnderDeclaredDutySummary {
       withinLimits.flatMap(_ =>
         Option(
           CheckYourAnswersHelpers.currencyOrActionLinkRow(
-            keyMsg        = "totalUnderDeclaredDuty.heading",
+            keyMsg        = "checkYourAnswers.totalUnderDeclaredDuty.question",
             amount        = totalUnderDeclaredDutyAnswer.getOrElse(BigDecimal(0)),
             showValueLink = totalUnderDeclaredDutyIsMissing,
             linkTextMsg   = "checkYourAnswers.enterAmount",
             url           = routes.TotalUnderDeclaredDutyController.onPageLoad(CheckMode).url,
-            hiddenMsg     = "totalUnderDeclaredDuty.heading"
+            hiddenMsg     = "checkYourAnswers.totalUnderDeclaredDuty.question"
           )
         ).filter(_ => withinLimitsAnswer.contains(true))
       )
