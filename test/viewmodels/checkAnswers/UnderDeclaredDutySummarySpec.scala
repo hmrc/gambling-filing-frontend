@@ -47,9 +47,9 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
       )
       hasUnderDeclaredDutyRow.actions mustBe None
 
-      keys(rows) mustNot contain(msgs("underDeclaredDutyReasonableCare.heading"))
-      keys(rows) mustNot contain(msgs("underDeclaredDutyLimits.question"))
-      keys(rows) mustNot contain(msgs("totalUnderDeclaredDuty.heading"))
+      keys(rows) mustNot contain(msgs("checkYourAnswers.underDeclaredDutyReasonableCare.question"))
+      keys(rows) mustNot contain(msgs("checkYourAnswers.underDeclaredDutyLimits.question"))
+      keys(rows) mustNot contain(msgs("checkYourAnswers.totalUnderDeclaredDuty.question"))
     }
 
     "must show the screener row with the normal 'No' value, and hide the other rows, when the screener is No" in {
@@ -75,9 +75,9 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
       hasUnderDeclaredDutyRow.value.content mustBe Text(msgs("site.no"))
       hasUnderDeclaredDutyRow.actions.value.items.head.href mustBe hasUnderDeclaredDutyUrl
 
-      keys(rows) mustNot contain(msgs("underDeclaredDutyReasonableCare.heading"))
-      keys(rows) mustNot contain(msgs("underDeclaredDutyLimits.question"))
-      keys(rows) mustNot contain(msgs("totalUnderDeclaredDuty.heading"))
+      keys(rows) mustNot contain(msgs("checkYourAnswers.underDeclaredDutyReasonableCare.question"))
+      keys(rows) mustNot contain(msgs("checkYourAnswers.underDeclaredDutyLimits.question"))
+      keys(rows) mustNot contain(msgs("checkYourAnswers.totalUnderDeclaredDuty.question"))
     }
 
     "when the screener is Yes" - {
@@ -88,15 +88,15 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
         val answers = emptyUserAnswers.set(UnderDeclaredDutyPage, true).success.value
 
         val rows = UnderDeclaredDutySummary.rows(answers)
-        val reasonableCareRow = rows.find(_.key.content == Text(msgs("underDeclaredDutyReasonableCare.heading"))).value
+        val reasonableCareRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.underDeclaredDutyReasonableCare.question"))).value
 
         reasonableCareRow.value.content mustBe HtmlContent(
           s"""<a class="govuk-link" href="$reasonableCareUrl">${msgs("checkYourAnswers.setValue")}</a>"""
         )
         reasonableCareRow.actions mustBe None
 
-        keys(rows) mustNot contain(msgs("underDeclaredDutyLimits.question"))
-        keys(rows) mustNot contain(msgs("totalUnderDeclaredDuty.heading"))
+        keys(rows) mustNot contain(msgs("checkYourAnswers.underDeclaredDutyLimits.question"))
+        keys(rows) mustNot contain(msgs("checkYourAnswers.totalUnderDeclaredDuty.question"))
       }
 
       "must hide within limits when reasonable care is answered Yes" in {
@@ -114,13 +114,13 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
           .value
 
         val rows = UnderDeclaredDutySummary.rows(answers)
-        val reasonableCareRow = rows.find(_.key.content == Text(msgs("underDeclaredDutyReasonableCare.heading"))).value
+        val reasonableCareRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.underDeclaredDutyReasonableCare.question"))).value
 
         reasonableCareRow.value.content mustBe Text(msgs("site.yes"))
         reasonableCareRow.actions.value.items.head.href mustBe reasonableCareUrl
 
-        keys(rows) mustNot contain(msgs("underDeclaredDutyLimits.question"))
-        keys(rows) mustNot contain(msgs("totalUnderDeclaredDuty.heading"))
+        keys(rows) mustNot contain(msgs("checkYourAnswers.underDeclaredDutyLimits.question"))
+        keys(rows) mustNot contain(msgs("checkYourAnswers.totalUnderDeclaredDuty.question"))
       }
 
       "must show the within limits row with a 'Set value' link when reasonable care is answered No and within limits is unanswered" in {
@@ -135,7 +135,7 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
           .value
 
         val rows = UnderDeclaredDutySummary.rows(answers)
-        val withinLimitsRow = rows.find(_.key.content == Text(msgs("underDeclaredDutyLimits.question"))).value
+        val withinLimitsRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.underDeclaredDutyLimits.question"))).value
 
         withinLimitsRow.value.content mustBe HtmlContent(
           s"""<a class="govuk-link" href="$withinLimitsUrl">${msgs("checkYourAnswers.setValue")}</a>"""
@@ -158,8 +158,8 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
           .value
 
         val rows = UnderDeclaredDutySummary.rows(answers)
-        val reasonableCareRow = rows.find(_.key.content == Text(msgs("underDeclaredDutyReasonableCare.heading"))).value
-        val withinLimitsRow = rows.find(_.key.content == Text(msgs("underDeclaredDutyLimits.question"))).value
+        val reasonableCareRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.underDeclaredDutyReasonableCare.question"))).value
+        val withinLimitsRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.underDeclaredDutyLimits.question"))).value
 
         reasonableCareRow.value.content mustBe Text(msgs("site.no"))
         reasonableCareRow.actions.value.items.head.href mustBe reasonableCareUrl
@@ -186,7 +186,7 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
           .value
 
         val rows = UnderDeclaredDutySummary.rows(answers)
-        val amountRow = rows.find(_.key.content == Text(msgs("totalUnderDeclaredDuty.heading"))).value
+        val amountRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalUnderDeclaredDuty.question"))).value
 
         amountRow.value.content mustBe HtmlContent(CurrencyFormatter.formattedAmountHtml(BigDecimal(250)))
         amountRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
@@ -194,9 +194,9 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
 
         keys(rows) mustBe Seq(
           msgs("underDeclaredDuty.heading"),
-          msgs("underDeclaredDutyReasonableCare.heading"),
-          msgs("underDeclaredDutyLimits.question"),
-          msgs("totalUnderDeclaredDuty.heading")
+          msgs("checkYourAnswers.underDeclaredDutyReasonableCare.question"),
+          msgs("checkYourAnswers.underDeclaredDutyLimits.question"),
+          msgs("checkYourAnswers.totalUnderDeclaredDuty.question")
         )
       }
 
@@ -215,7 +215,7 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
           .value
 
         val rows = UnderDeclaredDutySummary.rows(answers)
-        val amountRow = rows.find(_.key.content == Text(msgs("totalUnderDeclaredDuty.heading"))).value
+        val amountRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalUnderDeclaredDuty.question"))).value
 
         amountRow.value.content mustBe HtmlContent(
           s"""<a class="govuk-link" href="$totalUnderDeclaredDutyUrl">${msgs("checkYourAnswers.enterAmount")}</a>"""
@@ -241,7 +241,7 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
           .value
 
         val rows = UnderDeclaredDutySummary.rows(answers)
-        val amountRow = rows.find(_.key.content == Text(msgs("totalUnderDeclaredDuty.heading"))).value
+        val amountRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalUnderDeclaredDuty.question"))).value
 
         amountRow.value.content mustBe HtmlContent(
           s"""<a class="govuk-link" href="$totalUnderDeclaredDutyUrl">${msgs("checkYourAnswers.enterAmount")}</a>"""
@@ -268,7 +268,7 @@ class UnderDeclaredDutySummarySpec extends SpecBase {
 
         val rows = UnderDeclaredDutySummary.rows(answers)
 
-        keys(rows) mustNot contain(msgs("totalUnderDeclaredDuty.heading"))
+        keys(rows) mustNot contain(msgs("checkYourAnswers.totalUnderDeclaredDuty.question"))
       }
     }
   }

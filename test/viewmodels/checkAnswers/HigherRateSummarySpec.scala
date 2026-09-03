@@ -174,7 +174,7 @@ class HigherRateSummarySpec extends SpecBase {
 
         val rows = HigherRateSummary.rows(answers)
         val calculationRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.mgd.question"))).value
-        val dutyDueRow = rows.find(_.key.content == Text(msgs("submittedReturn.totalDueHigherRate"))).value
+        val dutyDueRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueHigherRate"))).value
 
         calculationRow.value.content mustBe Text(msgs("site.no"))
         calculationRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
@@ -206,7 +206,7 @@ class HigherRateSummarySpec extends SpecBase {
         val rows = HigherRateSummary.rows(answers)
         val netTakingsRow = rows.find(_.key.content == Text(msgs("submittedReturn.netTakingsHigherRate"))).value
         val calculationRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.mgd.question"))).value
-        val dutyDueRow = rows.find(_.key.content == Text(msgs("submittedReturn.totalDueHigherRate"))).value
+        val dutyDueRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueHigherRate"))).value
 
         netTakingsRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
         calculationRow.value.content mustBe Text(msgs("site.no"))
@@ -219,7 +219,7 @@ class HigherRateSummarySpec extends SpecBase {
           msgs("netTakingsHigherRate.question"),
           msgs("submittedReturn.netTakingsHigherRate"),
           msgs("checkYourAnswers.mgd.question"),
-          msgs("submittedReturn.totalDueHigherRate")
+          msgs("checkYourAnswers.totalDueHigherRate")
         )
       }
     }
@@ -243,7 +243,7 @@ class HigherRateSummarySpec extends SpecBase {
           .value
 
         val rows = HigherRateSummary.rows(answers)
-        val dutyDueRow = rows.find(_.key.content == Text(msgs("submittedReturn.totalDueHigherRate"))).value
+        val dutyDueRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueHigherRate"))).value
 
         dutyDueRow.value.content mustBe HtmlContent(views.CurrencyFormatter.formattedAmountHtml(BigDecimal(50)))
         dutyDueRow.actions mustBe None
