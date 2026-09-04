@@ -238,18 +238,12 @@ class Navigator @Inject() () {
     case NetTakingsHigherRatePage =>
       userAnswers =>
         userAnswers.get(NetTakingsHigherRatePage) match {
-          case Some(true) =>
-            routes.NetTakingsHigherController.onPageLoad(CheckMode)
-
-          case Some(false) =>
-            routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
-
-          case None =>
-            routes.CheckYourAnswersController.onPageLoad()
+          case Some(true) => routes.NetTakingsHigherController.onPageLoad(CheckMode)
+          case _          => routes.CheckYourAnswersController.onPageLoad()
         }
 
     case NetTakingsHigherPage =>
-      _ => routes.CheckYourAnswersController.onPageLoad()
+      _ => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
 
     case MgdStandardRatePage =>
       _.get(MgdStandardRatePage)
@@ -259,9 +253,8 @@ class Navigator @Inject() () {
     case CalculatedMGDHigherRatePage =>
       userAnswers =>
         userAnswers.get(CalculatedMGDHigherRatePage) match {
-          case Some(true)  => routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
-          case Some(false) => routes.MgdHigherRateController.onPageLoad(CheckMode)
-          case None        => routes.CheckYourAnswersController.onPageLoad()
+          case Some(true) => routes.CheckYourAnswersController.onPageLoad()
+          case _          => routes.MgdHigherRateController.onPageLoad(CheckMode)
         }
 
     case MgdHigherRatePage =>

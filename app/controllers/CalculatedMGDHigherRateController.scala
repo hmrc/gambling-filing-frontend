@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import controllers.actions.*
 import forms.CalculatedMGDHigherRateFormProvider
 import models.{Mode, SelectedReturn, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{CalculatedMGDHigherRatePage, MgdHigherRatePage, NetTakingsHigherPage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,7 +34,6 @@ class CalculatedMGDHigherRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: CalculatedMGDHigherRateFormProvider,
@@ -59,14 +58,7 @@ class CalculatedMGDHigherRateController @Inject() (
             val duty = netTakings * frontendAppConfig.higherRateDutyPercentage
             Future.successful(
               Ok(
-                view(radioAnswer,
-                     netTakings,
-                     duty,
-                     ratePercentage,
-                     mode,
-                     backNavigator.backPage(CalculatedMGDHigherRatePage, mode, request),
-                     selectedReturn
-                    )
+                view(radioAnswer, netTakings, duty, ratePercentage, mode, selectedReturn)
               )
             )
           }
@@ -88,14 +80,7 @@ class CalculatedMGDHigherRateController @Inject() (
                 formWithErrors =>
                   Future.successful(
                     BadRequest(
-                      view(formWithErrors,
-                           netTakings,
-                           duty,
-                           ratePercentage,
-                           mode,
-                           backNavigator.backPage(CalculatedMGDHigherRatePage, mode, request),
-                           selectedReturn
-                          )
+                      view(formWithErrors, netTakings, duty, ratePercentage, mode, selectedReturn)
                     )
                   ),
                 value => {

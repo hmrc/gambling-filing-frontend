@@ -43,7 +43,6 @@ class CalculatedMGDHigherRateControllerSpec extends SpecBase with MockitoSugar {
   private val duty = netTakings * BigDecimal(0.25)
   private val ratePercentage: BigDecimal = BigDecimal(0.25) * 100
   private val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
-  private val backUrl: Option[String] = Some(routes.NetTakingsHigherController.onPageLoad(NormalMode).url)
 
   private val userAnswersWithNetTakings =
     emptyUserAnswers
@@ -76,7 +75,7 @@ class CalculatedMGDHigherRateControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual
-          view(form, netTakings, duty, ratePercentage, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+          view(form, netTakings, duty, ratePercentage, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -89,7 +88,7 @@ class CalculatedMGDHigherRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), netTakings, duty, ratePercentage, NormalMode, backUrl, selectedReturn)(
+        contentAsString(result) mustEqual view(form.fill(validAnswer), netTakings, duty, ratePercentage, NormalMode, selectedReturn)(
           request,
           messages(application)
         ).toString
@@ -133,9 +132,9 @@ class CalculatedMGDHigherRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, netTakings, duty, ratePercentage, NormalMode, backUrl, selectedReturn)(request,
-                                                                                                                                 messages(application)
-                                                                                                                                ).toString
+        contentAsString(result) mustEqual view(boundForm, netTakings, duty, ratePercentage, NormalMode, selectedReturn)(request,
+                                                                                                                        messages(application)
+                                                                                                                       ).toString
       }
     }
 
