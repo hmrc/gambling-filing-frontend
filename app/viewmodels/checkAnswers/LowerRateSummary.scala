@@ -76,16 +76,16 @@ object LowerRateSummary {
     val correctedDutyIsMissing = correctedDutyAmount.forall(_ == BigDecimal(0))
 
     val dutyDue = calculatedMGDAnswer.flatMap {
-      case true => correctedDutyAmount.map(amount => CheckYourAnswersHelpers.currencyRow("submittedReturn.totalDueLowerRate", amount))
+      case true => correctedDutyAmount.map(amount => CheckYourAnswersHelpers.currencyRow("checkYourAnswers.totalDueLowerRate", amount))
       case false =>
         Some(
           CheckYourAnswersHelpers.currencyOrActionLinkRow(
-            keyMsg        = "submittedReturn.totalDueLowerRate",
+            keyMsg        = "checkYourAnswers.totalDueLowerRate",
             amount        = correctedDutyAmount.getOrElse(BigDecimal(0)),
             showValueLink = correctedDutyIsMissing,
             linkTextMsg   = "checkYourAnswers.enterMGD",
             url           = routes.MgdLowerRateController.onPageLoad(CheckMode).url,
-            hiddenMsg     = "submittedReturn.totalDueLowerRate"
+            hiddenMsg     = "checkYourAnswers.totalDueLowerRate"
           )
         )
     }

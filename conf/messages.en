@@ -45,6 +45,12 @@ checkYourAnswers.standardRate.heading = Standard rate of duty
 checkYourAnswers.higherRate.heading = Higher rate of duty
 checkYourAnswers.underDeclaredDuty.heading = Under-declared duty
 checkYourAnswers.dutyBroughtForward.heading = Duty brought forward
+checkYourAnswers.totalDueLowerRate = MGD due at lower rate of duty
+checkYourAnswers.totalDueStdRate = MGD due at standard rate of duty
+checkYourAnswers.totalDueHigherRate = MGD due at higher rate of duty
+checkYourAnswers.underDeclaredDutyReasonableCare.question = Did you fail to take reasonable care when you under-declared your duty?
+checkYourAnswers.underDeclaredDutyLimits.question = Does the amount you wish to declare fall within the limits?
+checkYourAnswers.totalUnderDeclaredDuty.question = Under-declared duty from previous periods
 
 journeyRecovery.continue.title = Sorry, there is a problem with the service
 journeyRecovery.continue.heading = Sorry, there is a problem with the service

@@ -77,16 +77,16 @@ object StandardRateSummary {
 
     val dutyDue =
       calculatedMGDAnswer.flatMap {
-        case true => correctedDutyAmount.map(amount => CheckYourAnswersHelpers.currencyRow("submittedReturn.totalDueStdRate", amount))
+        case true => correctedDutyAmount.map(amount => CheckYourAnswersHelpers.currencyRow("checkYourAnswers.totalDueStdRate", amount))
         case false =>
           Some(
             CheckYourAnswersHelpers.currencyOrActionLinkRow(
-              keyMsg        = "submittedReturn.totalDueStdRate",
+              keyMsg        = "checkYourAnswers.totalDueStdRate",
               amount        = correctedDutyAmount.getOrElse(BigDecimal(0)),
               showValueLink = correctedDutyIsMissing,
               linkTextMsg   = "checkYourAnswers.enterMGD",
               url           = routes.MgdStandardRateController.onPageLoad(CheckMode).url,
-              hiddenMsg     = "submittedReturn.totalDueStdRate"
+              hiddenMsg     = "checkYourAnswers.totalDueStdRate"
             )
           )
       }
