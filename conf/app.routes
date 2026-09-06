@@ -135,3 +135,6 @@ POST       /change-total-under-declared-duty          controllers.TotalUnderDecl
 
 GET        /declare-submit                              controllers.DeclareAndSubmitController.onPageLoad(mode: Mode = NormalMode)
 POST       /declare-submit                              controllers.DeclareAndSubmitController.onSubmit(mode: Mode = NormalMode)
+
+GET        /confirmation                            controllers.ConfirmationController.onPageLoad(mode: Mode = NormalMode)
+POST       /confirmation                            controllers.ConfirmationController.onSubmit(mode: Mode = NormalMode)
