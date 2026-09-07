@@ -592,7 +592,7 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NetTakingsHigherController.onPageLoad(CheckMode)
       }
 
-      "must go from NetTakingsHigherRatePage to UnderDeclaredDutyPage when answer is No" in {
+      "must go from NetTakingsHigherRatePage to CheckYourAnswersController when answer is No" in {
         val answers =
           emptyUserAnswers
             .set(NetTakingsHigherRatePage, false)
@@ -603,10 +603,10 @@ class NavigatorSpec extends SpecBase {
           NetTakingsHigherRatePage,
           CheckMode,
           answers
-        ) mustBe routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
-      "must go from CalculatedMGDHigherRatePage to UnderDeclaredDutyController when answer is Yes" in {
+      "must go from CalculatedMGDHigherRatePage to CheckYourAnswersController when answer is Yes" in {
         val answers =
           emptyUserAnswers
             .set(CalculatedMGDHigherRatePage, true)
@@ -617,7 +617,7 @@ class NavigatorSpec extends SpecBase {
           CalculatedMGDHigherRatePage,
           CheckMode,
           answers
-        ) mustBe routes.UnderDeclaredDutyController.onPageLoad(CheckMode)
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
       "must go from CalculatedMGDHigherRatePage to MgdHigherRatePage when answer is No" in {
@@ -634,12 +634,12 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.MgdHigherRateController.onPageLoad(CheckMode)
       }
 
-      "must go from NetTakingsHigherPage to CheckYourAnswersController" in {
+      "must go from NetTakingsHigherPage to CalculatedMGDHigherRateController" in {
         navigator.nextPage(
           NetTakingsHigherPage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.CheckYourAnswersController.onPageLoad()
+        ) mustBe routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
       }
 
       "must go from MgdStandardRatePage to NetTakingsHigherRatePage when answer exists" in {
