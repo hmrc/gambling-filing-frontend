@@ -177,50 +177,29 @@ class Navigator @Inject() () {
     case MachinesAvailablePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
+    // FAR-LOW-SCR
     case NetTakingsLowerRatePage =>
       userAnswers =>
         userAnswers.get(NetTakingsLowerRatePage) match {
-          case Some(true) =>
-            routes.NetTakingsLowerController.onPageLoad(CheckMode)
-
-          case Some(false) =>
-            routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
-
-          case None =>
-            routes.CheckYourAnswersController.onPageLoad()
+          case Some(true) => routes.NetTakingsLowerController.onPageLoad(CheckMode)
+          case _          => routes.CheckYourAnswersController.onPageLoad()
         }
 
+    // FAR-NET-LOW
     case NetTakingsLowerPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 
+    // FAR-LOW-CHK
     case CalculatedMGDLowerRatePage =>
       userAnswers =>
         userAnswers.get(CalculatedMGDLowerRatePage) match {
-          case Some(true) =>
-            routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
-
-          case Some(false) =>
-            routes.MgdLowerRateController.onPageLoad(CheckMode)
-
-          case None =>
-            routes.CheckYourAnswersController.onPageLoad()
+          case Some(true) => routes.CheckYourAnswersController.onPageLoad()
+          case _          => routes.MgdLowerRateController.onPageLoad(CheckMode)
         }
 
+    // FAR-DUR-LOW
     case MgdLowerRatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
-
-    case NetTakingsStandardPage =>
-      _ => routes.CheckYourAnswersController.onPageLoad()
-
-    case CalculatedMGDStandardRatePage =>
-      userAnswers =>
-        userAnswers
-          .get(CalculatedMGDStandardRatePage)
-          .map {
-            case true => routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
-            case _    => routes.MgdStandardRateController.onPageLoad(CheckMode)
-          }
-          .getOrElse(routes.CheckYourAnswersController.onPageLoad())
 
     case NetTakingsStandardRatePage =>
       userAnswers =>
@@ -235,6 +214,25 @@ class Navigator @Inject() () {
             routes.CheckYourAnswersController.onPageLoad()
         }
 
+    case NetTakingsStandardPage =>
+      _ => routes.CheckYourAnswersController.onPageLoad()
+
+    case CalculatedMGDStandardRatePage =>
+      userAnswers =>
+        userAnswers
+          .get(CalculatedMGDStandardRatePage)
+          .map {
+            case true => routes.NetTakingsHigherRateController.onPageLoad(CheckMode)
+            case _    => routes.MgdStandardRateController.onPageLoad(CheckMode)
+          }
+          .getOrElse(routes.CheckYourAnswersController.onPageLoad())
+
+    case MgdStandardRatePage =>
+      _.get(MgdStandardRatePage)
+        .map(_ => routes.NetTakingsHigherRateController.onPageLoad(CheckMode))
+        .getOrElse(routes.CheckYourAnswersController.onPageLoad())
+
+    // FAR-HIG-SCR
     case NetTakingsHigherRatePage =>
       userAnswers =>
         userAnswers.get(NetTakingsHigherRatePage) match {
@@ -242,14 +240,11 @@ class Navigator @Inject() () {
           case _          => routes.CheckYourAnswersController.onPageLoad()
         }
 
+    // FAR-NET-HIG
     case NetTakingsHigherPage =>
       _ => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
 
-    case MgdStandardRatePage =>
-      _.get(MgdStandardRatePage)
-        .map(_ => routes.NetTakingsHigherRateController.onPageLoad(CheckMode))
-        .getOrElse(routes.CheckYourAnswersController.onPageLoad())
-
+    // FAR-HIG-CHK
     case CalculatedMGDHigherRatePage =>
       userAnswers =>
         userAnswers.get(CalculatedMGDHigherRatePage) match {
@@ -257,6 +252,7 @@ class Navigator @Inject() () {
           case _          => routes.MgdHigherRateController.onPageLoad(CheckMode)
         }
 
+    // FAR-DUE-HIG
     case MgdHigherRatePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
 

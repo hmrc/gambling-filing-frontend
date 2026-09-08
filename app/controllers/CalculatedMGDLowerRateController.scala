@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import controllers.actions.*
 import forms.CalculatedMGDLowerRateFormProvider
 import models.{Mode, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{CalculatedMGDLowerRatePage, MgdLowerRatePage, NetTakingsLowerPage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,7 +34,6 @@ class CalculatedMGDLowerRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
@@ -61,7 +60,7 @@ class CalculatedMGDLowerRateController @Inject() (
 
         Future.successful(
           Ok(
-            view(radioAnswer, netTakings, duty, percentage, mode, backNavigator.backPage(CalculatedMGDLowerRatePage, mode, request), selectedReturn)
+            view(radioAnswer, netTakings, duty, percentage, mode, selectedReturn)
           )
         )
 
@@ -85,14 +84,7 @@ class CalculatedMGDLowerRateController @Inject() (
             formWithErrors =>
               Future.successful(
                 BadRequest(
-                  view(formWithErrors,
-                       netTakings,
-                       duty,
-                       percentage,
-                       mode,
-                       backNavigator.backPage(CalculatedMGDLowerRatePage, mode, request),
-                       selectedReturn
-                      )
+                  view(formWithErrors, netTakings, duty, percentage, mode, selectedReturn)
                 )
               ),
             value => {

@@ -27,9 +27,9 @@
     govukButton: GovukButton
 )
 
-@(form: Form[_], mode: Mode, backLink: Option[String], selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], mode: Mode, selectedReturn: SelectedReturn)(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = title(form, messages("mgdLowerRate.title")), backLink = backLink) {
+@layout(pageTitle = title(form, messages("mgdLowerRate.title"))) {
 
     @formHelper(action = routes.MgdLowerRateController.onSubmit(mode), Symbol("autoComplete") -> "off") {
 
