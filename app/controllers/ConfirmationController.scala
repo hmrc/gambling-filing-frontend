@@ -30,15 +30,13 @@ import scala.concurrent.Future
 
 class ConfirmationController @Inject() (
   override val messagesApi: MessagesApi,
-  navigator: Navigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
-  appConfig: FrontendAppConfig,
   view: ConfirmationView
 ) extends BaseFilingController {
 
-  def onPageLoad(mode: Mode): Action[AnyContent] =
+  def onPageLoad(): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
       request.userAnswers
         .flatMap(_.get(SelectReturnPage))
