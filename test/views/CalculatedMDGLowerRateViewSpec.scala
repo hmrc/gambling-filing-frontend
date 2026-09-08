@@ -32,8 +32,7 @@ class CalculatedMDGLowerRateViewSpec extends SpecBase {
 
     "must render the page with correct heading, caption and input" in new Setup {
 
-      val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
-      val html = view(form, BigDecimal(1000), BigDecimal(50), 5, NormalMode, None, selectedReturn)
+      val html = view(form, BigDecimal(1000), BigDecimal(50), 5, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.title must include(messages("calculatedMGDLowerRate.title", CurrencyFormatter.currencyFormat(BigDecimal(50))))
@@ -47,7 +46,7 @@ class CalculatedMDGLowerRateViewSpec extends SpecBase {
 
       val boundForm = form.bind(Map("value" -> ""))
       val html =
-        view(boundForm, BigDecimal(1000), BigDecimal(50), 5, NormalMode, None, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+        view(boundForm, BigDecimal(1000), BigDecimal(50), 5, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
@@ -58,7 +57,7 @@ class CalculatedMDGLowerRateViewSpec extends SpecBase {
 
       val boundForm = form.fill(true)
       val html =
-        view(boundForm, BigDecimal(1000), BigDecimal(50), 5, NormalMode, None, SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+        view(boundForm, BigDecimal(1000), BigDecimal(50), 5, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select("input[value=true]").hasAttr("checked") mustBe true
@@ -69,6 +68,7 @@ class CalculatedMDGLowerRateViewSpec extends SpecBase {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[CalculatedMGDLowerRateView]
     val form = new CalculatedMGDLowerRateFormProvider()()
+    val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 

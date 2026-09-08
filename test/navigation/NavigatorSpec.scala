@@ -467,7 +467,7 @@ class NavigatorSpec extends SpecBase {
           NetTakingsLowerRatePage,
           CheckMode,
           answers
-        ) mustBe routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
       "must go from NetTakingsLowerPage to CheckYourAnswersController" in {
@@ -489,7 +489,7 @@ class NavigatorSpec extends SpecBase {
           CalculatedMGDLowerRatePage,
           CheckMode,
           answers
-        ) mustBe routes.NetTakingsStandardRateController.onPageLoad(CheckMode)
+        ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
       "must go from CalculatedMGDLowerRatePage to Mgd LowerRateRatePage when answer is No" in {

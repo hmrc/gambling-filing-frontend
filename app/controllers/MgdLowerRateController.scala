@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.MgdLowerRateFormProvider
 import models.{Mode, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{MgdLowerRatePage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,7 +33,6 @@ class MgdLowerRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
@@ -52,7 +51,7 @@ class MgdLowerRateController @Inject() (
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
       case Some(selectedReturn) =>
         val preparedForm = request.userAnswers.flatMap(_.get(MgdLowerRatePage)).fold(form)(form.fill)
-        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(MgdLowerRatePage, mode, request), selectedReturn)))
+        Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
     }
   }
 
@@ -65,8 +64,7 @@ class MgdLowerRateController @Inject() (
         form
           .bindFromRequest()
           .fold(
-            formWithErrors =>
-              Future.successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(MgdLowerRatePage, mode, request), selectedReturn))),
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
               for {

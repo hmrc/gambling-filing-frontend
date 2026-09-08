@@ -38,18 +38,6 @@ class BackNavigator @Inject() () {
     case MachinesAvailablePage =>
       _ => routes.IntroductionController.onPageLoad()
 
-    case NetTakingsLowerRatePage =>
-      _ => routes.MachinesAvailableController.onPageLoad(NormalMode)
-
-    case NetTakingsLowerPage =>
-      _ => routes.NetTakingsLowerRateController.onPageLoad(NormalMode)
-
-    case CalculatedMGDLowerRatePage =>
-      _ => routes.NetTakingsLowerController.onPageLoad(NormalMode)
-
-    case MgdLowerRatePage =>
-      _ => routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode)
-
     case NetTakingsStandardPage =>
       _ => routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
 
@@ -116,18 +104,6 @@ class BackNavigator @Inject() () {
 
     case MachinesAvailablePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
-
-    case NetTakingsLowerRatePage =>
-      _ => routes.MachinesAvailableController.onPageLoad(CheckMode)
-
-    case NetTakingsLowerPage =>
-      _ => routes.NetTakingsLowerRateController.onPageLoad(CheckMode)
-
-    case CalculatedMGDLowerRatePage =>
-      _ => routes.NetTakingsLowerController.onPageLoad(CheckMode)
-
-    case MgdLowerRatePage =>
-      _ => routes.CalculatedMGDLowerRateController.onPageLoad(CheckMode)
 
     case MgdStandardRatePage =>
       _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
