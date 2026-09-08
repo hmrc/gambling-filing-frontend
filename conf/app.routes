@@ -137,4 +137,3 @@ GET        /declare-submit                              controllers.DeclareAndSu
 POST       /declare-submit                              controllers.DeclareAndSubmitController.onSubmit(mode: Mode = NormalMode)
 
 GET        /confirmation                            controllers.ConfirmationController.onPageLoad(mode: Mode = NormalMode)
-POST       /confirmation                            controllers.ConfirmationController.onSubmit(mode: Mode = NormalMode)
