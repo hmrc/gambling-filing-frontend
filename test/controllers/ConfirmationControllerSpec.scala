@@ -60,15 +60,15 @@ class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
         contentAsString(result) mustEqual
           view(
             acknowledgementReference = "4JTF BAXM GJXS TKM",
-              submissionDateTime = "6 June 2015 at 11:10 am",
-              periodStartDate = selectedReturn.periodStart,
-              periodEndDate = selectedReturn.periodEnd)(
+            submissionDateTime       = "6 June 2015 at 11:10 am",
+            periodStartDate          = selectedReturn.periodStart,
+            periodEndDate            = selectedReturn.periodEnd
+          )(
             request,
             messages(application)
           ).toString
       }
     }
-    
 
     "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
 
