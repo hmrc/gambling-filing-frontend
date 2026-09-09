@@ -18,7 +18,7 @@ package views
 
 import base.SpecBase
 import models.DeclaredSubmissionTestData.validResponseDeclaredSubmission
-import models.{NormalMode, SelectedReturn}
+import models.SelectedReturn
 import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import play.api.Application
@@ -35,7 +35,7 @@ class DeclareAndSubmitViewSpec extends SpecBase {
     "must render the page with correct heading, caption and table" in new Setup {
 
       private val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
-      private val html = view(NormalMode, None, selectedReturn, validResponseDeclaredSubmission)
+      private val html = view(None, selectedReturn, validResponseDeclaredSubmission)
       private val doc = Jsoup.parse(html.body)
 
       doc.title must include(messages("declareAndSubmit.title"))
@@ -47,6 +47,11 @@ class DeclareAndSubmitViewSpec extends SpecBase {
       )
       doc.select("main.govuk-main-wrapper div div table").hasClass("govuk-table") mustBe true
       doc.select("button").text mustBe messages("declareAndSubmit.button.submit")
+
+      val form: Elements = doc.select("form")
+      form.attr("method").toUpperCase mustBe "POST"
+      form.attr("action") mustBe controllers.routes.DeclareAndSubmitController.onSubmit().url
+      form.select("button").text mustBe messages("declareAndSubmit.button.submit")
 
       doc.select("main.govuk-main-wrapper div div table tr.govuk-table__row").size() mustBe 4
       val rows: Elements = doc.select("main.govuk-main-wrapper div div table tr.govuk-table__row")
@@ -65,7 +70,7 @@ class DeclareAndSubmitViewSpec extends SpecBase {
       ).foreach { case (amount, messageKey) =>
         val response = validResponseDeclaredSubmission.copy(netMGDPayableOnThisReturn = amount)
         val responseRows = Jsoup
-          .parse(view(NormalMode, None, selectedReturn, response).body)
+          .parse(view(None, selectedReturn, response).body)
           .select("main.govuk-main-wrapper div div table tr.govuk-table__row")
 
         responseRows.get(3).select("td").get(0).text mustBe messages(messageKey)

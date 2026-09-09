@@ -17,7 +17,7 @@
 package controllers
 
 import controllers.actions.*
-import models.{DeclaredSubmission, Mode, UserAnswers}
+import models.{DeclaredSubmission, NormalMode, UserAnswers}
 import navigation.{BackNavigator, Navigator}
 import pages.*
 import play.api.i18n.MessagesApi
@@ -38,7 +38,7 @@ class DeclareAndSubmitController @Inject() (
   view: DeclareAndSubmitView
 ) extends BaseFilingController {
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
+  def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
@@ -60,7 +60,7 @@ class DeclareAndSubmitController @Inject() (
           )
         } match {
           case Some(declaredSubmission) =>
-            Future.successful(Ok(view(mode, backNavigator.backPage(DeclareAndSubmitPage, mode, request), selectedReturn, declaredSubmission)))
+            Future.successful(Ok(view(backNavigator.backPage(DeclareAndSubmitPage, NormalMode, request), selectedReturn, declaredSubmission)))
           case _ =>
             logger.info(s"[onPageLoad] Unable to calculate DeclaredSubmission for regNum=${request.regNum}")
             Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
@@ -68,7 +68,7 @@ class DeclareAndSubmitController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
+  def onSubmit(): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
@@ -76,7 +76,7 @@ class DeclareAndSubmitController @Inject() (
       case Some(selectedReturn) =>
         // TODO:  should submit the form to the iForms and once we get a successful response we redirect to /confirmation page
         val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-        Future.successful(Redirect(navigator.nextPage(DeclareAndSubmitPage, mode, userAnswers)))
+        Future.successful(Redirect(navigator.nextPage(DeclareAndSubmitPage, NormalMode, userAnswers)))
     }
   }
 }
