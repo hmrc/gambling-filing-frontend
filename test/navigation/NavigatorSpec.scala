@@ -415,12 +415,12 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
-      "must go from DeclareAndSubmitPage to Confirmation page" in { // TODO: 24. FAR-CON - File a return - Confirmation  /manage-gambling-tax/returns/confirmation
+      "must go from DeclareAndSubmitPage to Confirmation page" in {
         navigator.nextPage(
           DeclareAndSubmitPage,
           NormalMode,
           emptyUserAnswers
-        ) mustBe routes.PageNotFoundController.onPageLoad()
+        ) mustBe routes.ConfirmationController.onPageLoad()
       }
 
     }

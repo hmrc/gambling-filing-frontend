@@ -163,7 +163,7 @@ class Navigator @Inject() () {
       }
 
     case DeclareAndSubmitPage =>
-      _ => routes.PageNotFoundController.onPageLoad() // TODO: 24. FAR-CON - File a return - Confirmation  /manage-gambling-tax/returns/confirmation
+      _ => routes.ConfirmationController.onPageLoad()
 
     case _ =>
       _ => routes.IndexController.onPageLoad()

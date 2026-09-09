@@ -22,13 +22,14 @@
 
 @this(
     layout: templates.Layout,
+    formHelper: FormWithCSRF,
     govukButton: GovukButton,
     h1: H1,
     govukTable: GovukTable,
     p: Paragraph
 )
 
-@(mode: Mode, backLink: Option[String], selectedReturn: SelectedReturn, model: DeclaredSubmission)(implicit request: Request[_], messages: Messages)
+@(backLink: Option[String], selectedReturn: SelectedReturn, model: DeclaredSubmission)(implicit request: Request[_], messages: Messages)
 
 @layout(pageTitle = titleNoForm(messages("declareAndSubmit.title")), backLink = backLink) {
 
@@ -83,8 +84,10 @@
     @p(messages("declareAndSubmit.confirmation.p"))
 
     <div class="govuk-clearfix">
-    @govukButton(
-        ButtonViewModel(messages("declareAndSubmit.button.submit"))
-    )
+    @formHelper(action = routes.DeclareAndSubmitController.onSubmit()) {
+        @govukButton(
+            ButtonViewModel(messages("declareAndSubmit.button.submit"))
+        )
+    }
     </div>
 }

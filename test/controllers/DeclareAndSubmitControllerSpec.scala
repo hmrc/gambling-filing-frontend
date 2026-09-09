@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import models.DeclaredSubmissionTestData.{validResponseDeclaredSubmission, zeroResponseDeclaredSubmission}
-import models.{NormalMode, SelectedReturn, UserAnswers}
+import models.{SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.*
@@ -75,9 +75,7 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[DeclareAndSubmitView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(NormalMode, backUrl, selectedReturn, validResponseDeclaredSubmission)(request,
-                                                                                                                     messages(application)
-                                                                                                                    ).toString
+        contentAsString(result) mustEqual view(backUrl, selectedReturn, validResponseDeclaredSubmission)(request, messages(application)).toString
       }
     }
 
@@ -95,9 +93,7 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[DeclareAndSubmitView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(NormalMode, backUrl, selectedReturn, zeroResponseDeclaredSubmission)(request,
-                                                                                                                    messages(application)
-                                                                                                                   ).toString
+        contentAsString(result) mustEqual view(backUrl, selectedReturn, zeroResponseDeclaredSubmission)(request, messages(application)).toString
       }
     }
 
