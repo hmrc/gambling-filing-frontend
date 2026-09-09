@@ -213,4 +213,55 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
       }
     }
   }
+
+  "landing" - {
+
+    "must save the mgdRegNumber in the session and redirect to onPageLoad" in {
+
+      val application = applicationBuilder().build()
+
+      running(application) {
+        val controller = application.injector.instanceOf[SelectReturnController]
+        val request = FakeRequest(GET, routes.SelectReturnController.landing(regNumber).url)
+
+        val result = controller.landing(regNumber)(request)
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
+        session(result).get("regNum").value mustEqual regNumber
+      }
+    }
+
+    "must upper-case the mgdRegNumber before saving it in the session" in {
+
+      val application = applicationBuilder().build()
+
+      running(application) {
+        val controller = application.injector.instanceOf[SelectReturnController]
+        val request = FakeRequest(GET, routes.SelectReturnController.landing(regNumber.toLowerCase).url)
+
+        val result = controller.landing(regNumber.toLowerCase)(request)
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
+        session(result).get("regNum").value mustEqual regNumber
+      }
+    }
+
+    "must redirect to access denied without updating the session when the mgdRegNumber is invalid" in {
+
+      val application = applicationBuilder().build()
+
+      running(application) {
+        val controller = application.injector.instanceOf[SelectReturnController]
+        val request = FakeRequest(GET, routes.SelectReturnController.landing("XWM123").url)
+
+        val result = controller.landing("XWM123")(request)
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.AccessDeniedController.onPageLoad().url
+        session(result).get("regNum") mustBe None
+      }
+    }
+  }
 }
