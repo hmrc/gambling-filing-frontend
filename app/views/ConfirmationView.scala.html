@@ -1,0 +1,96 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import views.html.components._
+@import utils.DateTimeFormats
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@this(
+    layout: templates.Layout,
+    paragraph: Paragraph,
+    paragraphWithLink: ParagraphMessageWithLink,
+    heading: H1,
+    govukPanel: GovukPanel
+)
+
+@(
+    acknowledgementReference: String,
+    submissionDateTime: String,
+    periodStartDate: java.time.LocalDate,
+    periodEndDate: java.time.LocalDate
+)(implicit request: Request[_], messages: Messages)
+
+@layout(pageTitle = titleNoForm(messages("confirmation.title"))) {
+
+    @govukPanel(
+        Panel(
+            title = Text(messages("confirmation.heading")),
+            content = HtmlContent(
+                s"""
+                <div>
+                    ${messages("confirmation.reference")}
+                    <br>
+                    <strong>$acknowledgementReference</strong>
+                </div>
+                """
+            )
+        )
+    )
+
+    @paragraph(
+        messages(
+            "confirmation.submission",
+            DateTimeFormats.formatDateMMM(Some(periodStartDate)),
+            DateTimeFormats.formatDateMMM(Some(periodEndDate)),
+            submissionDateTime
+        )
+    )
+
+    @paragraphWithLink(
+        message1 = Some(messages("confirmation.processing.p1")),
+        linkMessage = messages("confirmation.helpdesk.link"),
+        message2 = Some(messages("confirmation.processing.p2")),
+        linkUrl = "https://www.gov.uk/find-hmrc-contacts/technical-support-with-hmrc-online-services",
+        target = "_blank",
+        linkRel = "noopener noreferrer",
+        linkFullStop = false
+    )
+
+    <h2 class="govuk-heading-m">
+        @messages("confirmation.whatHappensNext.heading")
+    </h2>
+
+    @paragraph(
+        messages("confirmation.whatHappensNext.directDebit")
+    )
+
+    @paragraphWithLink(
+        message1 = Some(messages("confirmation.whatHappensNext.paymentMethods.p1")),
+        linkMessage = messages("confirmation.whatHappensNext.paymentMethods.link"),
+        message2 = None,
+        linkUrl = "#",
+        target = "_blank",
+        linkRel = "noopener noreferrer",
+        linkFullStop = false
+    )
+
+    <p class="govuk-body">
+        <a class="govuk-link"
+           href="/manage-gambling-tax/">
+            @messages("confirmation.returnToAccount")
+        </a>
+    </p>
+}
