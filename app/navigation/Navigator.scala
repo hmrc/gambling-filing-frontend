@@ -187,7 +187,7 @@ class Navigator @Inject() () {
 
     // FAR-NET-LOW
     case NetTakingsLowerPage =>
-      _ => routes.CheckYourAnswersController.onPageLoad()
+      _ => routes.CalculatedMGDLowerRateController.onPageLoad(CheckMode)
 
     // FAR-LOW-CHK
     case CalculatedMGDLowerRatePage =>
