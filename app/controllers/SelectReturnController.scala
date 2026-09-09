@@ -17,8 +17,8 @@
 package controllers
 
 import controllers.SelectReturnController.SortBy
-import controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidateAction}
-import models.{NormalMode, SelectedReturn, UserAnswers}
+import controllers.actions.{AuthenticatedAction, AuthorisedAction, DataRetrievalAction, GRNValidator, ValidateAction}
+import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
 import navigation.BackNavigator
 import pages.OpenReturnPeriodsPage
 import play.api.mvc.Results.Redirect
@@ -34,6 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class SelectReturnController @Inject() (
   val controllerComponents: MessagesControllerComponents,
+  authenticate: AuthenticatedAction,
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
@@ -43,6 +44,17 @@ class SelectReturnController @Inject() (
   openReturnsView: SelectReturnView
 )(implicit ec: ExecutionContext)
     extends BaseFilingController {
+
+  def landing(mgdRegNumber: String): Action[AnyContent] =
+    authenticate { implicit request =>
+      val regNum = mgdRegNumber.toUpperCase().trim
+      if (GRNValidator.validateRegNum(Regime.MGD, regNum)) {
+        Redirect(routes.SelectReturnController.onPageLoad()).addingToSession("regNum" -> regNum)
+      } else {
+        logger.warn(s"[landing] invalid mgdRegNumber, redirecting to access denied")
+        Redirect(controllers.routes.AccessDeniedController.onPageLoad())
+      }
+    }
 
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen validate andThen getData).async { implicit request =>
