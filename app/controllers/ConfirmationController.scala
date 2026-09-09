@@ -16,10 +16,8 @@
 
 package controllers
 
-import config.FrontendAppConfig
 import controllers.actions.*
-import models.{Mode, UserAnswers}
-import navigation.Navigator
+import models.UserAnswers
 import pages.SelectReturnPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
