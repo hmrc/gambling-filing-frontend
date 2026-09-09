@@ -53,7 +53,6 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and the correct view for a GET" in {
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
-      val backUrl = Some(routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode).url)
 
       running(application) {
         val request = FakeRequest(GET, mgdLowerRateRoute)
@@ -63,14 +62,13 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[MgdLowerRateView]
         status(result) mustEqual OK
 
-        contentAsString(result) mustEqual view(form, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
     "must populate the view correctly on a GET when the question has previously been answered" in {
       val userAnswers = userAnswersWithSelectedReturn.set(MgdLowerRatePage, validAnswer).success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-      val backUrl = Some(routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode).url)
 
       running(application) {
         val request = FakeRequest(GET, mgdLowerRateRoute)
@@ -80,7 +78,7 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -112,7 +110,6 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
 
     "must return a Bad Request and errors when invalid data is submitted" in {
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
-      val backUrl = Some(routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode).url)
 
       running(application) {
         val request =
@@ -126,13 +123,12 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
     "must return OK and the correct view for a GET when no existing data is found" in {
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
-      val backUrl = Some(routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode).url)
 
       running(application) {
         val request = FakeRequest(GET, mgdLowerRateRoute)
@@ -142,7 +138,7 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 

@@ -50,12 +50,6 @@ class CalculatedMGDLowerRateControllerSpec extends SpecBase with MockitoSugar {
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
-  lazy val backUrl = Some(
-    routes.NetTakingsLowerController
-      .onPageLoad(NormalMode)
-      .url
-  )
-
   val userAnswersWithNetTakings =
     emptyUserAnswers
       .set(SelectReturnPage, selectedReturn)
@@ -89,9 +83,9 @@ class CalculatedMGDLowerRateControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[CalculatedMGDLowerRateView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, netTakings, duty, percentage, NormalMode, backUrl, selectedReturn)(request,
-                                                                                                                        messages(application)
-                                                                                                                       ).toString
+        contentAsString(result) mustEqual view(form, netTakings, duty, percentage, NormalMode, selectedReturn)(request,
+                                                                                                               messages(application)
+                                                                                                              ).toString
       }
     }
 
@@ -107,7 +101,7 @@ class CalculatedMGDLowerRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), netTakings, duty, percentage, NormalMode, backUrl, selectedReturn)(
+        contentAsString(result) mustEqual view(form.fill(validAnswer), netTakings, duty, percentage, NormalMode, selectedReturn)(
           request,
           messages(application)
         ).toString
@@ -195,7 +189,7 @@ class CalculatedMGDLowerRateControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, netTakings, duty, percentage, NormalMode, backUrl, selectedReturn)(
+        contentAsString(result) mustEqual view(boundForm, netTakings, duty, percentage, NormalMode, selectedReturn)(
           request,
           messages(application)
         ).toString
