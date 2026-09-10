@@ -38,28 +38,6 @@ class BackNavigator @Inject() () {
     case MachinesAvailablePage =>
       _ => routes.IntroductionController.onPageLoad()
 
-    case NetTakingsStandardPage =>
-      _ => routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
-
-    case CalculatedMGDStandardRatePage =>
-      _ => routes.NetTakingsStandardController.onPageLoad(NormalMode)
-
-    case MgdStandardRatePage =>
-      _ => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
-
-    case NetTakingsStandardRatePage =>
-      userAnswers =>
-        userAnswers.get(NetTakingsLowerRatePage) match {
-          case Some(true) =>
-            userAnswers.get(CalculatedMGDLowerRatePage) match {
-              case Some(true)  => routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode)
-              case Some(false) => routes.MgdLowerRateController.onPageLoad(NormalMode)
-              case None        => routes.IndexController.onPageLoad()
-            }
-          case Some(false) => routes.NetTakingsLowerRateController.onPageLoad(NormalMode)
-          case None        => routes.IndexController.onPageLoad()
-        }
-
     case NegativeDutyBroughtForwardInputPage =>
       _ => routes.NegativeDutyController.onPageLoad(NormalMode)
 
@@ -104,25 +82,6 @@ class BackNavigator @Inject() () {
 
     case MachinesAvailablePage =>
       _ => routes.CheckYourAnswersController.onPageLoad()
-
-    case MgdStandardRatePage =>
-      _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
-
-    case CalculatedMGDStandardRatePage =>
-      _ => routes.NetTakingsStandardController.onPageLoad(CheckMode)
-
-    case NetTakingsStandardRatePage =>
-      userAnswers =>
-        userAnswers.get(NetTakingsLowerRatePage) match {
-          case Some(true) =>
-            userAnswers.get(CalculatedMGDLowerRatePage) match {
-              case Some(true)  => routes.CalculatedMGDLowerRateController.onPageLoad(CheckMode)
-              case Some(false) => routes.MgdLowerRateController.onPageLoad(CheckMode)
-              case None        => routes.CheckYourAnswersController.onPageLoad()
-            }
-          case Some(false) => routes.NetTakingsLowerRateController.onPageLoad(CheckMode)
-          case None        => routes.CheckYourAnswersController.onPageLoad()
-        }
 
     case NegativeDutyBroughtForwardInputPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()

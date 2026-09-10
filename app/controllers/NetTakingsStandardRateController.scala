@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.NetTakingsStandardRateFormProvider
 import models.{Mode, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{NetTakingsStandardRatePage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,7 +33,6 @@ class NetTakingsStandardRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
@@ -51,7 +50,7 @@ class NetTakingsStandardRateController @Inject() (
       .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
         val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsStandardRatePage)).fold(form)(form.fill)
         Future.successful(
-          Ok(view(preparedForm, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request), selectedReturn))
+          Ok(view(preparedForm, mode, selectedReturn))
         )
       }
   }
@@ -66,7 +65,7 @@ class NetTakingsStandardRateController @Inject() (
             formWithErrors =>
               Future.successful(
                 BadRequest(
-                  view(formWithErrors, mode, backNavigator.backPage(NetTakingsStandardRatePage, mode, request), selectedReturn)
+                  view(formWithErrors, mode, selectedReturn)
                 )
               ),
             value => {

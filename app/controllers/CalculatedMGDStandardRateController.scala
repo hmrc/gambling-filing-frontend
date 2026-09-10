@@ -20,7 +20,7 @@ import config.FrontendAppConfig
 import controllers.actions.*
 import forms.CalculatedMGDStandardRateFormProvider
 import models.{Mode, SelectedReturn, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{CalculatedMGDStandardRatePage, MgdStandardRatePage, NetTakingsStandardPage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -34,7 +34,6 @@ class CalculatedMGDStandardRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: CalculatedMGDStandardRateFormProvider,
@@ -59,14 +58,7 @@ class CalculatedMGDStandardRateController @Inject() (
             val duty = netTakings * frontendAppConfig.standardRateDutyPercentage
             Future.successful(
               Ok(
-                view(radioAnswer,
-                     netTakings,
-                     duty,
-                     ratePercentage,
-                     mode,
-                     backNavigator.backPage(CalculatedMGDStandardRatePage, mode, request),
-                     selectedReturn
-                    )
+                view(radioAnswer, netTakings, duty, ratePercentage, mode, selectedReturn)
               )
             )
           }
@@ -88,14 +80,7 @@ class CalculatedMGDStandardRateController @Inject() (
                 formWithErrors =>
                   Future.successful(
                     BadRequest(
-                      view(formWithErrors,
-                           netTakings,
-                           duty,
-                           ratePercentage,
-                           mode,
-                           backNavigator.backPage(CalculatedMGDStandardRatePage, mode, request),
-                           selectedReturn
-                          )
+                      view(formWithErrors, netTakings, duty, ratePercentage, mode, selectedReturn)
                     )
                   ),
                 value => {

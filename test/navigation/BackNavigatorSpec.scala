@@ -96,108 +96,6 @@ class BackNavigatorSpec extends SpecBase {
         }
       }
 
-      "NetTakingsStandardPage" - {
-
-        "must go from NetTakingsStandardPage to NetTakingsStandardRatePage" in {
-
-          navigator.backPage(
-            NetTakingsStandardPage,
-            NormalMode,
-            optionalDataRequest
-          ) mustBe Some(
-            routes.NetTakingsStandardRateController
-              .onPageLoad(NormalMode)
-              .url
-          )
-        }
-      }
-
-      "CalculatedMGDStandardRatePage" - {
-
-        "must go from CalculatedMGDStandardRatePage to NetTakingsStandardPage" in {
-
-          navigator.backPage(
-            CalculatedMGDStandardRatePage,
-            NormalMode,
-            optionalDataRequest
-          ) mustBe Some(
-            routes.NetTakingsStandardController
-              .onPageLoad(NormalMode)
-              .url
-          )
-        }
-      }
-
-      "MgdStandardRatePage" - {
-
-        "must go from MgdStandardRatePage to CalculatedMGDStandardRatePage" in {
-
-          navigator.backPage(
-            MgdStandardRatePage,
-            NormalMode,
-            optionalDataRequest
-          ) mustBe Some(
-            routes.CalculatedMGDStandardRateController
-              .onPageLoad(NormalMode)
-              .url
-          )
-        }
-      }
-
-      "must go from NetTakingsStandardRatePage to LowerRateCalculationCheckController when answer is Yes" in {
-        val answers =
-          emptyUserAnswers
-            .set(NetTakingsLowerRatePage, true)
-            .flatMap(_.set(CalculatedMGDLowerRatePage, true))
-            .success
-            .value
-
-        val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(answers))
-
-        navigator.backPage(NetTakingsStandardRatePage, NormalMode, request) mustBe
-          Some(routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode).url)
-      }
-
-      "must go from NetTakingsStandardRatePage to Mgd LowerRateController when answer is No" in {
-        val answers =
-          emptyUserAnswers
-            .set(NetTakingsLowerRatePage, true)
-            .flatMap(_.set(CalculatedMGDLowerRatePage, false))
-            .success
-            .value
-
-        val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(answers))
-
-        navigator.backPage(
-          NetTakingsStandardRatePage,
-          NormalMode,
-          request
-        ) mustBe Some(routes.MgdLowerRateController.onPageLoad(NormalMode).url)
-      }
-
-      "must go from NetTakingsStandardRatePage to NetTakingsLowerRateController when answer is No" in {
-        val answers =
-          emptyUserAnswers
-            .set(NetTakingsLowerRatePage, false)
-            .success
-            .value
-
-        val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(answers))
-
-        navigator.backPage(
-          NetTakingsStandardRatePage,
-          NormalMode,
-          request
-        ) mustBe Some(routes.NetTakingsLowerRateController.onPageLoad(NormalMode).url)
-      }
-
-      "must go from CalculatedMGDStandardRatePage to NetTakingsStandardController regardless of previous answers" in {
-        val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(emptyUserAnswers))
-
-        val result = navigator.backPage(CalculatedMGDStandardRatePage, NormalMode, request)
-        result mustBe Some(routes.NetTakingsStandardController.onPageLoad(NormalMode).url)
-      }
-
       "NegativeDutyBroughtForwardInputPage" - {
 
         "must go from NegativeDutyBroughtForwardInputPage to NegativeDutyController" in {
@@ -336,13 +234,6 @@ class BackNavigatorSpec extends SpecBase {
 
       "must go from MachinesAvailablePage to CheckYourAnswers" in {
         navigator.backPage(MachinesAvailablePage, CheckMode, optionalDataRequest) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
-      }
-
-      "must go from CalculatedMGDStandardRatePage to NetTakingsStandardController regardless of previous answers" in {
-        val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(emptyUserAnswers))
-
-        val result = navigator.backPage(CalculatedMGDStandardRatePage, CheckMode, request)
-        result mustBe Some(routes.NetTakingsStandardController.onPageLoad(CheckMode).url)
       }
 
       "must go from NegativeDutyBroughtForwardInputPage to CheckYourAnswersController" in {
