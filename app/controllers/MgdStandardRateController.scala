@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.MgdStandardRateFormProvider
 import models.{Mode, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{MgdStandardRatePage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,7 +33,6 @@ class MgdStandardRateController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
@@ -50,7 +49,7 @@ class MgdStandardRateController @Inject() (
       .flatMap(_.get(SelectReturnPage))
       .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
         val preparedForm = request.userAnswers.flatMap(_.get(MgdStandardRatePage)).fold(form)(form.fill)
-        Future.successful(Ok(view(preparedForm, mode, backNavigator.backPage(MgdStandardRatePage, mode, request), selectedReturn)))
+        Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
       }
   }
 
@@ -61,8 +60,7 @@ class MgdStandardRateController @Inject() (
         form
           .bindFromRequest()
           .fold(
-            formWithErrors =>
-              Future.successful(BadRequest(view(formWithErrors, mode, backNavigator.backPage(MgdStandardRatePage, mode, request), selectedReturn))),
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
             value => {
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
               for {
