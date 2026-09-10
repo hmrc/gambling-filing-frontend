@@ -33,7 +33,9 @@
     periodEndDate: java.time.LocalDate
 )(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = titleNoForm(messages("confirmation.title"))) {
+@layout(pageTitle = titleNoForm(messages("confirmation.title")),
+showBackLink = false
+) {
 
     @govukPanel(
         Panel(
@@ -53,8 +55,8 @@
     @paragraph(
         messages(
             "confirmation.submission",
-            DateTimeFormats.formatDateMMM(Some(periodStartDate)),
-            DateTimeFormats.formatDateMMM(Some(periodEndDate)),
+            periodStartDate.format(DateTimeFormats.dateTimeFormat()(messages.lang)),
+            periodEndDate.format(DateTimeFormats.dateTimeFormat()(messages.lang)),
             submissionDateTime
         )
     )
@@ -81,7 +83,7 @@
         message1 = Some(messages("confirmation.whatHappensNext.paymentMethods.p1")),
         linkMessage = messages("confirmation.whatHappensNext.paymentMethods.link"),
         message2 = None,
-        linkUrl = "#",
+        linkUrl = "https://www.gov.uk/pay-machine-games-duty",
         target = "_blank",
         linkRel = "noopener noreferrer",
         linkFullStop = false
