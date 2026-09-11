@@ -62,7 +62,9 @@ class ConfirmationViewSpec extends SpecBase {
         messages("confirmation.helpdesk.link")
 
       val accountLink =
-        doc.select("""a[href="/manage-gambling-tax/"]""")
+        doc.select("""a[href="/manage-gambling-tax/returns/"]""")
+          .last()
+
       accountLink.text mustBe
         messages("confirmation.returnToAccount")
 
