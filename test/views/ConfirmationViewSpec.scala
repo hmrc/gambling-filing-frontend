@@ -62,7 +62,8 @@ class ConfirmationViewSpec extends SpecBase {
         messages("confirmation.helpdesk.link")
 
       val accountLink =
-        doc.select("""a[href="/manage-gambling-tax/returns/"]""")
+        doc
+          .select("""a[href="/manage-gambling-tax/returns/"]""")
           .last()
 
       accountLink.text mustBe
@@ -76,6 +77,7 @@ class ConfirmationViewSpec extends SpecBase {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[ConfirmationView]
     val selectedReturn = SelectedReturn(
+      1,
       LocalDate.of(2025, 1, 1),
       LocalDate.of(2025, 3, 31)
     )

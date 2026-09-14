@@ -68,7 +68,7 @@ class MgdStandardRateViewSpec extends SpecBase {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[MgdStandardRateView]
     val form = new MgdStandardRateFormProvider()()
-    val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+    val selectedReturn: SelectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 

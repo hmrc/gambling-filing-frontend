@@ -17,9 +17,9 @@
 package controllers
 
 import base.SpecBase
-import models.{Regime, SelectedReturn, UserAnswers}
+import models.{Regime, SelectedReturn, SubmissionResult, UserAnswers}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.SelectReturnPage
+import pages.{SelectReturnPage, SubmissionResultPage}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.ConfirmationView
@@ -29,11 +29,17 @@ import java.time.LocalDate
 class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
 
   val selectedReturn: SelectedReturn =
-    SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+    SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+
+  val submissionResult: SubmissionResult =
+    SubmissionResult("4JTF BAXM GJXS TKM", "2025-03-31T10:15:30Z")
 
   def userAnswersWithSelectedReturn: UserAnswers =
     UserAnswers(userAnswersId)
       .set(SelectReturnPage, selectedReturn)
+      .success
+      .value
+      .set(SubmissionResultPage, submissionResult)
       .success
       .value
 
@@ -59,8 +65,8 @@ class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
 
         contentAsString(result) mustEqual
           view(
-            acknowledgementReference = "4JTF BAXM GJXS TKM",
-            submissionDateTime       = "6 June 2015 at 11:10 am",
+            acknowledgementReference = submissionResult.acknowledgementReference,
+            submissionDateTime       = submissionResult.submissionTimestamp,
             periodStartDate          = selectedReturn.periodStart,
             periodEndDate            = selectedReturn.periodEnd
           )(
@@ -70,7 +76,7 @@ class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
+    "must redirect to DeclareAndSubmitController on a GET when no SelectedReturn is found in the session" in {
 
       val application =
         applicationBuilder(
@@ -85,11 +91,11 @@ class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
 
         redirectLocation(result).value mustEqual
-          routes.SelectReturnController.onPageLoad().url
+          routes.DeclareAndSubmitController.onPageLoad().url
       }
     }
 
-    "must redirect to SelectReturnController when UserAnswers exist but SelectedReturn is missing" in {
+    "must redirect to DeclareAndSubmitController when UserAnswers exist but SelectedReturn is missing" in {
 
       val application =
         applicationBuilder(
@@ -104,7 +110,26 @@ class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual SEE_OTHER
 
         redirectLocation(result).value mustEqual
-          routes.SelectReturnController.onPageLoad().url
+          routes.DeclareAndSubmitController.onPageLoad().url
+      }
+    }
+
+    "must redirect to DeclareAndSubmitController when SelectedReturn exists but SubmissionResult is missing" in {
+
+      val application =
+        applicationBuilder(
+          userAnswers = Some(UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value),
+          regime      = Regime.MGD
+        ).build()
+
+      running(application) {
+        val request = FakeRequest(GET, confirmationRoute)
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual
+          routes.DeclareAndSubmitController.onPageLoad().url
       }
     }
   }

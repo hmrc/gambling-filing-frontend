@@ -68,7 +68,7 @@ class NetTakingsLowerViewSpec extends SpecBase {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[NetTakingsLowerView]
     val form = new NetTakingsLowerFormProvider()()
-    val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+    val selectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 

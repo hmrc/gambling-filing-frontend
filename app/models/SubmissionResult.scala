@@ -18,14 +18,11 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.LocalDate
-
-final case class SelectedReturn(
-  consecNo: Int,
-  periodStart: LocalDate,
-  periodEnd: LocalDate
+final case class SubmissionResult(
+  acknowledgementReference: String,
+  submissionTimestamp: String
 )
 
-object SelectedReturn {
-  implicit val format: OFormat[SelectedReturn] = Json.format[SelectedReturn]
+object SubmissionResult {
+  implicit val format: OFormat[SubmissionResult] = Json.format[SubmissionResult]
 }

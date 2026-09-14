@@ -17,7 +17,7 @@
 package services
 
 import connectors.GamblingConnector
-import models.{OpenReturnPeriods, SubmittedReturnSingle, SubmittedReturns}
+import models.{OpenReturnPeriods, SubmissionResult, SubmitReturnRequest, SubmittedReturnSingle, SubmittedReturns}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
@@ -35,4 +35,7 @@ class GamblingService @Inject() (connector: GamblingConnector) {
     hc: HeaderCarrier
   ): Future[OpenReturnPeriods] =
     connector.getOpenReturnPeriods(regime, mgdRegNumber, sortBy, orderBy)
+
+  def submitReturn(mgdRegNumber: String, submitReturnRequest: SubmitReturnRequest)(implicit hc: HeaderCarrier): Future[SubmissionResult] =
+    connector.submitReturn(mgdRegNumber, submitReturnRequest)
 }

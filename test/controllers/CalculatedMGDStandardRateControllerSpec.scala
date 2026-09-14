@@ -42,7 +42,7 @@ class CalculatedMGDStandardRateControllerSpec extends SpecBase with MockitoSugar
   private val netTakings = BigDecimal(1000)
   private val duty = netTakings * BigDecimal(0.2)
   private val ratePercentage: BigDecimal = BigDecimal(0.2) * 100
-  private val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+  private val selectedReturn: SelectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
   private val userAnswersWithNetTakings =
     emptyUserAnswers

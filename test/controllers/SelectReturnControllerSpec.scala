@@ -158,7 +158,7 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
         val captor = org.mockito.ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository).set(captor.capture())
 
-        captor.getValue.get(SelectReturnPage).value mustEqual SelectedReturn(LocalDate.of(2025, 7, 1), LocalDate.of(2025, 9, 30))
+        captor.getValue.get(SelectReturnPage).value mustEqual SelectedReturn(12345, LocalDate.of(2025, 7, 1), LocalDate.of(2025, 9, 30))
       }
     }
 

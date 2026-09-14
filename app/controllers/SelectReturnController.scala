@@ -84,7 +84,7 @@ class SelectReturnController @Inject() (
         .fold(Future.successful(Redirect(routes.SelectReturnController.onPageLoad()))) { (periodStart, periodEnd) =>
           val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
           Future
-            .fromTry(userAnswers.selectPeriod(SelectedReturn(periodStart, periodEnd)))
+            .fromTry(userAnswers.selectPeriod(SelectedReturn(consecNo, periodStart, periodEnd)))
             .flatMap(sessionRepository.set)
             .map(_ => Redirect(routes.IntroductionController.onPageLoad()))
         }

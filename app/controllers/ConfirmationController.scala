@@ -17,8 +17,7 @@
 package controllers
 
 import controllers.actions.*
-import models.UserAnswers
-import pages.SelectReturnPage
+import pages.{SelectReturnPage, SubmissionResultPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.ConfirmationView
@@ -36,29 +35,25 @@ class ConfirmationController @Inject() (
 
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
-      request.userAnswers
-        .flatMap(_.get(SelectReturnPage))
-        .fold(
-          Future.successful(
-            Redirect(
-              controllers.routes.SelectReturnController.onPageLoad()
-            )
-          )
-        ) { selectedReturn =>
-          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-          val acknowledgementReference = "4JTF BAXM GJXS TKM"
-          val submissionDateTime = "6 June 2015 at 11:10 am"
+      val requiredAnswers =
+        for
+          selectedReturn   <- request.userAnswers.flatMap(_.get(SelectReturnPage))
+          submissionResult <- request.userAnswers.flatMap(_.get(SubmissionResultPage))
+        yield (selectedReturn, submissionResult)
 
-          Future.successful(
-            Ok(
-              view(
-                acknowledgementReference = acknowledgementReference,
-                submissionDateTime       = submissionDateTime,
-                periodStartDate          = selectedReturn.periodStart,
-                periodEndDate            = selectedReturn.periodEnd
-              )
+      requiredAnswers.fold(
+        Future.successful(Redirect(controllers.routes.DeclareAndSubmitController.onPageLoad()))
+      )((selectedReturn, submissionResult) =>
+        Future.successful(
+          Ok(
+            view(
+              acknowledgementReference = submissionResult.acknowledgementReference,
+              submissionDateTime       = submissionResult.submissionTimestamp,
+              periodStartDate          = selectedReturn.periodStart,
+              periodEndDate            = selectedReturn.periodEnd
             )
           )
-        }
+        )
+      )
     }
 }

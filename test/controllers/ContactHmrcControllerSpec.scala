@@ -30,7 +30,7 @@ import java.time.LocalDate
 class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
 
   val selectedReturn: SelectedReturn =
-    SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+    SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
   def userAnswersWithSelectedReturn: UserAnswers =
     UserAnswers(userAnswersId)

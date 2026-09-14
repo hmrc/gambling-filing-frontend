@@ -30,7 +30,7 @@ import scala.jdk.CollectionConverters.*
 
 class CheckYourAnswersViewSpec extends SpecBase with SummaryListFluency {
 
-  private val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+  private val selectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
   private def rowFor(doc: Document, keyText: String): Element =
     doc
