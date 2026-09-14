@@ -255,7 +255,7 @@ underDeclaredDutyLimits.question = Does the amount you wish to declare fall with
 underDeclaredDutyLimits.error.required = Select yes if the amount you wish to declare falls within these limits
 
 underDeclaredDutyReasonableCare.title = Nature of under-declared duty error
-underDeclaredDutyReasonableCare.heading = Was the error that led to your under-declared duty caused by a failure to take reasonable care?
+underDeclaredDutyReasonableCare.heading = Did you fail to take reasonable care when you under-declared your duty?
 underDeclaredDutyReasonableCare.caption = File a return for {0} to {1}
 underDeclaredDutyReasonableCare.error.required = Select yes if the error that led to your under-declared duty was caused by a failure to take reasonable care
 
