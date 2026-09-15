@@ -108,16 +108,19 @@ class SubmitReturnRequestSpec extends AnyWordSpec with Matchers with OptionValue
     "equal netMGDPayableOnThisReturn when it is positive" in {
       val result = SubmitReturnRequest.from("regNum", "sessionId", "ENG", userAnswersWithNetMGDPayableOnThisReturn(BigDecimal(50)))
       result.value.netPayable mustBe BigDecimal(50)
+      result.value.carryForward mustBe BigDecimal(0)
     }
 
     "be zero when netMGDPayableOnThisReturn is exactly zero" in {
       val result = SubmitReturnRequest.from("regNum", "sessionId", "ENG", userAnswersWithNetMGDPayableOnThisReturn(BigDecimal(0)))
       result.value.netPayable mustBe BigDecimal(0)
+      result.value.carryForward mustBe BigDecimal(0)
     }
 
     "be zero when netMGDPayableOnThisReturn is negative" in {
       val result = SubmitReturnRequest.from("regNum", "sessionId", "ENG", userAnswersWithNetMGDPayableOnThisReturn(BigDecimal(-127.55)))
       result.value.netPayable mustBe BigDecimal(0)
+      result.value.carryForward mustBe BigDecimal(127.55)
     }
   }
 
@@ -125,16 +128,19 @@ class SubmitReturnRequestSpec extends AnyWordSpec with Matchers with OptionValue
     "be zero when netMGDPayableOnThisReturn is positive" in {
       val result = SubmitReturnRequest.from("regNum", "sessionId", "ENG", userAnswersWithNetMGDPayableOnThisReturn(BigDecimal(50)))
       result.value.carryForward mustBe BigDecimal(0)
+      result.value.netPayable mustBe BigDecimal(50)
     }
 
     "be zero when netMGDPayableOnThisReturn is exactly zero" in {
       val result = SubmitReturnRequest.from("regNum", "sessionId", "ENG", userAnswersWithNetMGDPayableOnThisReturn(BigDecimal(0)))
       result.value.carryForward mustBe BigDecimal(0)
+      result.value.netPayable mustBe BigDecimal(0)
     }
 
     "equal the absolute value of netMGDPayableOnThisReturn when it is negative" in {
       val result = SubmitReturnRequest.from("regNum", "sessionId", "ENG", userAnswersWithNetMGDPayableOnThisReturn(BigDecimal(-127.55)))
       result.value.carryForward mustBe BigDecimal(127.55)
+      result.value.netPayable mustBe BigDecimal(0)
     }
   }
 
