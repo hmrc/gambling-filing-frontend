@@ -55,14 +55,7 @@ object SubmitReturnRequest {
       val dueAtLowerRate = userAnswers.get(MgdLowerRatePage).getOrElse(BigDecimal(0))
       val dueAtStandardRate = userAnswers.get(MgdStandardRatePage).getOrElse(BigDecimal(0))
       val dueAtHigherRate = userAnswers.get(MgdHigherRatePage).getOrElse(BigDecimal(0))
-      val underDeclaredFromPreviousPeriods = userAnswers.get(TotalUnderDeclaredDutyPage).getOrElse(BigDecimal(0))
-      val amountBroughtForward = userAnswers.get(NegativeDutyBroughtForwardInputPage).getOrElse(BigDecimal(0))
-
-      val declaredSubmission = DeclaredSubmission(
-        dueAtLowerRate + dueAtStandardRate + dueAtHigherRate,
-        underDeclaredFromPreviousPeriods,
-        amountBroughtForward
-      )
+      val declaredSubmission = DeclaredSubmission.from(userAnswers)
 
       SubmitReturnRequest(
         mgdRegNumber                     = regNum,

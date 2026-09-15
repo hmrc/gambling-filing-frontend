@@ -51,7 +51,7 @@ class DeclareAndSubmitController @Inject() (
         logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
       case Some(selectedReturn) =>
-        request.userAnswers.flatMap(buildDeclaredSubmission) match {
+        request.userAnswers.map(DeclaredSubmission.from) match {
           case Some(declaredSubmission) =>
             Future.successful(Ok(view(backNavigator.backPage(DeclareAndSubmitPage, NormalMode, request), selectedReturn, declaredSubmission)))
           case _ =>
@@ -89,21 +89,5 @@ class DeclareAndSubmitController @Inject() (
         logger.info(s"Unable to build SubmitReturnRequest for regNum=${request.regNum}")
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
       }
-  }
-
-  private def buildDeclaredSubmission(ua: UserAnswers): Option[DeclaredSubmission] = {
-    val mgdLowerRate = ua.get(MgdLowerRatePage).getOrElse(BigDecimal(0.00))
-    val mgdStandardRate = ua.get(MgdStandardRatePage).getOrElse(BigDecimal(0.00))
-    val mgdHigherRate = ua.get(MgdHigherRatePage).getOrElse(BigDecimal(0.00))
-    val underDeclaredTaxFromPreviousPeriods = ua.get(TotalUnderDeclaredDutyPage).getOrElse(BigDecimal(0.00))
-    val amountBroughtForward = ua.get(NegativeDutyBroughtForwardInputPage).getOrElse(BigDecimal(0.00))
-
-    Some(
-      DeclaredSubmission(
-        mgdLowerRate + mgdStandardRate + mgdHigherRate,
-        underDeclaredTaxFromPreviousPeriods,
-        amountBroughtForward
-      )
-    )
   }
 }
