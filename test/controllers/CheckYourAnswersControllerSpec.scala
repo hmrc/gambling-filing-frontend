@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.{CheckMode, SelectedReturn, UserAnswers}
+import models.{CheckMode, NormalMode, SelectedReturn, UserAnswers}
 import pages.{MachinesAvailablePage, SelectReturnPage}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -30,6 +30,8 @@ import java.time.LocalDate
 class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+
+  val backLink = Some(routes.NegativeDutyController.onPageLoad(NormalMode).url)
 
   def userAnswersWithSelectedReturn: UserAnswers = emptyUserAnswers.set(SelectReturnPage, selectedReturn).success.value
 
@@ -93,7 +95,8 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
           standardRate,
           higherRate,
           underDeclaredDuty,
-          dutyBroughtForward
+          dutyBroughtForward,
+          backLink
         )(request, msgs).toString
       }
     }

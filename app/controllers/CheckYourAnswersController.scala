@@ -18,6 +18,7 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.actions.{AuthorisedAction, DataRequiredAction, DataRetrievalAction, ValidateAction}
+import navigation.BackNavigator
 import pages.SelectReturnPage
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -30,6 +31,7 @@ class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedAction,
   validate: ValidateAction,
+  backNavigator: BackNavigator,
   getData: DataRetrievalAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
@@ -40,6 +42,7 @@ class CheckYourAnswersController @Inject() (
   def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData andThen requireData) { implicit request =>
 
     val answers = request.userAnswers
+    val backLink = backNavigator.checkYourAnswersBackPage(request)
 
     answers.get(SelectReturnPage).fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
       val machines = SummaryListViewModel(rows = MachinesAvailableSummary.rows(answers))
@@ -49,7 +52,7 @@ class CheckYourAnswersController @Inject() (
       val underDeclaredDuty = SummaryListViewModel(rows = UnderDeclaredDutySummary.rows(answers))
       val dutyBroughtForward = SummaryListViewModel(rows = DutyBroughtForwardSummary.rows(answers))
 
-      Ok(view(selectedReturn, machines, lowerRate, standardRate, higherRate, underDeclaredDuty, dutyBroughtForward))
+      Ok(view(selectedReturn, machines, lowerRate, standardRate, higherRate, underDeclaredDuty, dutyBroughtForward, backLink))
     }
   }
 }
