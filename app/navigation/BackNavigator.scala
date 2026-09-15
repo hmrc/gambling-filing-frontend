@@ -18,7 +18,7 @@ package navigation
 
 import controllers.routes
 import models.*
-import models.requests.{DataRequest, OptionalDataRequest}
+import models.requests.OptionalDataRequest
 import pages.*
 import play.api.mvc.{AnyContent, Call}
 
@@ -26,8 +26,6 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class BackNavigator @Inject() () {
-
-  private val HasBeenThroughCyaFlow = "hasBeenThroughCyaFlow"
 
   private val normalBackRoutes: Page => UserAnswers => Call = {
 
@@ -93,25 +91,6 @@ class BackNavigator @Inject() () {
 
     case _ =>
       _ => routes.CheckYourAnswersController.onPageLoad()
-  }
-
-  def checkYourAnswersBackPage(request: DataRequest[AnyContent]): Option[String] = {
-    val userAnswers = request.userAnswers
-    val hasBeenThroughCyaFlow = request.session
-      .get(HasBeenThroughCyaFlow)
-      .contains("true")
-    val route =
-      if (hasBeenThroughCyaFlow) {
-        routes.NegativeDutyBroughtForwardInputController
-          .onPageLoad(NormalMode)
-      } else {
-        userAnswers.get(NegativeDutyPage) match {
-          case Some(true)  => routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode)
-          case Some(false) => routes.NegativeDutyController.onPageLoad(NormalMode)
-          case None        => routes.NegativeDutyController.onPageLoad(NormalMode)
-        }
-      }
-    Some(route.url)
   }
 
   def backPage(page: Page, mode: Mode, request: OptionalDataRequest[AnyContent]): Option[String] = {

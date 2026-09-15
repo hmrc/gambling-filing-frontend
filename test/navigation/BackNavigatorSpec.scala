@@ -19,7 +19,7 @@ package navigation
 import base.SpecBase
 import controllers.routes
 import models.*
-import models.requests.{DataRequest, OptionalDataRequest}
+import models.requests.OptionalDataRequest
 import pages.*
 import play.api.mvc.AnyContent
 import play.api.test.FakeRequest
@@ -243,71 +243,6 @@ class BackNavigatorSpec extends SpecBase {
         result mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
       }
 
-    }
-
-    "checkYourAnswersBackPage" - {
-
-      def request(userAnswers: UserAnswers, session: (String, String)*): DataRequest[AnyContent] =
-        DataRequest(FakeRequest().withSession(session*), "reg123", Regime.MGD, userAnswers)
-
-      "must go to NegativeDutyBroughtForwardInputController when user has been through CYA flow" in {
-        val userAnswers =
-          emptyUserAnswers
-            .set(NegativeDutyPage, false)
-            .success
-            .value
-
-        navigator.checkYourAnswersBackPage(
-          request(userAnswers, "hasBeenThroughCyaFlow" -> "true")
-        ) mustBe Some(
-          routes.NegativeDutyBroughtForwardInputController
-            .onPageLoad(NormalMode)
-            .url
-        )
-      }
-
-      "must go to NegativeDutyBroughtForwardInputController when negative duty is true" in {
-        val userAnswers =
-          emptyUserAnswers
-            .set(NegativeDutyPage, true)
-            .success
-            .value
-
-        navigator.checkYourAnswersBackPage(
-          request(userAnswers)
-        ) mustBe Some(
-          routes.NegativeDutyBroughtForwardInputController
-            .onPageLoad(NormalMode)
-            .url
-        )
-      }
-
-      "must go to NegativeDutyController when negative duty is false" in {
-        val userAnswers =
-          emptyUserAnswers
-            .set(NegativeDutyPage, false)
-            .success
-            .value
-
-        navigator.checkYourAnswersBackPage(
-          request(userAnswers)
-        ) mustBe Some(
-          routes.NegativeDutyController
-            .onPageLoad(NormalMode)
-            .url
-        )
-      }
-
-      "must go to NegativeDutyController when negative duty answer is missing" in {
-
-        navigator.checkYourAnswersBackPage(
-          request(emptyUserAnswers)
-        ) mustBe Some(
-          routes.NegativeDutyController
-            .onPageLoad(NormalMode)
-            .url
-        )
-      }
     }
   }
 }

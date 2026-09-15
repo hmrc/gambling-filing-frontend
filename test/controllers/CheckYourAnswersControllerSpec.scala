@@ -31,8 +31,6 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
   val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
-  val backLink = Some(routes.NegativeDutyController.onPageLoad(NormalMode).url)
-
   def userAnswersWithSelectedReturn: UserAnswers = emptyUserAnswers.set(SelectReturnPage, selectedReturn).success.value
 
   def userAnswersWithMachinesAvailable: UserAnswers =
@@ -57,6 +55,8 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
 
         val result = route(application, request).value
+
+        val backLink = Some(routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode).url)
 
         val view = application.injector.instanceOf[CheckYourAnswersView]
         implicit val msgs: play.api.i18n.Messages = messages(application)
