@@ -17,15 +17,19 @@
 package controllers
 
 import controllers.actions.*
-import models.{DeclaredSubmission, NormalMode, UserAnswers}
+import models.{DeclaredSubmission, NormalMode, SubmitReturnRequest, UserAnswers}
 import navigation.{BackNavigator, Navigator}
 import pages.*
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
+import services.GamblingService
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import views.html.DeclareAndSubmitView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class DeclareAndSubmitController @Inject() (
   override val messagesApi: MessagesApi,
@@ -34,9 +38,12 @@ class DeclareAndSubmitController @Inject() (
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
+  sessionRepository: SessionRepository,
+  gamblingService: GamblingService,
   val controllerComponents: MessagesControllerComponents,
   view: DeclareAndSubmitView
-) extends BaseFilingController {
+)(implicit ec: ExecutionContext)
+    extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
@@ -44,21 +51,7 @@ class DeclareAndSubmitController @Inject() (
         logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
       case Some(selectedReturn) =>
-        request.userAnswers.flatMap { ua =>
-          val mgdLowerRate = ua.get(MgdLowerRatePage).getOrElse(BigDecimal(0.00))
-          val mgdStandardRate = ua.get(MgdStandardRatePage).getOrElse(BigDecimal(0.00))
-          val mgdHigherRate = ua.get(MgdHigherRatePage).getOrElse(BigDecimal(0.00))
-          val underDeclaredTaxFromPreviousPeriods = ua.get(TotalUnderDeclaredDutyPage).getOrElse(BigDecimal(0.00))
-          val amountBroughtForward = ua.get(NegativeDutyBroughtForwardInputPage).getOrElse(BigDecimal(0.00))
-
-          Some(
-            DeclaredSubmission(
-              mgdLowerRate + mgdStandardRate + mgdHigherRate,
-              underDeclaredTaxFromPreviousPeriods,
-              amountBroughtForward
-            )
-          )
-        } match {
+        request.userAnswers.map(DeclaredSubmission.from) match {
           case Some(declaredSubmission) =>
             Future.successful(Ok(view(backNavigator.backPage(DeclareAndSubmitPage, NormalMode, request), selectedReturn, declaredSubmission)))
           case _ =>
@@ -69,14 +62,32 @@ class DeclareAndSubmitController @Inject() (
   }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-      case None =>
-        logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+    val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+    val language = if (messagesApi.preferred(request).lang.code == "cy") "CYM" else "ENG"
+
+    hc.sessionId
+      .map(_.value)
+      .flatMap(SubmitReturnRequest.from(request.regNum, _, language, userAnswers))
+      .map(submitReturnRequest =>
+        gamblingService
+          .submitReturn(request.regNum, submitReturnRequest)
+          .flatMap { submissionResult =>
+            Future
+              .fromTry(
+                userAnswers.set(SubmissionResultPage, submissionResult)
+              )
+              .flatMap(sessionRepository.set)
+              .map(_ => Redirect(navigator.nextPage(DeclareAndSubmitPage, NormalMode, userAnswers)))
+          }
+          .recover { case ex =>
+            logger.error(s"Failed to submit mgd return for regNum=${request.regNum}", ex)
+            Redirect(controllers.routes.SystemErrorController.onPageLoad())
+          }
+      )
+      .getOrElse {
+        logger.info(s"Unable to build SubmitReturnRequest for regNum=${request.regNum}")
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-      case Some(selectedReturn) =>
-        // TODO:  should submit the form to the iForms and once we get a successful response we redirect to /confirmation page
-        val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-        Future.successful(Redirect(navigator.nextPage(DeclareAndSubmitPage, NormalMode, userAnswers)))
-    }
+      }
   }
 }

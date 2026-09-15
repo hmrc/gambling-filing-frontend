@@ -34,7 +34,7 @@ class DeclareAndSubmitViewSpec extends SpecBase {
 
     "must render the page with correct heading, caption and table" in new Setup {
 
-      private val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+      private val selectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
       private val html = view(None, selectedReturn, validResponseDeclaredSubmission)
       private val doc = Jsoup.parse(html.body)
 

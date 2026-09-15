@@ -16,9 +16,11 @@
 
 package connectors
 
-import models.{MgdCertificate, OpenReturnPeriods, SubmittedReturnSingle, SubmittedReturns}
+import models.{MgdCertificate, OpenReturnPeriods, SubmissionResult, SubmitReturnRequest, SubmittedReturnSingle, SubmittedReturns}
 import play.api.Logging
 import play.api.http.Status.OK
+import play.api.libs.json.Json
+import play.api.libs.ws.writeableOf_JsValue
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{HeaderCarrier, HttpReadsInstances, HttpResponse, StringContextOps, UpstreamErrorResponse}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
@@ -73,4 +75,11 @@ class GamblingConnector @Inject() (config: ServicesConfig, http: HttpClientV2)(i
     http
       .get(url"$baseUrl/open-periods/$regime/$regNumber?sortBy=$sortBy&orderBy=$orderBy")
       .execute[OpenReturnPeriods]
+
+  def submitReturn(mgdRegNumber: String, submitReturnRequest: SubmitReturnRequest)(implicit hc: HeaderCarrier): Future[SubmissionResult] = {
+    http
+      .post(url"$baseUrl/submit-return/mgd/$mgdRegNumber")
+      .withBody(Json.toJson(submitReturnRequest))
+      .execute[SubmissionResult]
+  }
 }

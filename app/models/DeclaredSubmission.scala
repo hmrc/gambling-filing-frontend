@@ -16,6 +16,7 @@
 
 package models
 
+import pages.{MgdHigherRatePage, MgdLowerRatePage, MgdStandardRatePage, NegativeDutyBroughtForwardInputPage, TotalUnderDeclaredDutyPage}
 import play.api.libs.json.{Json, OFormat}
 
 case class DeclaredSubmission(
@@ -43,4 +44,17 @@ object DeclaredSubmission {
       dutyPayableBeforeAdjustments + underDeclaredTaxFromPreviousPeriods + amountBroughtForwardAsNegativeValue
     )
   }
+
+  def from(ua: UserAnswers): DeclaredSubmission =
+    val mgdLowerRate = ua.get(MgdLowerRatePage).getOrElse(BigDecimal(0.00))
+    val mgdStandardRate = ua.get(MgdStandardRatePage).getOrElse(BigDecimal(0.00))
+    val mgdHigherRate = ua.get(MgdHigherRatePage).getOrElse(BigDecimal(0.00))
+    val underDeclaredTaxFromPreviousPeriods = ua.get(TotalUnderDeclaredDutyPage).getOrElse(BigDecimal(0.00))
+    val amountBroughtForward = ua.get(NegativeDutyBroughtForwardInputPage).getOrElse(BigDecimal(0.00))
+
+    DeclaredSubmission(
+      mgdLowerRate + mgdStandardRate + mgdHigherRate,
+      underDeclaredTaxFromPreviousPeriods,
+      amountBroughtForward
+    )
 }

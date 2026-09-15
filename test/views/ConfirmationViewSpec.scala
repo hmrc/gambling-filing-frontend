@@ -77,6 +77,7 @@ class ConfirmationViewSpec extends SpecBase {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[ConfirmationView]
     val selectedReturn = SelectedReturn(
+      1,
       LocalDate.of(2025, 1, 1),
       LocalDate.of(2025, 3, 31)
     )

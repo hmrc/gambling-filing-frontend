@@ -92,7 +92,7 @@ class CalculatedMGDStandardRateViewSpec extends SpecBase {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[CalculatedMGDStandardRateView]
     val form = new CalculatedMGDStandardRateFormProvider()()
-    val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+    val selectedReturn: SelectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
     val percentage: BigDecimal = 20
     val netTakings: BigDecimal = BigDecimal(1000)
 

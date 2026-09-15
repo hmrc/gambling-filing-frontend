@@ -31,7 +31,7 @@ class IntroductionViewSpec extends SpecBase {
 
     "must render the heading with the selected return period, intro content and continue button" in new Setup {
 
-      val selectedReturn = SelectedReturn(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31))
+      val selectedReturn = SelectedReturn(1, LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31))
       val html = view(selectedReturn, guidanceUrl, Some("/back"))
       val doc = Jsoup.parse(html.body)
 
@@ -50,7 +50,7 @@ class IntroductionViewSpec extends SpecBase {
 
     "must render the guidance link opening in a new tab" in new Setup {
 
-      val selectedReturn = SelectedReturn(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31))
+      val selectedReturn = SelectedReturn(1, LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31))
       val html = view(selectedReturn, guidanceUrl, None)
       val doc = Jsoup.parse(html.body)
 
@@ -63,7 +63,7 @@ class IntroductionViewSpec extends SpecBase {
 
     "must render the back link" in new Setup {
 
-      val selectedReturn = SelectedReturn(LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31))
+      val selectedReturn = SelectedReturn(1, LocalDate.of(2014, 1, 1), LocalDate.of(2014, 12, 31))
       val html = view(selectedReturn, guidanceUrl, Some("/back"))
       val doc = Jsoup.parse(html.body)
 

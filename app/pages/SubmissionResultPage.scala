@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package models
+package pages
 
-import play.api.libs.json.{Json, OFormat}
+import models.SubmissionResult
+import play.api.libs.json.JsPath
 
-import java.time.LocalDate
+case object SubmissionResultPage extends QuestionPage[SubmissionResult] {
 
-final case class SelectedReturn(
-  consecNo: Int,
-  periodStart: LocalDate,
-  periodEnd: LocalDate
-)
+  override def path: JsPath = JsPath \ toString
 
-object SelectedReturn {
-  implicit val format: OFormat[SelectedReturn] = Json.format[SelectedReturn]
+  override def toString: String = "submissionResult"
 }

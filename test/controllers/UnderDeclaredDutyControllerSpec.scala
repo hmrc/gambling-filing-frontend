@@ -43,7 +43,7 @@ class UnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
 
   val validAnswer: Boolean = true
 
-  val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+  val selectedReturn: SelectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
   def userAnswersWithSelectedReturn: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
 

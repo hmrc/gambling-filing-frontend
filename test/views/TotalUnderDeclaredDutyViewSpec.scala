@@ -86,7 +86,7 @@ class TotalUnderDeclaredDutyViewSpec extends SpecBase {
       new TotalUnderDeclaredDutyFormProvider()(
         maximumAllowed
       )
-    val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+    val selectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
     implicit val messages: Messages =

@@ -68,7 +68,7 @@ class CalculatedMDGLowerRateViewSpec extends SpecBase {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[CalculatedMGDLowerRateView]
     val form = new CalculatedMGDLowerRateFormProvider()()
-    val selectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+    val selectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 

@@ -18,8 +18,10 @@ package controllers
 
 import base.SpecBase
 import models.DeclaredSubmissionTestData.{validResponseDeclaredSubmission, zeroResponseDeclaredSubmission}
-import models.{SelectedReturn, UserAnswers}
+import models.{SelectedReturn, SubmissionResult, SubmitReturnRequest, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.*
 import play.api.inject.bind
@@ -27,15 +29,18 @@ import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
+import services.GamblingService
+import uk.gov.hmrc.http.HeaderCarrier
 import views.html.DeclareAndSubmitView
 
 import java.time.LocalDate
+import scala.concurrent.Future
 
 class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
 
   def onwardRoute = Call("GET", "/foo")
 
-  val selectedReturn: SelectedReturn = SelectedReturn(LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
+  val selectedReturn: SelectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
   lazy val backUrl = Some(routes.CheckYourAnswersController.onPageLoad().url)
 
@@ -97,26 +102,69 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
-    "must redirect to the next page when page is submitted" in {
+    "must submit the return, store the submission result and redirect to the next page when page is submitted" in {
 
       val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+
+      val mockService = mock[GamblingService]
+      when(mockService.submitReturn(any[String], any[SubmitReturnRequest])(any[HeaderCarrier]))
+        .thenReturn(Future.successful(SubmissionResult("4JTF BAXM GJXS TKM", "2025-03-31T10:15:30Z")))
 
       val application =
         applicationBuilder(userAnswers = Some(userAnswersWithData))
           .overrides(
             bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
-            bind[SessionRepository].toInstance(mockSessionRepository)
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[GamblingService].toInstance(mockService)
           )
           .build()
 
       running(application) {
         val request =
-          FakeRequest(POST, declareAndSubmitRoute)
+          FakeRequest(POST, declareAndSubmitRoute).withSession("sessionId" -> "session-id-value")
 
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual onwardRoute.url
+
+        val userAnswersCaptor = org.mockito.ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository).set(userAnswersCaptor.capture())
+        userAnswersCaptor.getValue.get(SubmissionResultPage).value mustEqual
+          SubmissionResult("4JTF BAXM GJXS TKM", "2025-03-31T10:15:30Z")
+
+        val requestCaptor = org.mockito.ArgumentCaptor.forClass(classOf[SubmitReturnRequest])
+        verify(mockService).submitReturn(any[String], requestCaptor.capture())(any[HeaderCarrier])
+        requestCaptor.getValue.sessionId mustEqual "session-id-value"
+      }
+    }
+
+    "must redirect to SystemErrorController when the submission call fails" in {
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      val mockService = mock[GamblingService]
+      when(mockService.submitReturn(any[String], any[SubmitReturnRequest])(any[HeaderCarrier]))
+        .thenReturn(Future.failed(new RuntimeException("upstream error")))
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswersWithData))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[GamblingService].toInstance(mockService)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, declareAndSubmitRoute).withSession("sessionId" -> "session-id-value")
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.SystemErrorController.onPageLoad().url
       }
     }
 

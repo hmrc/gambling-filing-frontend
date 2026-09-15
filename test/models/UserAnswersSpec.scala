@@ -23,8 +23,8 @@ import java.time.LocalDate
 
 class UserAnswersSpec extends SpecBase {
 
-  private val periodA = SelectedReturn(LocalDate.of(2025, 7, 1), LocalDate.of(2025, 9, 30))
-  private val periodB = SelectedReturn(LocalDate.of(2025, 4, 1), LocalDate.of(2025, 6, 30))
+  private val periodA = SelectedReturn(1, LocalDate.of(2025, 7, 1), LocalDate.of(2025, 9, 30))
+  private val periodB = SelectedReturn(1, LocalDate.of(2025, 4, 1), LocalDate.of(2025, 6, 30))
 
   "selectPeriod" - {
 
