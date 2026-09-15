@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.{CheckMode, SelectedReturn, UserAnswers}
+import models.{CheckMode, NormalMode, SelectedReturn, UserAnswers}
 import pages.{MachinesAvailablePage, SelectReturnPage}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
@@ -56,6 +56,8 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         val result = route(application, request).value
 
+        val backLink = Some(routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode).url)
+
         val view = application.injector.instanceOf[CheckYourAnswersView]
         implicit val msgs: play.api.i18n.Messages = messages(application)
         val machines = SummaryListViewModel(
@@ -93,7 +95,8 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
           standardRate,
           higherRate,
           underDeclaredDuty,
-          dutyBroughtForward
+          dutyBroughtForward,
+          backLink
         )(request, msgs).toString
       }
     }

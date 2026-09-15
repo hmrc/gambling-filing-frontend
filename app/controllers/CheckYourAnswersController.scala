@@ -18,7 +18,8 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.actions.{AuthorisedAction, DataRequiredAction, DataRetrievalAction, ValidateAction}
-import pages.SelectReturnPage
+import models.NormalMode
+import pages.{NegativeDutyPage, SelectReturnPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
@@ -40,6 +41,13 @@ class CheckYourAnswersController @Inject() (
   def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData andThen requireData) { implicit request =>
 
     val answers = request.userAnswers
+    val backLink =
+      answers.get(NegativeDutyPage) match {
+        case Some(false) =>
+          Some(routes.NegativeDutyController.onPageLoad(NormalMode).url)
+        case _ =>
+          Some(routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode).url)
+      }
 
     answers.get(SelectReturnPage).fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
       val machines = SummaryListViewModel(rows = MachinesAvailableSummary.rows(answers))
@@ -49,7 +57,7 @@ class CheckYourAnswersController @Inject() (
       val underDeclaredDuty = SummaryListViewModel(rows = UnderDeclaredDutySummary.rows(answers))
       val dutyBroughtForward = SummaryListViewModel(rows = DutyBroughtForwardSummary.rows(answers))
 
-      Ok(view(selectedReturn, machines, lowerRate, standardRate, higherRate, underDeclaredDuty, dutyBroughtForward))
+      Ok(view(selectedReturn, machines, lowerRate, standardRate, higherRate, underDeclaredDuty, dutyBroughtForward, backLink))
     }
   }
 }

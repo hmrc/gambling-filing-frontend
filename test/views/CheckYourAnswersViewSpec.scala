@@ -50,7 +50,7 @@ class CheckYourAnswersViewSpec extends SpecBase with SummaryListFluency {
       val emptyList = SummaryListViewModel(Seq.empty)
 
       val doc =
-        Jsoup.parse(view(selectedReturn, emptyList, emptyList, emptyList, emptyList, emptyList, emptyList)(request, msgs).body)
+        Jsoup.parse(view(selectedReturn, emptyList, emptyList, emptyList, emptyList, emptyList, emptyList, None)(request, msgs).body)
 
       doc.title() must include(msgs("checkYourAnswers.title"))
 
@@ -73,7 +73,7 @@ class CheckYourAnswersViewSpec extends SpecBase with SummaryListFluency {
       val emptyList = SummaryListViewModel(Seq.empty)
 
       val doc =
-        Jsoup.parse(view(selectedReturn, emptyList, emptyList, emptyList, emptyList, emptyList, emptyList)(request, msgs).body)
+        Jsoup.parse(view(selectedReturn, emptyList, emptyList, emptyList, emptyList, emptyList, emptyList, None)(request, msgs).body)
 
       val h2Texts = doc.select("h2").eachText().asScala
 
@@ -150,7 +150,7 @@ class CheckYourAnswersViewSpec extends SpecBase with SummaryListFluency {
       )
 
       val doc = Jsoup.parse(
-        view(selectedReturn, machines, lowerRate, standardRate, higherRate, underDeclaredDuty, dutyBroughtForward)(
+        view(selectedReturn, machines, lowerRate, standardRate, higherRate, underDeclaredDuty, dutyBroughtForward, None)(
           request,
           msgs
         ).body
