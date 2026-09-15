@@ -124,8 +124,8 @@ class SubmittedReturnsControllerSpec extends SpecBase with MockitoSugar {
         status(result) mustEqual OK
 
         content must include("View filed return")
-        content must include("Submission details")
-        content must include("Date submitted")
+        content must include("Filing details")
+        content must include("Date filed")
         content must include("1 Apr 2025")
         content must include("Acknowledgement reference")
         content must include(filedReturn.ackRef)
