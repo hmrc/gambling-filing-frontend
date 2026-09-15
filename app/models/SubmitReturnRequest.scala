@@ -74,8 +74,8 @@ object SubmitReturnRequest {
         dueBeforeAdjustments             = declaredSubmission.dutyPayableBeforeAdjustments,
         underDeclaredFromPreviousPeriods = declaredSubmission.underDeclaredTaxFromPreviousPeriods,
         broughtForward                   = declaredSubmission.amountBroughtForward,
-        // netMGDPayableOnThisReturn is one signed figure: negative means a credit to carry forward, positive means duty owed.
-        // The backend wants these as two separate non-negative fields, so exactly one of the two is ever non-zero.
+        //when netMGDPayableOnThisReturn is positive, this means tax is due and we should submit it as such and ensure carry forward is set to 0.
+        //when netMGDPayableOnThisReturn is negative, this means not tax is due and we should submit this value as carry forward and ensure net payable is set to 0.
         carryForward                     = declaredSubmission.netMGDPayableOnThisReturn.min(BigDecimal(0)).abs,
         netPayable                       = declaredSubmission.netMGDPayableOnThisReturn.max(BigDecimal(0))
       )
