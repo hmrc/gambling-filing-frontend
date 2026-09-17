@@ -35,12 +35,15 @@
             @govukErrorSummary(ErrorSummaryViewModel(form))
         }
 
+        <span class="govuk-caption-l">
+        @messages("changeEmailAddress.caption")
+        </span>
+
         @govukInput(
             InputViewModel(
                 field = form("value"),
                 label = LabelViewModel(messages("changeEmailAddress.heading")).asPageHeading()
             )
-            .withWidth(Full)
         )
 
         @govukButton(
