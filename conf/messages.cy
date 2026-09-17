@@ -201,6 +201,7 @@ selectReturn.table.returnPeriod = Return period
 selectReturn.table.returnPeriod.dates = {0} to {1}
 selectReturn.table.dueDate = Date due
 selectReturn.table.status = Status
+selectReturn.status.0 = Closed
 selectReturn.status.1 = Open
 selectReturn.status.2 = Overdue
 selectReturn.empty.title = No returns to file

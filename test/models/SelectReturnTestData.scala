@@ -32,6 +32,12 @@ object SelectReturnTestData {
         period   = "01/04/2025 - 30/06/2025",
         dueDate  = LocalDate.of(2025, 7, 31),
         status   = 2
+      ),
+      OpenPeriod(
+        consecNo = 32345,
+        period   = "01/01/2025 - 31/03/2025",
+        dueDate  = LocalDate.of(2025, 4, 30),
+        status   = 0
       )
     )
   )
