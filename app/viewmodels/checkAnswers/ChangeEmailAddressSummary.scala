@@ -22,22 +22,21 @@ import pages.ChangeEmailAddressPage
 import play.api.i18n.Messages
 import play.twirl.api.HtmlFormat
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
-import viewmodels.govuk.summarylist._
-import viewmodels.implicits._
+import viewmodels.govuk.summarylist.*
+import viewmodels.implicits.*
 
-object ChangeEmailAddressSummary  {
+object ChangeEmailAddressSummary {
 
   def row(answers: UserAnswers)(implicit messages: Messages): Option[SummaryListRow] =
-    answers.get(ChangeEmailAddressPage).map {
-      answer =>
+    answers.get(ChangeEmailAddressPage).map { answer =>
 
-        SummaryListRowViewModel(
-          key     = "changeEmailAddress.checkYourAnswersLabel",
-          value   = ValueViewModel(HtmlFormat.escape(answer).toString),
-          actions = Seq(
-            ActionItemViewModel("site.change", routes.ChangeEmailAddressController.onPageLoad(CheckMode).url)
-              .withVisuallyHiddenText(messages("changeEmailAddress.change.hidden"))
-          )
+      SummaryListRowViewModel(
+        key   = "changeEmailAddress.checkYourAnswersLabel",
+        value = ValueViewModel(HtmlFormat.escape(answer).toString),
+        actions = Seq(
+          ActionItemViewModel("site.change", routes.ChangeEmailAddressController.onPageLoad().url)
+            .withVisuallyHiddenText(messages("changeEmailAddress.change.hidden"))
         )
+      )
     }
 }

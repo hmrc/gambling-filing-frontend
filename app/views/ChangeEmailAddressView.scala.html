@@ -29,7 +29,7 @@
 
 @layout(pageTitle = title(form, messages("changeEmailAddress.title"))) {
 
-    @formHelper(action = routes.ChangeEmailAddressController.onSubmit(mode)) {
+    @formHelper(action = routes.ChangeEmailAddressController.onSubmit()) {
 
         @if(form.errors.nonEmpty) {
             @govukErrorSummary(ErrorSummaryViewModel(form))

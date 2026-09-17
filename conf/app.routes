@@ -138,6 +138,6 @@ POST       /declare-submit                              controllers.DeclareAndSu
 
 GET        /confirmation                            controllers.ConfirmationController.onPageLoad()
 
-GET         /change-business-details/business-contact-details/change-email-address     controllers.ChangeEmailAddressController.onPageLoad(mode = NormalMode)
-POST        /change-business-details/business-contact-details/change-email-address     controllers.ChangeEmailAddressController.onSubmit(mode = NormalMode)
+GET         /change-business-details/business-contact-details/change-email-address     controllers.ChangeEmailAddressController.onPageLoad(mode:Mode = NormalMode)
+POST        /change-business-details/business-contact-details/change-email-address     controllers.ChangeEmailAddressController.onSubmit(mode:Mode = NormalMode)
 
