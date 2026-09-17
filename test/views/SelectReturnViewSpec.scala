@@ -59,6 +59,14 @@ class SelectReturnViewSpec extends SpecBase {
       overdueTag.attr("class") mustEqual "govuk-tag govuk-tag--red"
       overdueTag.text() mustEqual "Overdue"
 
+      pageText must include("1 Jan 2025 to 31 Mar 2025")
+      pageText must include("30 Apr 2025")
+      pageText must include("Closed")
+
+      val closedTag = doc.select("[data-testid=open-returns-status-2] strong")
+      closedTag.attr("class") mustEqual "govuk-tag"
+      closedTag.text() mustEqual "Closed"
+
       val links = doc.select(".govuk-table__cell a.govuk-link")
       links.size() mustBe validResponseOpenReturns.openPeriods.size
 
