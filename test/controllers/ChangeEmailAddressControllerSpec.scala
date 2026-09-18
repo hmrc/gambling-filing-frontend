@@ -11,7 +11,7 @@ import pages.ChangeEmailAddressPage
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.ChangeEmailAddressView
 
@@ -24,7 +24,7 @@ class ChangeEmailAddressControllerSpec extends SpecBase with MockitoSugar {
   val formProvider = new ChangeEmailAddressFormProvider()
   val form = formProvider()
 
-  lazy val changeEmailAddressRoute = routes.ChangeEmailAddressController.onPageLoad(NormalMode).url
+  lazy val changeEmailAddressRoute = routes.ChangeEmailAddressController.onPageLoad().url
 
   "ChangeEmailAddress Controller" - {
 
@@ -79,7 +79,7 @@ class ChangeEmailAddressControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request =
           FakeRequest(POST, changeEmailAddressRoute)
-            .withFormUrlEncodedBody(("value", "answer"))
+            .withFormUrlEncodedBody(("value", "email@example.com"))
 
         val result = route(application, request).value
 
