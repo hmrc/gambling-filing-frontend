@@ -18,7 +18,7 @@ package viewmodels.checkAnswers
 
 import controllers.routes
 import models.{CheckMode, UserAnswers}
-import pages.{CalculatedMGDHigherRatePage, MgdHigherRatePage, NetTakingsHigherPage, NetTakingsHigherRatePage}
+import pages.{MgdHigherRatePage, NetTakingsHigherPage, NetTakingsHigherRatePage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 
@@ -56,41 +56,23 @@ object HigherRateSummary {
         )
       ).filter(_ => screenerYes)
 
-    val calculatedMGDAnswer = answers.get(CalculatedMGDHigherRatePage)
-
-    val calculationCorrect =
-      netTakings.flatMap(_ =>
-        Option(
-          CheckYourAnswersHelpers.yesNoOrActionLinkRow(
-            keyMsg        = "checkYourAnswers.mgd.question",
-            answer        = calculatedMGDAnswer,
-            showValueLink = calculatedMGDAnswer.isEmpty && !netTakingsIsMissing,
-            linkTextMsg   = "checkYourAnswers.setValue",
-            url           = routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode).url,
-            hiddenMsg     = "checkYourAnswers.mgd.question"
-          )
-        ).filter(_ => calculatedMGDAnswer.isDefined || !netTakingsIsMissing)
-      )
-
     val correctedDutyAmount = answers.get(MgdHigherRatePage)
     val correctedDutyIsMissing = correctedDutyAmount.forall(_ == BigDecimal(0))
 
     val dutyDue =
-      calculatedMGDAnswer.flatMap {
-        case true => correctedDutyAmount.map(amount => CheckYourAnswersHelpers.currencyRow("checkYourAnswers.totalDueHigherRate", amount))
-        case false =>
-          Some(
-            CheckYourAnswersHelpers.currencyOrActionLinkRow(
-              keyMsg        = "checkYourAnswers.totalDueHigherRate",
-              amount        = correctedDutyAmount.getOrElse(BigDecimal(0)),
-              showValueLink = correctedDutyIsMissing,
-              linkTextMsg   = "checkYourAnswers.enterMGD",
-              url           = routes.MgdHigherRateController.onPageLoad(CheckMode).url,
-              hiddenMsg     = "checkYourAnswers.totalDueHigherRate"
-            )
+      netTakings.flatMap(_ =>
+        Option(
+          CheckYourAnswersHelpers.currencyOrActionLinkRow(
+            keyMsg        = "checkYourAnswers.totalDueHigherRate",
+            amount        = correctedDutyAmount.getOrElse(BigDecimal(0)),
+            showValueLink = correctedDutyIsMissing,
+            linkTextMsg   = "checkYourAnswers.enterMGD",
+            url           = routes.MgdHigherRateController.onPageLoad(CheckMode).url,
+            hiddenMsg     = "checkYourAnswers.totalDueHigherRate"
           )
-      }
+        ).filter(_ => !netTakingsIsMissing)
+      )
 
-    Seq(netTakingsLiable, netTakings, calculationCorrect, dutyDue).flatten
+    Seq(netTakingsLiable, netTakings, dutyDue).flatten
   }
 }

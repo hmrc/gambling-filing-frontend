@@ -32,7 +32,6 @@ case object NetTakingsLowerRatePage extends QuestionPage[Boolean] {
       case Some(false) =>
         userAnswers
           .remove(NetTakingsLowerPage)
-          .flatMap(_.remove(CalculatedMGDLowerRatePage))
           .flatMap(_.remove(MgdLowerRatePage))
       case _ => super.cleanup(value, userAnswers)
     }
