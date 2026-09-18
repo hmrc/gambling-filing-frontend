@@ -27,9 +27,6 @@ class NetTakingsLowerRatePageSpec extends SpecBase {
     .set(NetTakingsLowerPage, BigDecimal(100))
     .success
     .value
-    .set(CalculatedMGDLowerRatePage, true)
-    .success
-    .value
     .set(MgdLowerRatePage, BigDecimal(5))
     .success
     .value
@@ -40,7 +37,6 @@ class NetTakingsLowerRatePageSpec extends SpecBase {
       val result = answersWithSubQuestions.set(NetTakingsLowerRatePage, false).success.value
 
       result.get(NetTakingsLowerPage) mustBe None
-      result.get(CalculatedMGDLowerRatePage) mustBe None
       result.get(MgdLowerRatePage) mustBe None
     }
 
@@ -48,7 +44,6 @@ class NetTakingsLowerRatePageSpec extends SpecBase {
       val result = answersWithSubQuestions.set(NetTakingsLowerRatePage, true).success.value
 
       result.get(NetTakingsLowerPage) mustBe Some(BigDecimal(100))
-      result.get(CalculatedMGDLowerRatePage) mustBe Some(true)
       result.get(MgdLowerRatePage) mustBe Some(BigDecimal(5))
     }
   }

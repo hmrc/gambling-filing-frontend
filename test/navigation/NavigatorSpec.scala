@@ -72,39 +72,11 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
       }
 
-      "must go from NetTakingsLowerPage to CalculatedMGDLowerRatePage" in {
+      "must go from NetTakingsLowerPage to MgdLowerRatePage" in {
         navigator.nextPage(
           NetTakingsLowerPage,
           NormalMode,
           emptyUserAnswers
-        ) mustBe routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode)
-      }
-
-      "must go from CalculatedMGDLowerRatePage to NetTakingsStandardRatePage when answer is Yes" in {
-        val answers =
-          emptyUserAnswers
-            .set(CalculatedMGDLowerRatePage, true)
-            .success
-            .value
-
-        navigator.nextPage(
-          CalculatedMGDLowerRatePage,
-          NormalMode,
-          answers
-        ) mustBe routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
-      }
-
-      "must go from CalculatedMGDLowerRatePage to Mgd LowerRateRatePage when answer is No" in {
-        val answers =
-          emptyUserAnswers
-            .set(CalculatedMGDLowerRatePage, false)
-            .success
-            .value
-
-        navigator.nextPage(
-          CalculatedMGDLowerRatePage,
-          NormalMode,
-          answers
         ) mustBe routes.MgdLowerRateController.onPageLoad(NormalMode)
       }
 
@@ -144,48 +116,12 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
       }
 
-      "must go from NetTakingsStandardPage to CalculatedMGDStandardRatePage" in {
+      "must go from NetTakingsStandardPage to MgdStandardRatePage" in {
         navigator.nextPage(
           NetTakingsStandardPage,
           NormalMode,
           emptyUserAnswers
-        ) mustBe routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
-      }
-
-      "must go from CalculatedMGDStandardRatePage to NetTakingsHigherRatePage when answer is Yes" in {
-        val answers =
-          emptyUserAnswers
-            .set(CalculatedMGDStandardRatePage, true)
-            .success
-            .value
-
-        navigator.nextPage(
-          CalculatedMGDStandardRatePage,
-          NormalMode,
-          answers
-        ) mustBe routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
-      }
-
-      "must go from CalculatedMGDStandardRatePage to MgdStandardRatePage when answer is No" in {
-        val answers =
-          emptyUserAnswers
-            .set(CalculatedMGDStandardRatePage, false)
-            .success
-            .value
-
-        navigator.nextPage(
-          CalculatedMGDStandardRatePage,
-          NormalMode,
-          answers
         ) mustBe routes.MgdStandardRateController.onPageLoad(NormalMode)
-      }
-
-      "must go from CalculatedMGDStandardRatePage to Index when no answer exists" in {
-        navigator.nextPage(
-          CalculatedMGDStandardRatePage,
-          NormalMode,
-          emptyUserAnswers
-        ) mustBe routes.IndexController.onPageLoad()
       }
 
       "must go from NetTakingsHigherRatePage to NetTakingsHigherPage when answer is Yes" in {
@@ -244,40 +180,12 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.NegativeDutyController.onPageLoad(NormalMode)
       }
 
-      "must go from CalculatedMGDHigherRatePage to UnderDeclaredDutyController when answer is Yes" in {
-        val answers =
-          emptyUserAnswers
-            .set(CalculatedMGDHigherRatePage, true)
-            .success
-            .value
-
-        navigator.nextPage(
-          CalculatedMGDHigherRatePage,
-          NormalMode,
-          answers
-        ) mustBe routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
-      }
-
-      "must go from CalculatedMGDHigherRatePage to MgdHigherRatePage when answer is No" in {
-        val answers =
-          emptyUserAnswers
-            .set(CalculatedMGDHigherRatePage, false)
-            .success
-            .value
-
-        navigator.nextPage(
-          CalculatedMGDHigherRatePage,
-          NormalMode,
-          answers
-        ) mustBe routes.MgdHigherRateController.onPageLoad(NormalMode)
-      }
-
-      "must go from NetTakingsHigherPage to CalculatedMGDHigherRatePage" in {
+      "must go from NetTakingsHigherPage to MgdHigherRatePage" in {
         navigator.nextPage(
           NetTakingsHigherPage,
           NormalMode,
           emptyUserAnswers
-        ) mustBe routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
+        ) mustBe routes.MgdHigherRateController.onPageLoad(NormalMode)
       }
 
       "must go from UnderDeclaredDutyReasonableCarePage to ContactHmrcPage when answer is Yes" in {
@@ -470,39 +378,11 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
-      "must go from NetTakingsLowerPage to CalculatedMGDLowerRateController" in {
+      "must go from NetTakingsLowerPage to MgdLowerRatePage" in {
         navigator.nextPage(
           NetTakingsLowerPage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.CalculatedMGDLowerRateController.onPageLoad(CheckMode)
-      }
-
-      "must go from CalculatedMGDLowerRatePage to NetTakingsStandardRatePage when answer is Yes" in {
-        val answers =
-          emptyUserAnswers
-            .set(CalculatedMGDLowerRatePage, true)
-            .success
-            .value
-
-        navigator.nextPage(
-          CalculatedMGDLowerRatePage,
-          CheckMode,
-          answers
-        ) mustBe routes.CheckYourAnswersController.onPageLoad()
-      }
-
-      "must go from CalculatedMGDLowerRatePage to Mgd LowerRateRatePage when answer is No" in {
-        val answers =
-          emptyUserAnswers
-            .set(CalculatedMGDLowerRatePage, false)
-            .success
-            .value
-
-        navigator.nextPage(
-          CalculatedMGDLowerRatePage,
-          CheckMode,
-          answers
         ) mustBe routes.MgdLowerRateController.onPageLoad(CheckMode)
       }
 
@@ -542,39 +422,11 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
-      "must go from NetTakingsStandardPage to CalculatedMGDStandardRate Controller" in {
+      "must go from NetTakingsStandardPage to MgdStandardRatePage" in {
         navigator.nextPage(
           NetTakingsStandardPage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
-      }
-
-      "must go from CalculatedMGDStandardRatePage to CheckYourAnswersPage when answer is Yes" in {
-        val answers =
-          emptyUserAnswers
-            .set(CalculatedMGDStandardRatePage, true)
-            .success
-            .value
-
-        navigator.nextPage(
-          CalculatedMGDStandardRatePage,
-          CheckMode,
-          answers
-        ) mustBe routes.CheckYourAnswersController.onPageLoad()
-      }
-
-      "must go from CalculatedMGDStandardRatePage to MgdStandardRatePage when answer is No" in {
-        val answers =
-          emptyUserAnswers
-            .set(CalculatedMGDStandardRatePage, false)
-            .success
-            .value
-
-        navigator.nextPage(
-          CalculatedMGDStandardRatePage,
-          CheckMode,
-          answers
         ) mustBe routes.MgdStandardRateController.onPageLoad(CheckMode)
       }
 
@@ -614,40 +466,12 @@ class NavigatorSpec extends SpecBase {
         ) mustBe routes.CheckYourAnswersController.onPageLoad()
       }
 
-      "must go from CalculatedMGDHigherRatePage to CheckYourAnswersController when answer is Yes" in {
-        val answers =
-          emptyUserAnswers
-            .set(CalculatedMGDHigherRatePage, true)
-            .success
-            .value
-
-        navigator.nextPage(
-          CalculatedMGDHigherRatePage,
-          CheckMode,
-          answers
-        ) mustBe routes.CheckYourAnswersController.onPageLoad()
-      }
-
-      "must go from CalculatedMGDHigherRatePage to MgdHigherRatePage when answer is No" in {
-        val answers =
-          emptyUserAnswers
-            .set(CalculatedMGDHigherRatePage, false)
-            .success
-            .value
-
-        navigator.nextPage(
-          CalculatedMGDHigherRatePage,
-          CheckMode,
-          answers
-        ) mustBe routes.MgdHigherRateController.onPageLoad(CheckMode)
-      }
-
-      "must go from NetTakingsHigherPage to CalculatedMGDHigherRateController" in {
+      "must go from NetTakingsHigherPage to MgdHigherRatePage" in {
         navigator.nextPage(
           NetTakingsHigherPage,
           CheckMode,
           emptyUserAnswers
-        ) mustBe routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
+        ) mustBe routes.MgdHigherRateController.onPageLoad(CheckMode)
       }
 
       "must go from MgdHigherRatePage to CheckYourAnswersController" in {

@@ -45,20 +45,7 @@ class Navigator @Inject() () {
         }
 
     case NetTakingsLowerPage =>
-      _ => routes.CalculatedMGDLowerRateController.onPageLoad(NormalMode)
-
-    case CalculatedMGDLowerRatePage =>
-      userAnswers =>
-        userAnswers.get(CalculatedMGDLowerRatePage) match {
-          case Some(true) =>
-            routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
-
-          case Some(false) =>
-            routes.MgdLowerRateController.onPageLoad(NormalMode)
-
-          case None =>
-            routes.IndexController.onPageLoad()
-        }
+      _ => routes.MgdLowerRateController.onPageLoad(NormalMode)
 
     case MgdLowerRatePage =>
       _ => routes.NetTakingsStandardRateController.onPageLoad(NormalMode)
@@ -77,17 +64,7 @@ class Navigator @Inject() () {
         }
 
     case NetTakingsStandardPage =>
-      _ => routes.CalculatedMGDStandardRateController.onPageLoad(NormalMode)
-
-    case CalculatedMGDStandardRatePage =>
-      userAnswers =>
-        userAnswers
-          .get(CalculatedMGDStandardRatePage)
-          .map {
-            case true => routes.NetTakingsHigherRateController.onPageLoad(NormalMode)
-            case _    => routes.MgdStandardRateController.onPageLoad(NormalMode)
-          }
-          .getOrElse(routes.IndexController.onPageLoad())
+      _ => routes.MgdStandardRateController.onPageLoad(NormalMode)
 
     case MgdStandardRatePage =>
       _.get(MgdStandardRatePage)
@@ -103,21 +80,13 @@ class Navigator @Inject() () {
         }
 
     case NetTakingsHigherPage =>
-      _ => routes.CalculatedMGDHigherRateController.onPageLoad(NormalMode)
+      _ => routes.MgdHigherRateController.onPageLoad(NormalMode)
 
     case UnderDeclaredDutyPage =>
       userAnswers =>
         userAnswers.get(UnderDeclaredDutyPage) match {
           case Some(true)  => routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode)
           case Some(false) => routes.NegativeDutyController.onPageLoad(NormalMode)
-          case None        => routes.IndexController.onPageLoad()
-        }
-
-    case CalculatedMGDHigherRatePage =>
-      userAnswers =>
-        userAnswers.get(CalculatedMGDHigherRatePage) match {
-          case Some(true)  => routes.UnderDeclaredDutyController.onPageLoad(NormalMode)
-          case Some(false) => routes.MgdHigherRateController.onPageLoad(NormalMode)
           case None        => routes.IndexController.onPageLoad()
         }
 
@@ -187,15 +156,7 @@ class Navigator @Inject() () {
 
     // FAR-NET-LOW
     case NetTakingsLowerPage =>
-      _ => routes.CalculatedMGDLowerRateController.onPageLoad(CheckMode)
-
-    // FAR-LOW-CHK
-    case CalculatedMGDLowerRatePage =>
-      userAnswers =>
-        userAnswers.get(CalculatedMGDLowerRatePage) match {
-          case Some(true) => routes.CheckYourAnswersController.onPageLoad()
-          case _          => routes.MgdLowerRateController.onPageLoad(CheckMode)
-        }
+      _ => routes.MgdLowerRateController.onPageLoad(CheckMode)
 
     // FAR-DUR-LOW
     case MgdLowerRatePage =>
@@ -211,15 +172,7 @@ class Navigator @Inject() () {
 
     // FAR-NET-STA
     case NetTakingsStandardPage =>
-      _ => routes.CalculatedMGDStandardRateController.onPageLoad(CheckMode)
-
-    // FAR-STA-CHK
-    case CalculatedMGDStandardRatePage =>
-      userAnswers =>
-        userAnswers.get(CalculatedMGDStandardRatePage) match {
-          case Some(true) => routes.CheckYourAnswersController.onPageLoad()
-          case _          => routes.MgdStandardRateController.onPageLoad(CheckMode)
-        }
+      _ => routes.MgdStandardRateController.onPageLoad(CheckMode)
 
     // FAR-DUR-STA
     case MgdStandardRatePage =>
@@ -235,15 +188,7 @@ class Navigator @Inject() () {
 
     // FAR-NET-HIG
     case NetTakingsHigherPage =>
-      _ => routes.CalculatedMGDHigherRateController.onPageLoad(CheckMode)
-
-    // FAR-HIG-CHK
-    case CalculatedMGDHigherRatePage =>
-      userAnswers =>
-        userAnswers.get(CalculatedMGDHigherRatePage) match {
-          case Some(true) => routes.CheckYourAnswersController.onPageLoad()
-          case _          => routes.MgdHigherRateController.onPageLoad(CheckMode)
-        }
+      _ => routes.MgdHigherRateController.onPageLoad(CheckMode)
 
     // FAR-DUE-HIG
     case MgdHigherRatePage =>

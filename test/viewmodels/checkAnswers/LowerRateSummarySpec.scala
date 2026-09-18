@@ -19,7 +19,7 @@ package viewmodels.checkAnswers
 import base.SpecBase
 import controllers.routes
 import models.CheckMode
-import pages.{CalculatedMGDLowerRatePage, MgdLowerRatePage, NetTakingsLowerPage, NetTakingsLowerRatePage}
+import pages.{MgdLowerRatePage, NetTakingsLowerPage, NetTakingsLowerRatePage}
 import play.api.i18n.Messages
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 
@@ -27,7 +27,6 @@ class LowerRateSummarySpec extends SpecBase {
 
   private def screenerUrl = routes.NetTakingsLowerRateController.onPageLoad(CheckMode).url
   private def netTakingsUrl = routes.NetTakingsLowerController.onPageLoad(CheckMode).url
-  private def calculatedMGDUrl = routes.CalculatedMGDLowerRateController.onPageLoad(CheckMode).url
   private def mgdLowerUrl = routes.MgdLowerRateController.onPageLoad(CheckMode).url
 
   private def keys(rows: Seq[uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow]): Seq[String] =
@@ -42,9 +41,6 @@ class LowerRateSummarySpec extends SpecBase {
         .set(NetTakingsLowerPage, BigDecimal(500))
         .success
         .value
-        .set(CalculatedMGDLowerRatePage, true)
-        .success
-        .value
 
       val rows = LowerRateSummary.rows(answers)
       val screenerRow = rows.find(_.key.content == Text(msgs("netTakingsLowerRate.question"))).value
@@ -53,7 +49,7 @@ class LowerRateSummarySpec extends SpecBase {
       screenerRow.actions mustBe None
 
       keys(rows) mustNot contain(msgs("submittedReturn.netTakingsLowerRate"))
-      keys(rows) mustNot contain(msgs("checkYourAnswers.mgd.question"))
+      keys(rows) mustNot contain(msgs("checkYourAnswers.totalDueLowerRate"))
     }
 
     "must show the screener row with the 'No' value and hide the net takings and calculation rows when the screener is No" in {
@@ -66,9 +62,6 @@ class LowerRateSummarySpec extends SpecBase {
         .set(NetTakingsLowerPage, BigDecimal(500))
         .success
         .value
-        .set(CalculatedMGDLowerRatePage, true)
-        .success
-        .value
 
       val rows = LowerRateSummary.rows(answers)
       val screenerRow = rows.find(_.key.content == Text(msgs("netTakingsLowerRate.question"))).value
@@ -78,7 +71,7 @@ class LowerRateSummarySpec extends SpecBase {
       screenerRow.actions.value.items.head.href mustBe screenerUrl
 
       keys(rows) mustNot contain(msgs("submittedReturn.netTakingsLowerRate"))
-      keys(rows) mustNot contain(msgs("checkYourAnswers.mgd.question"))
+      keys(rows) mustNot contain(msgs("checkYourAnswers.totalDueLowerRate"))
     }
 
     "when the screener is Yes and net takings is unanswered and calculation is unanswered" - {
@@ -98,42 +91,12 @@ class LowerRateSummarySpec extends SpecBase {
         )
         netTakingsRow.actions mustBe None
 
-        rows.exists(_.key.content == Text(msgs("checkYourAnswers.mgd.question"))) mustBe false
+        rows.exists(_.key.content == Text(msgs("checkYourAnswers.totalDueLowerRate"))) mustBe false
       }
     }
 
-    "when the screener is Yes, net takings is 0 and calculation is answered" - {
-      "must show an 'Enter net takings' link and a calculation row" in {
-        implicit val msgs: Messages = messages(applicationBuilder().build())
-
-        val answers = emptyUserAnswers
-          .set(NetTakingsLowerRatePage, true)
-          .success
-          .value
-          .set(NetTakingsLowerPage, BigDecimal(0))
-          .success
-          .value
-          .set(CalculatedMGDLowerRatePage, true)
-          .success
-          .value
-
-        val rows = LowerRateSummary.rows(answers)
-        val netTakingsRow = rows.find(_.key.content == Text(msgs("submittedReturn.netTakingsLowerRate"))).value
-        val calculationRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.mgd.question"))).value
-
-        netTakingsRow.value.content mustBe HtmlContent(
-          s"""<a class="govuk-link" href="$netTakingsUrl">${msgs("checkYourAnswers.enterNetTakings")}</a>"""
-        )
-        netTakingsRow.actions mustBe None
-
-        calculationRow.value.content mustBe Text(msgs("site.yes"))
-        calculationRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
-        calculationRow.actions.value.items.head.href mustBe calculatedMGDUrl
-      }
-    }
-
-    "when the screener is Yes, net takings is non-zero and calculation is unanswered" - {
-      "must show a net takings row and a 'Set value' link" in {
+    "when the screener is Yes, net takings is answered and MGD is unanswered" - {
+      "must show the net takings value and an 'Enter MGD' link" in {
         implicit val msgs: Messages = messages(applicationBuilder().build())
 
         val answers = emptyUserAnswers
@@ -145,48 +108,25 @@ class LowerRateSummarySpec extends SpecBase {
           .value
 
         val rows = LowerRateSummary.rows(answers)
-        val netTakingsRow = rows.find(_.key.content == Text(msgs("submittedReturn.netTakingsLowerRate"))).value
-        val calculationRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.mgd.question"))).value
+
+        val netTakingsRow =
+          rows.find(_.key.content == Text(msgs("submittedReturn.netTakingsLowerRate"))).value
+
+        val dutyDueRow =
+          rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueLowerRate"))).value
 
         netTakingsRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
+        netTakingsRow.actions.value.items.head.href mustBe netTakingsUrl
 
-        calculationRow.value.content mustBe HtmlContent(
-          s"""<a class="govuk-link" href="$calculatedMGDUrl">${msgs("checkYourAnswers.setValue")}</a>"""
+        dutyDueRow.value.content mustBe HtmlContent(
+          s"""<a class="govuk-link" href="$mgdLowerUrl">${msgs("checkYourAnswers.enterMGD")}</a>"""
         )
-        calculationRow.actions mustBe None
-      }
-    }
-
-    "when calculation is No and the corrected duty amount has not been submitted" - {
-      "must show the calculation row as a 'No', and the duty due row with an 'Enter MGD' link" in {
-        implicit val msgs: Messages = messages(applicationBuilder().build())
-
-        val answers = emptyUserAnswers
-          .set(NetTakingsLowerRatePage, true)
-          .success
-          .value
-          .set(NetTakingsLowerPage, BigDecimal(123.45))
-          .success
-          .value
-          .set(CalculatedMGDLowerRatePage, false)
-          .success
-          .value
-
-        val rows = LowerRateSummary.rows(answers)
-        val calculationRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.mgd.question"))).value
-        val dutyDueRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueLowerRate"))).value
-
-        calculationRow.value.content mustBe Text(msgs("site.no"))
-        calculationRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
-        calculationRow.actions.value.items.head.href mustBe calculatedMGDUrl
-
-        dutyDueRow.value.content mustBe HtmlContent(s"""<a class="govuk-link" href="$mgdLowerUrl">${msgs("checkYourAnswers.enterMGD")}</a>""")
         dutyDueRow.actions mustBe None
       }
     }
 
-    "when the screener is Yes and both net takings and calculation are answered" - {
-      "must show rows for both, matching the pre-existing behaviour" in {
+    "when the screener is Yes and both net takings and MGD are answered" - {
+      "must show the net takings and MGD values" in {
         implicit val msgs: Messages = messages(applicationBuilder().build())
 
         val answers = emptyUserAnswers
@@ -194,9 +134,6 @@ class LowerRateSummarySpec extends SpecBase {
           .success
           .value
           .set(NetTakingsLowerPage, BigDecimal(123.45))
-          .success
-          .value
-          .set(CalculatedMGDLowerRatePage, false)
           .success
           .value
           .set(MgdLowerRatePage, BigDecimal(50))
@@ -204,50 +141,29 @@ class LowerRateSummarySpec extends SpecBase {
           .value
 
         val rows = LowerRateSummary.rows(answers)
-        val netTakingsRow = rows.find(_.key.content == Text(msgs("submittedReturn.netTakingsLowerRate"))).value
-        val calculationRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.mgd.question"))).value
-        val dutyDueRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueLowerRate"))).value
+
+        val netTakingsRow =
+          rows.find(_.key.content == Text(msgs("submittedReturn.netTakingsLowerRate"))).value
+
+        val dutyDueRow =
+          rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueLowerRate"))).value
 
         netTakingsRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
-        calculationRow.value.content mustBe Text(msgs("site.no"))
-        calculationRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
-        dutyDueRow.value.content mustBe HtmlContent(views.CurrencyFormatter.formattedAmountHtml(BigDecimal(50)))
+        netTakingsRow.actions.value.items.head.href mustBe netTakingsUrl
+
+        dutyDueRow.value.content mustBe
+          HtmlContent(views.CurrencyFormatter.formattedAmountHtml(BigDecimal(50)))
+
         dutyDueRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
         dutyDueRow.actions.value.items.head.href mustBe mgdLowerUrl
 
         keys(rows) mustBe Seq(
           msgs("netTakingsLowerRate.question"),
           msgs("submittedReturn.netTakingsLowerRate"),
-          msgs("checkYourAnswers.mgd.question"),
           msgs("checkYourAnswers.totalDueLowerRate")
         )
       }
     }
 
-    "when calculation is Yes" - {
-      "must show the duty due row read-only with no change action" in {
-        implicit val msgs: Messages = messages(applicationBuilder().build())
-
-        val answers = emptyUserAnswers
-          .set(NetTakingsLowerRatePage, true)
-          .success
-          .value
-          .set(NetTakingsLowerPage, BigDecimal(123.45))
-          .success
-          .value
-          .set(CalculatedMGDLowerRatePage, true)
-          .success
-          .value
-          .set(MgdLowerRatePage, BigDecimal(50))
-          .success
-          .value
-
-        val rows = LowerRateSummary.rows(answers)
-        val dutyDueRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueLowerRate"))).value
-
-        dutyDueRow.value.content mustBe HtmlContent(views.CurrencyFormatter.formattedAmountHtml(BigDecimal(50)))
-        dutyDueRow.actions mustBe None
-      }
-    }
   }
 }
