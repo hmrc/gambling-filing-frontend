@@ -314,3 +314,10 @@ confirmation.whatHappensNext.directDebit = If you pay by Direct Debit, any tax d
 confirmation.whatHappensNext.paymentMethods.p1 = You can pay your MGD by a number of different methods.
 confirmation.whatHappensNext.paymentMethods.link = Learn more about the different payment methods (opens in new window)
 confirmation.returnToAccount = Return to your MGD account
+
+changeEmailAddress.title = What is the email address for this business?
+changeEmailAddress.heading = What is the email address for this business?
+changeEmailAddress.caption = Check business details
+changeEmailAddress.error.required = Enter an email address for this business
+changeEmailAddress.error.invalid = The email address must only include letters a to z, numbers 0 to 9, dots, hyphens or underscores, with one @ symbol in the middle, like name@example.com
+changeEmailAddress.error.length = The email address must be 70 characters or less
