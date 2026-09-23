@@ -122,3 +122,6 @@ GET        /declare-submit                              controllers.DeclareAndSu
 POST       /declare-submit                              controllers.DeclareAndSubmitController.onSubmit()
 
 GET        /confirmation                            controllers.ConfirmationController.onPageLoad()
+
+GET        /change-business-details                  controllers.CheckBusinessDetailsController.onPageLoad()
+POST       /change-business-details                  controllers.CheckBusinessDetailsController.onSubmit()

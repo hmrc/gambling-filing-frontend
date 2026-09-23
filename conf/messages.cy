@@ -293,3 +293,13 @@ confirmation.whatHappensNext.directDebit = If you pay by Direct Debit, any tax d
 confirmation.whatHappensNext.paymentMethods.p1 = You can pay your MGD by a number of different methods.
 confirmation.whatHappensNext.paymentMethods.link = Learn more about the different payment methods (opens in new window)
 confirmation.returnToAccount = Return to your MGD account
+
+checkBusinessDetails.title = Check your business details
+checkBusinessDetails.heading = Check your business details
+checkBusinessDetails.businessName = Business name
+checkBusinessDetails.businessAddress = Business address
+checkBusinessDetails.contactDetails.heading = Contact details
+checkBusinessDetails.phoneNumber = Phone number
+checkBusinessDetails.mobileNumber = Mobile number
+checkBusinessDetails.faxNumber = Fax number
+checkBusinessDetails.emailAddress = Email address
