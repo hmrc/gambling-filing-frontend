@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.NegativeDutyFormProvider
 import models.{Mode, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{NegativeDutyPage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,7 +33,6 @@ class NegativeDutyController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: NegativeDutyFormProvider,
@@ -53,7 +52,7 @@ class NegativeDutyController @Inject() (
         val preparedForm = request.userAnswers.flatMap(_.get(NegativeDutyPage)).fold(form)(form.fill)
 
         Future.successful(
-          Ok(view(preparedForm, mode, backNavigator.backPage(NegativeDutyPage, mode, request), selectedReturn))
+          Ok(view(preparedForm, mode, selectedReturn))
         )
     }
   }
@@ -70,7 +69,7 @@ class NegativeDutyController @Inject() (
             formWithErrors =>
               Future.successful(
                 BadRequest(
-                  view(formWithErrors, mode, backNavigator.backPage(NegativeDutyPage, mode, request), selectedReturn)
+                  view(formWithErrors, mode, selectedReturn)
                 )
               ),
             value => {
