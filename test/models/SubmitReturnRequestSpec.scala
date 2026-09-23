@@ -84,11 +84,23 @@ class SubmitReturnRequestSpec extends AnyWordSpec with Matchers with OptionValue
           dueAtLowerRate                   = BigDecimal(-5.56),
           dueBeforeAdjustments             = BigDecimal(-133.33),
           underDeclaredFromPreviousPeriods = BigDecimal(7.77),
-          broughtForward                   = BigDecimal(-1.99),
+          broughtForward                   = BigDecimal(1.99),
           carryForward                     = BigDecimal(127.55),
           netPayable                       = BigDecimal(0)
         )
       )
+    }
+
+    "build a SubmitReturnRequest from UserAnswers use absolute value for broughtForward" in {
+      val userAnswersWithNegative =
+        userAnswersWithData
+          .set(NegativeDutyBroughtForwardInputPage, BigDecimal(-1.99))
+          .success
+          .value
+
+      val result = SubmitReturnRequest.from("XGM00003122200", "sessionId", "ENG", userAnswersWithNegative)
+
+      result.map(_.broughtForward) mustBe Some(BigDecimal(1.99))
     }
 
     "default missing rate/duty answers to zero and compute a positive netPayable with zero carryForward" in {
