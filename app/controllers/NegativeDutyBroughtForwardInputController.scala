@@ -19,7 +19,7 @@ package controllers
 import controllers.actions.*
 import forms.NegativeDutyBroughtForwardInputFormProvider
 import models.{Mode, UserAnswers}
-import navigation.{BackNavigator, Navigator}
+import navigation.Navigator
 import pages.{NegativeDutyBroughtForwardInputPage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -33,7 +33,6 @@ class NegativeDutyBroughtForwardInputController @Inject() (
   override val messagesApi: MessagesApi,
   sessionRepository: SessionRepository,
   navigator: Navigator,
-  backNavigator: BackNavigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   formProvider: NegativeDutyBroughtForwardInputFormProvider,
@@ -53,7 +52,7 @@ class NegativeDutyBroughtForwardInputController @Inject() (
         val preparedForm = request.userAnswers.flatMap(_.get(NegativeDutyBroughtForwardInputPage)).fold(form)(form.fill)
 
         Future.successful(
-          Ok(view(preparedForm, mode, backNavigator.backPage(NegativeDutyBroughtForwardInputPage, mode, request), selectedReturn))
+          Ok(view(preparedForm, mode, selectedReturn))
         )
     }
   }
@@ -70,7 +69,7 @@ class NegativeDutyBroughtForwardInputController @Inject() (
             formWithErrors =>
               Future.successful(
                 BadRequest(
-                  view(formWithErrors, mode, backNavigator.backPage(NegativeDutyBroughtForwardInputPage, mode, request), selectedReturn)
+                  view(formWithErrors, mode, selectedReturn)
                 )
               ),
             value => {

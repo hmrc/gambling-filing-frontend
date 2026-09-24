@@ -96,112 +96,6 @@ class BackNavigatorSpec extends SpecBase {
         }
       }
 
-      "NegativeDutyBroughtForwardInputPage" - {
-
-        "must go from NegativeDutyBroughtForwardInputPage to NegativeDutyController" in {
-
-          navigator.backPage(
-            NegativeDutyBroughtForwardInputPage,
-            NormalMode,
-            optionalDataRequest
-          ) mustBe Some(
-            routes.NegativeDutyController
-              .onPageLoad(NormalMode)
-              .url
-          )
-        }
-      }
-
-      "NegativeDutyPage" - {
-
-        "must go from NegativeDutyPage to TotalUnderDeclaredDutyController when reasonable care is No and limits is Yes" in {
-          val userAnswers =
-            emptyUserAnswers
-              .set(UnderDeclaredDutyPage, true)
-              .success
-              .value
-              .set(UnderDeclaredDutyReasonableCarePage, false)
-              .success
-              .value
-              .set(UnderDeclaredDutyLimitsPage, true)
-              .success
-              .value
-
-          val request =
-            OptionalDataRequest[AnyContent](
-              FakeRequest(),
-              "reg123",
-              Regime.MGD,
-              Some(userAnswers)
-            )
-
-          navigator.backPage(
-            NegativeDutyPage,
-            NormalMode,
-            request
-          ) mustBe Some(
-            routes.TotalUnderDeclaredDutyController.onPageLoad(NormalMode).url
-          )
-        }
-
-        "must go from NegativeDutyPage to ContactHmrcController when reasonable care is Yes" in {
-          val userAnswers =
-            emptyUserAnswers
-              .set(UnderDeclaredDutyPage, true)
-              .success
-              .value
-              .set(UnderDeclaredDutyReasonableCarePage, true)
-              .success
-              .value
-
-          val request: OptionalDataRequest[AnyContent] =
-            OptionalDataRequest(
-              FakeRequest(),
-              "reg123",
-              Regime.MGD,
-              Some(userAnswers)
-            )
-
-          navigator.backPage(
-            NegativeDutyPage,
-            NormalMode,
-            request
-          ) mustBe Some(
-            routes.ContactHmrcController.onPageLoad(NormalMode).url
-          )
-        }
-
-        "must go from NegativeDutyPage to ContactHmrcController when limits is No" in {
-          val userAnswers =
-            emptyUserAnswers
-              .set(UnderDeclaredDutyPage, true)
-              .success
-              .value
-              .set(UnderDeclaredDutyReasonableCarePage, false)
-              .success
-              .value
-              .set(UnderDeclaredDutyLimitsPage, false)
-              .success
-              .value
-
-          val request: OptionalDataRequest[AnyContent] =
-            OptionalDataRequest(
-              FakeRequest(),
-              "reg123",
-              Regime.MGD,
-              Some(userAnswers)
-            )
-
-          navigator.backPage(
-            NegativeDutyPage,
-            NormalMode,
-            request
-          ) mustBe Some(
-            routes.ContactHmrcController.onPageLoad(NormalMode).url
-          )
-        }
-      }
-
       "DeclareAndSubmitPage" - {
 
         "must go from DeclareAndSubmitPage to the CheckYourAnswers page" in {
@@ -235,14 +129,6 @@ class BackNavigatorSpec extends SpecBase {
       "must go from MachinesAvailablePage to CheckYourAnswers" in {
         navigator.backPage(MachinesAvailablePage, CheckMode, optionalDataRequest) mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
       }
-
-      "must go from NegativeDutyBroughtForwardInputPage to CheckYourAnswersController" in {
-        val request: OptionalDataRequest[AnyContent] = OptionalDataRequest(FakeRequest(), "reg123", Regime.MGD, Some(emptyUserAnswers))
-
-        val result = navigator.backPage(NegativeDutyBroughtForwardInputPage, CheckMode, request)
-        result mustBe Some(routes.CheckYourAnswersController.onPageLoad().url)
-      }
-
     }
   }
 }

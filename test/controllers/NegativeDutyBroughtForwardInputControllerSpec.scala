@@ -43,7 +43,6 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
   def onwardRoute: Call = Call("GET", "/foo")
 
   val validAnswer: BigDecimal = BigDecimal("-100.50")
-  val backUrl: Some[String] = Some("/manage-gambling-tax/returns/duty-brought-forward")
 
   val selectedReturn: SelectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
@@ -64,7 +63,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
         val view = application.injector.instanceOf[NegativeDutyBroughtForwardInputView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -80,7 +79,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
         val view = application.injector.instanceOf[NegativeDutyBroughtForwardInputView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(form.fill(validAnswer), NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -152,7 +151,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -170,7 +169,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -204,7 +203,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -222,7 +221,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, backUrl, selectedReturn)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
