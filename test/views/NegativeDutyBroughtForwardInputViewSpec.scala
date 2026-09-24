@@ -32,8 +32,7 @@ class NegativeDutyBroughtForwardInputViewSpec extends SpecBase {
 
     "must render the page with correct heading, caption, hint and input" in new Setup {
 
-      val selectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
-      val html = view(form, NormalMode, None, selectedReturn)
+      val html = view(form, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.title must include(messages("negativeDutyBroughtForwardInput.title"))
@@ -48,7 +47,7 @@ class NegativeDutyBroughtForwardInputViewSpec extends SpecBase {
     "must render error summary and inline error when no amount is entered" in new Setup {
 
       val boundForm = form.bind(Map("value" -> ""))
-      val html = view(boundForm, NormalMode, None, SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary").isEmpty mustBe false
@@ -59,7 +58,7 @@ class NegativeDutyBroughtForwardInputViewSpec extends SpecBase {
     "must render an invalid format error when a non-numeric amount is entered" in new Setup {
 
       val boundForm = form.bind(Map("value" -> "not a number"))
-      val html = view(boundForm, NormalMode, None, SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary__list a").text must include(messages("negativeDutyBroughtForwardInput.error.invalid"))
@@ -68,7 +67,7 @@ class NegativeDutyBroughtForwardInputViewSpec extends SpecBase {
     "must render a range error when entered amount is a billion" in new Setup {
 
       val boundForm = form.bind(Map("value" -> "1000000000.00"))
-      val html = view(boundForm, NormalMode, None, SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary__list a").text must include(messages("negativeDutyBroughtForwardInput.error.range"))
@@ -77,7 +76,7 @@ class NegativeDutyBroughtForwardInputViewSpec extends SpecBase {
     "must render a range error when entered amount is negative billion" in new Setup {
 
       val boundForm = form.bind(Map("value" -> "-1000000000.00"))
-      val html = view(boundForm, NormalMode, None, SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select(".govuk-error-summary__list a").text must include(messages("negativeDutyBroughtForwardInput.error.range"))
@@ -86,7 +85,7 @@ class NegativeDutyBroughtForwardInputViewSpec extends SpecBase {
     "must populate the input when form has a negative value" in new Setup {
 
       val boundForm = form.fill(BigDecimal("-123.45"))
-      val html = view(boundForm, NormalMode, None, SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select("#value").`val` mustBe "-123.45"
@@ -95,7 +94,7 @@ class NegativeDutyBroughtForwardInputViewSpec extends SpecBase {
     "must populate the input when form has a positive value" in new Setup {
 
       val boundForm = form.fill(BigDecimal("123.45"))
-      val html = view(boundForm, NormalMode, None, SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31)))
+      val html = view(boundForm, NormalMode, selectedReturn)
       val doc = Jsoup.parse(html.body)
 
       doc.select("#value").`val` mustBe "123.45"
@@ -106,6 +105,7 @@ class NegativeDutyBroughtForwardInputViewSpec extends SpecBase {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[NegativeDutyBroughtForwardInputView]
     val form = new NegativeDutyBroughtForwardInputFormProvider()()
+    val selectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()
 
