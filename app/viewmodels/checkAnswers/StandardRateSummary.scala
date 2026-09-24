@@ -68,7 +68,7 @@ object StandardRateSummary {
             url           = routes.MgdStandardRateController.onPageLoad(CheckMode).url,
             hiddenMsg     = "checkYourAnswers.totalDueStdRate"
           )
-        ).filter(_ => !netTakingsIsMissing)
+        ).filter(_ => netTakingsAmount.isDefined)
       )
 
     Seq(netTakingsLiable, netTakings, dutyDue).flatten

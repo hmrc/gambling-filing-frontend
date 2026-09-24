@@ -70,7 +70,7 @@ object LowerRateSummary {
             url           = routes.MgdLowerRateController.onPageLoad(CheckMode).url,
             hiddenMsg     = "checkYourAnswers.totalDueLowerRate"
           )
-        ).filter(_ => !netTakingsIsMissing)
+        ).filter(_ => netTakingsAmount.isDefined)
       )
 
     Seq(netTakingsLiable, netTakings, dutyDue).flatten
