@@ -48,6 +48,7 @@ trait SpecBase extends AnyFreeSpec with Matchers with TryValues with OptionValue
     new GuiceApplicationBuilder()
       .overrides(
         bind[DataRequiredAction].to[DataRequiredActionImpl],
+        bind[AuthenticatedAction].toInstance(new FakeAuthenticatedAction(play.api.mvc.PlayBodyParsers()(mat))),
         bind[AuthorisedAction].toInstance(new FakeAuthorisedAction(play.api.mvc.PlayBodyParsers()(mat), regime)),
         bind[DataRetrievalAction].toInstance(new FakeDataRetrievalAction(userAnswers))
       )

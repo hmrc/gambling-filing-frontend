@@ -23,6 +23,9 @@ GET        /there-is-a-problem-with-the-service          controllers.SystemError
 GET        /there-is-a-problem-access-denied             controllers.AccessDeniedController.onPageLoad()
 GET        /page-not-found                               controllers.PageNotFoundController.onPageLoad()
 
+#landing url into the service
+GET        /:mgdRegNumber/select-return                 controllers.SelectReturnController.landing(mgdRegNumber: String)
+
 GET        /registration-certificate                     controllers.ViewRegistrationCertificateController.onPageLoad()
 
 GET        /introduction                                controllers.IntroductionController.onPageLoad(mode: Mode = NormalMode)
