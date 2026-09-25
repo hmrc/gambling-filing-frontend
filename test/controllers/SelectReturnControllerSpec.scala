@@ -44,12 +44,15 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
     routes.IndexController.onPageLoad().url
   )
 
+  private val openOnlyResponse =
+    validResponseOpenReturns.copy(openPeriods = validResponseOpenReturns.openPeriods.filterNot(_.status == 0))
+
   def userAnswersWithCachedPeriods: UserAnswers =
     UserAnswers(userAnswersId).set(OpenReturnPeriodsPage, validResponseOpenReturns).success.value
 
   "OpenReturnsController" - {
 
-    "must return OK and the correct view for a GET, caching the open periods in session" in {
+    "must return OK and the correct view for a GET, caching the open periods in session without closed periods" in {
 
       val mockSessionRepository = mock[SessionRepository]
       when(mockSessionRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
@@ -75,12 +78,12 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SelectReturnView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(regNumber, validResponseOpenReturns, backUrl)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(regNumber, openOnlyResponse, backUrl)(request, messages(application)).toString
 
         val captor = org.mockito.ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository).set(captor.capture())
 
-        captor.getValue.get(OpenReturnPeriodsPage).value mustEqual validResponseOpenReturns
+        captor.getValue.get(OpenReturnPeriodsPage).value mustEqual openOnlyResponse
       }
     }
 

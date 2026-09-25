@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.SelectReturnController.SortBy
+import controllers.SelectReturnController.{Closed, SortBy}
 import controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidateAction}
 import models.{NormalMode, SelectedReturn, UserAnswers}
 import navigation.BackNavigator
@@ -51,6 +51,7 @@ class SelectReturnController @Inject() (
 
       gamblingService
         .getOpenReturnPeriods(request.regime.code, regNum, SortBy.DueDate, OrderBy.Ascending)
+        .map(periods => periods.copy(openPeriods = periods.openPeriods.filterNot(_.status == Closed)))
         .flatMap { openReturnPeriods =>
           val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
           Future
@@ -92,6 +93,8 @@ class SelectReturnController @Inject() (
 }
 
 private object SelectReturnController {
+  val Closed = 0
+
   object SortBy {
     val Period = 1
     val DueDate = 2
