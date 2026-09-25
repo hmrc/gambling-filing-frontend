@@ -51,7 +51,7 @@ class SelectReturnController @Inject() (
       if (GRNValidator.validateRegNum(Regime.MGD, regNum)) {
         Redirect(routes.SelectReturnController.onPageLoad()).addingToSession("regNum" -> regNum)
       } else {
-        logger.warn(s"[landing] invalid mgdRegNumber, redirecting to access denied")
+        logger.warn(s"invalid mgdRegNumber, redirecting to access denied")
         Redirect(controllers.routes.AccessDeniedController.onPageLoad())
       }
     }
@@ -59,7 +59,7 @@ class SelectReturnController @Inject() (
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen validate andThen getData).async { implicit request =>
       val regNum = request.regNum
-      val logTxt = s"[onPageLoad] for regNum=$regNum"
+      val logTxt = s"for regNum=$regNum"
 
       gamblingService
         .getOpenReturnPeriods(request.regime.code, regNum, SortBy.DueDate, OrderBy.Ascending)
