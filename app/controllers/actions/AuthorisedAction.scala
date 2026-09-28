@@ -21,6 +21,7 @@ import config.FrontendAppConfig
 import models.Regime
 import models.requests.AuthorisedRequest
 import play.api.Logging
+import services.{AgentClientAuthResult, AgentClientAuthService}
 import play.api.mvc.*
 import play.api.mvc.Results.*
 import uk.gov.hmrc.auth.core.*
@@ -39,6 +40,7 @@ trait AuthorisedAction extends ActionBuilder[AuthorisedRequest, AnyContent] with
 class DefaultAuthorisedAction @Inject() (
   override val authConnector: AuthConnector,
   config: FrontendAppConfig,
+  agentClientAuthService: AgentClientAuthService,
   val parser: BodyParsers.Default
 )(implicit val executionContext: ExecutionContext)
     extends AuthorisedAction
@@ -52,10 +54,25 @@ class DefaultAuthorisedAction @Inject() (
     authorised()
       .retrieve(Retrievals.affinityGroup.and(Retrievals.allEnrolments)) {
         case Some(affinityGroup @ AffinityGroup.Agent) ~ AuthorisedAction.HasActiveAgentEnrolment(
-              regNum,
+              _,
               regime
             ) =>
-          block(AuthorisedRequest(request, affinityGroup, regNum, regime))
+          request.session.get("regNum") match {
+            case Some(clientRegNum) =>
+              agentClientAuthService.authoriseClient(regime, clientRegNum).flatMap {
+                case AgentClientAuthResult.Authorised =>
+                  block(AuthorisedRequest(request, affinityGroup, clientRegNum, regime))
+                case AgentClientAuthResult.NotAuthorised =>
+                  logger.warn(s"Agent not authorised for the client for ${request.path}")
+                  Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
+                case AgentClientAuthResult.NotReady | AgentClientAuthResult.Failed =>
+                  logger.warn(s"Client list not ready or failed for ${request.path}")
+                  Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+              }
+            case None =>
+              logger.warn(s"No client regNum in session for agent for ${request.path}")
+              Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
+          }
 
         case Some(AffinityGroup.Agent) ~ _ =>
           logger.warn(s"Agent auth failed: enrolment missing or not activated for ${request.path}")

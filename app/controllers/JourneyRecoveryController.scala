@@ -16,7 +16,7 @@
 
 package controllers
 
-import controllers.actions.{AuthorisedAction, ValidateAction}
+import controllers.actions.AuthenticatedAction
 import play.api.Logging
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -30,15 +30,14 @@ import scala.concurrent.Future
 
 class JourneyRecoveryController @Inject() (
   val controllerComponents: MessagesControllerComponents,
-  authorise: AuthorisedAction,
-  validate: ValidateAction,
+  authenticate: AuthenticatedAction,
   continueView: JourneyRecoveryContinueView,
   startAgainView: JourneyRecoveryStartAgainView
 ) extends FrontendBaseController
     with I18nSupport
     with Logging {
 
-  def onPageLoad(continueUrl: Option[RedirectUrl] = None): Action[AnyContent] = (authorise andThen validate).async { implicit request =>
+  def onPageLoad(continueUrl: Option[RedirectUrl] = None): Action[AnyContent] = authenticate.async { implicit request =>
 
     val safeUrl: Option[String] = continueUrl.flatMap { unsafeUrl =>
       unsafeUrl.getEither(OnlyRelative) match {
