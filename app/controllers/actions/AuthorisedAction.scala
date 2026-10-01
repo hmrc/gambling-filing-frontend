@@ -66,7 +66,6 @@ class DefaultAuthorisedAction @Inject() (
                   logger.warn(s"Agent not authorised for the client for ${request.path}")
                   Future.successful(Redirect(controllers.routes.AccessDeniedController.onPageLoad()))
                 case AgentClientAuthResult.NotReady | AgentClientAuthResult.Failed =>
-                  logger.warn(s"Client list not ready or failed for ${request.path}")
                   Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
               }
             case None =>
