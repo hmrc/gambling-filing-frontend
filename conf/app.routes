@@ -125,3 +125,4 @@ GET        /declare-submit                              controllers.DeclareAndSu
 POST       /declare-submit                              controllers.DeclareAndSubmitController.onSubmit()
 
 GET        /confirmation                            controllers.ConfirmationController.onPageLoad()
+GET        /confirm-number-of-machines              controllers.ConfirmNumberOfMachinesInterrupterController.onPageLoad()
