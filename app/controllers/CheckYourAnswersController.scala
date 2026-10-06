@@ -19,13 +19,14 @@ package controllers
 import com.google.inject.Inject
 import controllers.actions.{AuthorisedAction, DataRequiredAction, DataRetrievalAction, ValidateAction}
 import models.NormalMode
-import pages.{NegativeDutyPage, SelectReturnPage}
-import play.api.i18n.{I18nSupport, MessagesApi}
+import pages.{MachinesAvailablePage, NegativeDutyPage, SelectReturnPage}
+import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import viewmodels.checkAnswers.*
 import viewmodels.govuk.summarylist.*
 import views.html.CheckYourAnswersView
+
+import scala.concurrent.Future
 
 class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
@@ -35,8 +36,7 @@ class CheckYourAnswersController @Inject() (
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView
-) extends FrontendBaseController
-    with I18nSupport {
+) extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData andThen requireData) { implicit request =>
 
@@ -58,6 +58,18 @@ class CheckYourAnswersController @Inject() (
       val dutyBroughtForward = SummaryListViewModel(rows = DutyBroughtForwardSummary.rows(answers))
 
       Ok(view(selectedReturn, machines, lowerRate, standardRate, higherRate, underDeclaredDuty, dutyBroughtForward, backLink))
+    }
+  }
+
+  def onSubmit(): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
+    request.userAnswers.flatMap(_.get(MachinesAvailablePage)) match {
+      case None =>
+        logger.info(s"no MachinesAvailable found for regNum=${request.regNum}")
+        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+      case Some(machinesAvailable) if machinesAvailable > 0L =>
+        Future.successful(Redirect(controllers.routes.DeclareAndSubmitController.onPageLoad()))
+      case _ =>
+        Future.successful(Redirect(controllers.routes.ConfirmNumberOfMachinesInterrupterController.onPageLoad()))
     }
   }
 }

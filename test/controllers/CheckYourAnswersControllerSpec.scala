@@ -33,10 +33,9 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
   def userAnswersWithSelectedReturn: UserAnswers = emptyUserAnswers.set(SelectReturnPage, selectedReturn).success.value
 
-  def userAnswersWithMachinesAvailable: UserAnswers =
-    userAnswersWithSelectedReturn.set(MachinesAvailablePage, 10).success.value
+  def userAnswersWithMachinesAvailable: UserAnswers = userAnswersWithSelectedReturn.set(MachinesAvailablePage, 10).success.value
 
-  "Check Your Answers Controller" - {
+  "Check Your Answers Controller onPageLoad" - {
 
     def setValueRow(keyMsg: String, url: String)(implicit msgs: play.api.i18n.Messages) = CheckYourAnswersHelpers.yesNoOrActionLinkRow(
       keyMsg        = keyMsg,
@@ -146,6 +145,57 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.JourneyRecoveryController.onPageLoad().url
+      }
+    }
+  }
+
+  "CheckYourAnswersController onSubmit" - {
+
+    "onSubmit must return SEE_OTHER and redirect to the correct page for a POST when MachinesAvailablePage is 0" in {
+
+      def userAnswersWithData: UserAnswers = UserAnswers(userAnswersId).set(MachinesAvailablePage, 0L).success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
+
+      running(application) {
+        val request = FakeRequest(POST, routes.CheckYourAnswersController.onSubmit().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.ConfirmNumberOfMachinesInterrupterController.onPageLoad().url
+      }
+    }
+
+    "onSubmit must return SEE_OTHER and redirect to the correct page for a POST when MachinesAvailablePage is 1" in {
+
+      def userAnswersWithData: UserAnswers = UserAnswers(userAnswersId).set(MachinesAvailablePage, 1L).success.value
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
+
+      running(application) {
+        val request = FakeRequest(POST, routes.CheckYourAnswersController.onSubmit().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.DeclareAndSubmitController.onPageLoad().url
+      }
+    }
+
+    "onSubmit must return SEE_OTHER and redirect to the correct page for a POST when MachinesAvailablePage is None" in {
+
+      def userAnswersWithData: UserAnswers = UserAnswers(userAnswersId)
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
+
+      running(application) {
+        val request = FakeRequest(POST, routes.CheckYourAnswersController.onSubmit().url)
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
   }

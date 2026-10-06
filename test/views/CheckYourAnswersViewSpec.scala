@@ -20,6 +20,7 @@ import base.SpecBase
 import models.SelectedReturn
 import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
+import play.api.i18n.Messages
 import play.api.test.FakeRequest
 import utils.DateTimeFormats
 import viewmodels.checkAnswers.CheckYourAnswersHelpers
@@ -62,6 +63,21 @@ class CheckYourAnswersViewSpec extends SpecBase with SummaryListFluency {
       doc.select(".govuk-caption-l").text() mustEqual expectedCaption
 
       doc.select("h1").text() mustEqual msgs("checkYourAnswers.heading")
+    }
+
+    "must render the button to continue to the next page" in {
+      val app = applicationBuilder().build()
+      val view = app.injector.instanceOf[views.html.CheckYourAnswersView]
+      val request = FakeRequest()
+      implicit val msgs: Messages = messages(app)
+
+      val emptyList = SummaryListViewModel(Seq.empty)
+
+      val doc =
+        Jsoup.parse(view(selectedReturn, emptyList, emptyList, emptyList, emptyList, emptyList, emptyList, None)(request, msgs).body)
+
+      val link = doc.select(".govuk-button")
+      link.text() mustEqual msgs("site.continue")
     }
 
     "must render each section heading" in {
