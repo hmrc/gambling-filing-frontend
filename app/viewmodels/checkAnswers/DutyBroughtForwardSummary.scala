@@ -41,13 +41,13 @@ object DutyBroughtForwardSummary {
     val screenerYes = negativeDutyAnswer.contains(true)
 
     val amountBroughtForwardAnswer = answers.get(NegativeDutyBroughtForwardInputPage)
-    val amountIsMissing = amountBroughtForwardAnswer.forall(_ == BigDecimal(0))
+    val amountIsMissing = amountBroughtForwardAnswer.isEmpty
 
     val amountBroughtForward =
       Option(
         CheckYourAnswersHelpers.currencyOrActionLinkRow(
           keyMsg        = "submittedReturn.previousReturnAmount",
-          amount        = amountBroughtForwardAnswer.map(_ * -1).getOrElse(BigDecimal(0)),
+          amount        = amountBroughtForwardAnswer.getOrElse(BigDecimal(0)),
           showValueLink = amountIsMissing,
           linkTextMsg   = "checkYourAnswers.enterAmount",
           url           = routes.NegativeDutyBroughtForwardInputController.onPageLoad(CheckMode).url,

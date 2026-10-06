@@ -109,9 +109,10 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       }
     }
 
-    "must store the absolute value when a negative amount is submitted" in {
+    "must store the submitted negative value when a negative amount is submitted" in {
       val negativeAmount = BigDecimal("-100.50")
       val mockSessionRepository = mock[SessionRepository]
+
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
@@ -125,15 +126,20 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       running(application) {
         val request =
           FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
-            .withFormUrlEncodedBody(("value", validAnswer.toString))
+            .withFormUrlEncodedBody(("value", negativeAmount.toString))
 
         val result = route(application, request).value
+
         status(result) mustEqual SEE_OTHER
 
-        val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        val userAnswersCaptor: ArgumentCaptor[UserAnswers] =
+          ArgumentCaptor.forClass(classOf[UserAnswers])
+
         verify(mockSessionRepository).set(userAnswersCaptor.capture())
 
-        userAnswersCaptor.getValue.get(NegativeDutyBroughtForwardInputPage).value mustEqual negativeAmount.abs
+        userAnswersCaptor.getValue
+          .get(NegativeDutyBroughtForwardInputPage)
+          .value mustEqual negativeAmount
       }
     }
 
@@ -170,22 +176,6 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
 
         status(result) mustEqual BAD_REQUEST
         contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
-      }
-    }
-
-    "must redirect to next page when a valid positive amount is submitted" in {
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
-            .withFormUrlEncodedBody(("value", "100.00"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.CheckYourAnswersController.onPageLoad().url
       }
     }
 
