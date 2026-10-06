@@ -20,6 +20,7 @@
 
 @this(
         layout: templates.Layout,
+        formHelper: FormWithCSRF,
         govukSummaryList: GovukSummaryList,
         h1: H1,
         h2: H2,
@@ -66,9 +67,8 @@
     @govukSummaryList(dutyBroughtForward.withCssClass("govuk-!-margin-bottom-9"))
 
     <div class="govuk-clearfix">
-        @govukButton(
-            ButtonViewModel(messages("site.continue"))
-                .asLink(routes.ConfirmNumberOfMachinesInterrupterController.onPageLoad().url)
-        )
+        @formHelper(action = routes.CheckYourAnswersController.onSubmit()) {
+            @govukButton(ButtonViewModel(messages("site.continue")))
+        }
     </div>
 }

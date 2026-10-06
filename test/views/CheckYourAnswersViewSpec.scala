@@ -78,10 +78,6 @@ class CheckYourAnswersViewSpec extends SpecBase with SummaryListFluency {
 
       val link = doc.select(".govuk-button")
       link.text() mustEqual msgs("site.continue")
-      link.attr("href") mustEqual controllers.routes.ConfirmNumberOfMachinesInterrupterController.onPageLoad().url
-      link.attr("target") mustBe ""
-      link.attr("rel") mustBe ""
-
     }
 
     "must render each section heading" in {

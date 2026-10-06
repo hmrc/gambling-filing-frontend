@@ -19,15 +19,11 @@ package controllers
 import base.SpecBase
 import models.UserAnswers
 import org.scalatestplus.mockito.MockitoSugar
-import pages.MachinesAvailablePage
-import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.ConfirmNumberOfMachinesInterrupterView
 
 class ConfirmNumberOfMachinesInterrupterControllerSpec extends SpecBase with MockitoSugar {
-
-  def onwardRoute = Call("GET", "/manage-gambling-tax/returns/declare-submit")
 
   private lazy val confirmNumberOfMachinesInterrupterRoute = routes.ConfirmNumberOfMachinesInterrupterController.onPageLoad().url
 
@@ -35,9 +31,9 @@ class ConfirmNumberOfMachinesInterrupterControllerSpec extends SpecBase with Moc
 
     "onPageLoad must return OK and the correct view for a GET when MachinesAvailablePage is 0" in {
 
-      def userAnswersWithData: UserAnswers = UserAnswers(userAnswersId).set(MachinesAvailablePage, 0L).success.value
+      def userAnswers: UserAnswers = UserAnswers(userAnswersId)
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, confirmNumberOfMachinesInterrupterRoute)
@@ -48,38 +44,6 @@ class ConfirmNumberOfMachinesInterrupterControllerSpec extends SpecBase with Moc
 
         status(result) mustEqual OK
         contentAsString(result) mustEqual view()(request, messages(application)).toString
-      }
-    }
-
-    "onPageLoad must return SEE_OTHER and redirect to the correct page for a GET when MachinesAvailablePage is 1" in {
-
-      def userAnswersWithData: UserAnswers = UserAnswers(userAnswersId).set(MachinesAvailablePage, 1L).success.value
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, confirmNumberOfMachinesInterrupterRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual onwardRoute.url
-      }
-    }
-
-    "onPageLoad must return SEE_OTHER and redirect to the correct page for a GET when MachinesAvailablePage is None" in {
-
-      def userAnswersWithData: UserAnswers = UserAnswers(userAnswersId)
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, confirmNumberOfMachinesInterrupterRoute)
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
   }

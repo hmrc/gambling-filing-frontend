@@ -17,7 +17,6 @@
 package controllers
 
 import controllers.actions.*
-import pages.MachinesAvailablePage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import views.html.ConfirmNumberOfMachinesInterrupterView
@@ -28,22 +27,14 @@ import scala.concurrent.Future
 class ConfirmNumberOfMachinesInterrupterController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedAction,
+  validate: ValidateAction,
   getData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
   view: ConfirmNumberOfMachinesInterrupterView
 ) extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen getData).async { implicit request =>
-
-      request.userAnswers.flatMap(_.get(MachinesAvailablePage)) match {
-        case None =>
-          logger.info(s"[onPageLoad] no MachinesAvailable found for regNum=${request.regNum}")
-          Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-        case Some(machinesAvailable) if machinesAvailable > 0L =>
-          Future.successful(Redirect(controllers.routes.DeclareAndSubmitController.onPageLoad()))
-        case _ =>
-          Future.successful(Ok(view()))
-      }
+    (authorise andThen validate andThen getData).async { implicit request =>
+      Future.successful(Ok(view()))
     }
 }
