@@ -62,7 +62,7 @@ class SelectReturnController @Inject() (
       val logTxt = s"for regNum=$regNum"
 
       gamblingService
-        .getOpenReturnPeriods(request.regime.code, regNum, SortBy.DueDate, OrderBy.Ascending)
+        .getOpenReturnPeriods(request.regime.code, regNum, SortBy.DueDate, OrderBy.Descending)
         .flatMap { openReturnPeriods =>
           val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
           Future

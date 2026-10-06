@@ -29,6 +29,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.TotalUnderDeclaredDutyView
 
 import javax.inject.Inject
+import scala.math.BigDecimal.RoundingMode
 import scala.concurrent.{ExecutionContext, Future}
 
 class TotalUnderDeclaredDutyController @Inject() (
@@ -101,7 +102,7 @@ class TotalUnderDeclaredDutyController @Inject() (
       lowerNetTakings + standardNetTakings + higherNetTakings
 
     val percentageOfTotalNetTakings =
-      totalNetTakings * appConfig.underDeclaredDutyPercentage
+      (totalNetTakings * appConfig.underDeclaredDutyPercentage).setScale(2, RoundingMode.HALF_EVEN)
 
     appConfig.underDeclaredDutyMinimumLimit.max(
       percentageOfTotalNetTakings.min(
