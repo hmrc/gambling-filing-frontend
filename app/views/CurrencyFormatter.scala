@@ -16,10 +16,12 @@
 
 package views
 
+import scala.math.BigDecimal.RoundingMode
+
 trait CurrencyFormatter {
 
   def currencyFormat(amt: BigDecimal): String =
-    f"£${amt.abs}%,1.2f".replace(".00", "")
+    f"£${amt.abs.setScale(2, RoundingMode.HALF_EVEN)}%,1.2f".replace(".00", "")
 
   def formattedAmountHtml(amount: BigDecimal): String =
     s"""<span style="white-space:nowrap">${if (amount < 0) "&#8722;" else ""}${currencyFormat(amount)}</span>"""
