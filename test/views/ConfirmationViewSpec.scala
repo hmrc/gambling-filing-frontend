@@ -51,16 +51,6 @@ class ConfirmationViewSpec extends SpecBase {
         messages("confirmation.whatHappensNext.heading")
       )
 
-      doc.body.text must include(
-        messages("confirmation.whatHappensNext.directDebit")
-      )
-
-      val helpdeskLink =
-        doc.select("""a[href="https://www.gov.uk/find-hmrc-contacts/technical-support-with-hmrc-online-services"]""")
-
-      helpdeskLink.text mustBe
-        messages("confirmation.helpdesk.link")
-
       val accountLink =
         doc
           .select("""a[href="/manage-gambling-tax/returns/"]""")

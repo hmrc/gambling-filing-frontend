@@ -33,7 +33,7 @@
 -- Safe to run multiple times — deletes all existing data first, then inserts.
 -- ============================================================================
 
-SET DEFINE OFF;
+--SET DEFINE OFF;
 
 -- ============================================================================
 -- 0. CLEAN SLATE — Delete all existing data for XWM00003001200

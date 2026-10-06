@@ -124,4 +124,4 @@ POST       /change-total-under-declared-duty          controllers.TotalUnderDecl
 GET        /declare-submit                              controllers.DeclareAndSubmitController.onPageLoad()
 POST       /declare-submit                              controllers.DeclareAndSubmitController.onSubmit()
 
-GET        /confirmation                            controllers.ConfirmationController.onPageLoad()
+GET        /return-submitted                             controllers.ConfirmationController.onPageLoad()

@@ -33,7 +33,7 @@
     -- Safe to run multiple times — deletes all existing data first.
   -- ============================================================================
 
-SET DEFINE OFF;
+--SET DEFINE OFF;
 
 -- ============================================================================
   -- 0. UPDATE PERIOD WINDOW
