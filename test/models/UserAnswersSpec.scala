@@ -67,7 +67,8 @@ class UserAnswersSpec extends SpecBase {
         .selectPeriod(periodA)
         .flatMap(_.set(MachinesAvailablePage, 12L))
         .success
-        .value.copy(journeyComplete = true)
+        .value
+        .copy(journeyComplete = true)
 
       answers.journeyComplete mustBe true
 

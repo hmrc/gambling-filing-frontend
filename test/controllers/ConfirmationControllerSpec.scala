@@ -165,7 +165,7 @@ class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
       val application =
         applicationBuilder(
           userAnswers = Some(UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value),
-          regime = Regime.MGD
+          regime      = Regime.MGD
         ).overrides(
           bind[SessionRepository].toInstance(mockSessionRepository)
         ).build()
