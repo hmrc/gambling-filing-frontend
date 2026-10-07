@@ -54,10 +54,8 @@ object DutyBroughtForwardSummary {
     val amountBroughtForward =
       Option(
         CheckYourAnswersHelpers.currencyOrActionLinkRow(
-          keyMsg = "submittedReturn.previousReturnAmount",
-          amount = amountBroughtForwardAnswer
-            .map(value => -value.abs)
-            .getOrElse(BigDecimal(0)),
+          keyMsg        = "submittedReturn.previousReturnAmount",
+          amount        = amountBroughtForwardAnswer.getOrElse(BigDecimal(0)),
           showValueLink = amountIsMissing,
           linkTextMsg   = "checkYourAnswers.enterAmount",
           url = routes.NegativeDutyBroughtForwardInputController

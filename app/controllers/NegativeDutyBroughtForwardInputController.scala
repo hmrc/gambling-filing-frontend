@@ -49,7 +49,7 @@ class NegativeDutyBroughtForwardInputController @Inject() (
         logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
       case Some(selectedReturn) =>
-        val preparedForm = request.userAnswers.flatMap(_.get(NegativeDutyBroughtForwardInputPage)).fold(form)(value => form.fill(-value.abs))
+        val preparedForm = request.userAnswers.flatMap(_.get(NegativeDutyBroughtForwardInputPage)).fold(form)(form.fill)
 
         Future.successful(
           Ok(view(preparedForm, mode, selectedReturn))
@@ -76,7 +76,8 @@ class NegativeDutyBroughtForwardInputController @Inject() (
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 
               for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(NegativeDutyBroughtForwardInputPage, value.abs))
+                // we store the value as -ve irrspecitve of if user adds -ve sign or not.
+                updatedAnswers <- Future.fromTry(userAnswers.set(NegativeDutyBroughtForwardInputPage, -value.abs))
                 _              <- sessionRepository.set(updatedAnswers)
               } yield Redirect(navigator.nextPage(NegativeDutyBroughtForwardInputPage, mode, updatedAnswers))
             }

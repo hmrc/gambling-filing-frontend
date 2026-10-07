@@ -66,7 +66,7 @@ class DutyBroughtForwardSummarySpec extends SpecBase {
       implicit val msgs: Messages = messages(applicationBuilder().build())
 
       val answers =
-        emptyUserAnswers.set(NegativeDutyPage, true).success.value.set(NegativeDutyBroughtForwardInputPage, BigDecimal("123.45")).success.value
+        emptyUserAnswers.set(NegativeDutyPage, true).success.value.set(NegativeDutyBroughtForwardInputPage, BigDecimal("-123.45")).success.value
       val rows = DutyBroughtForwardSummary.rows(answers)
       val negativeDutyRow = rows.find(_.key.content == Text(msgs("negativeDuty.question"))).value
       val amountRow = rows.find(_.key.content == Text(msgs("submittedReturn.previousReturnAmount"))).value

@@ -67,10 +67,9 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       }
     }
 
-    "must populate the view with a negative value on a GET when the question has previously been answered" in {
+    "must populate the view with the stored negative value on a GET when the question has previously been answered" in {
 
-      val storedAnswer = BigDecimal("100.50")
-      val userAnswers = userAnswersWithSelectedReturn.set(NegativeDutyBroughtForwardInputPage, storedAnswer).success.value
+      val userAnswers = userAnswersWithSelectedReturn.set(NegativeDutyBroughtForwardInputPage, validAnswer).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
@@ -110,7 +109,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       }
     }
 
-    "must store the absolute value when a negative amount is submitted" in {
+    "must store the canonical negative value when a negative amount is submitted" in {
       val negativeAmount = BigDecimal("-100.50")
       val mockSessionRepository = mock[SessionRepository]
 
@@ -138,7 +137,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
 
         verify(mockSessionRepository).set(userAnswersCaptor.capture())
 
-        userAnswersCaptor.getValue.get(NegativeDutyBroughtForwardInputPage).value mustEqual negativeAmount.abs
+        userAnswersCaptor.getValue.get(NegativeDutyBroughtForwardInputPage).value mustEqual negativeAmount
       }
     }
 
