@@ -32,6 +32,7 @@ class UserAnswersSpec extends SpecBase {
       val result = emptyUserAnswers.selectPeriod(periodA).success.value
 
       result.get(SelectReturnPage).value mustEqual periodA
+      result.journeyComplete mustBe false
     }
 
     "must preserve existing answers when re-selecting the same period" in {
@@ -58,6 +59,23 @@ class UserAnswersSpec extends SpecBase {
 
       result.get(SelectReturnPage).value mustEqual periodB
       result.get(MachinesAvailablePage) mustBe None
+      result.journeyComplete mustBe false
+    }
+
+    "must set journeyComplete flag to false when selecting the same period and journeyComplete flag is true" in {
+      val answers = emptyUserAnswers
+        .selectPeriod(periodA)
+        .flatMap(_.set(MachinesAvailablePage, 12L))
+        .success
+        .value.copy(journeyComplete = true)
+
+      answers.journeyComplete mustBe true
+
+      val result = answers.selectPeriod(periodA).success.value
+
+      result.get(SelectReturnPage).value mustEqual periodA
+      result.get(MachinesAvailablePage) mustBe None
+      result.journeyComplete mustBe false
     }
   }
 }

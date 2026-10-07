@@ -27,7 +27,8 @@ import scala.util.{Failure, Success, Try}
 final case class UserAnswers(
   id: String,
   data: JsObject = Json.obj(),
-  lastUpdated: Instant = Instant.now
+  lastUpdated: Instant = Instant.now,
+  journeyComplete: Boolean = false
 ) {
 
   def get[A](page: Gettable[A])(implicit rds: Reads[A]): Option[A] =
@@ -65,7 +66,7 @@ final case class UserAnswers(
 
   def selectPeriod(newPeriod: SelectedReturn): Try[UserAnswers] = {
     val periodChanged = get(SelectReturnPage).exists(_ != newPeriod)
-    val base = if (periodChanged) copy(data = Json.obj()) else this
+    val base = if (periodChanged || journeyComplete) copy(data = Json.obj(), journeyComplete = false) else this
     base.set(SelectReturnPage, newPeriod)
   }
 }
@@ -79,7 +80,8 @@ object UserAnswers {
     (
       (__ \ "_id").read[String] and
         (__ \ "data").read[JsObject] and
-        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat)
+        (__ \ "lastUpdated").read(MongoJavatimeFormats.instantFormat) and
+        (__ \ "journeyComplete").read[Boolean]
     )(UserAnswers.apply _)
   }
 
@@ -90,8 +92,9 @@ object UserAnswers {
     (
       (__ \ "_id").write[String] and
         (__ \ "data").write[JsObject] and
-        (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat)
-    )(ua => (ua.id, ua.data, ua.lastUpdated))
+        (__ \ "lastUpdated").write(MongoJavatimeFormats.instantFormat) and
+        (__ \ "journeyComplete").write[Boolean]
+    )(ua => (ua.id, ua.data, ua.lastUpdated, ua.journeyComplete))
   }
 
   implicit val format: OFormat[UserAnswers] = OFormat(reads, writes)

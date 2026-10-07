@@ -95,16 +95,10 @@ class SelectReturnController @Inject() (
         .flatMap(openPeriod => DateTimeFormats.parseMgdPeriod(openPeriod.period))
         .fold(Future.successful(Redirect(routes.SelectReturnController.onPageLoad()))) { (periodStart, periodEnd) =>
           val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-          for {
-            updatedAnswers1 <- Future.fromTry(userAnswers.selectPeriod(SelectedReturn(consecNo, periodStart, periodEnd)))
-            updatedAnswers2 <- Future.fromTry(updatedAnswers1.selectPeriod(SelectedReturn(consecNo, periodStart, periodEnd)))
-            _ <- sessionRepository.set(updatedAnswers2)
-          } yield Redirect(routes.IntroductionController.onPageLoad())
-          
-//          Future
-//            .fromTry(userAnswers.selectPeriod(SelectedReturn(consecNo, periodStart, periodEnd)))
-//            .flatMap(sessionRepository.set)
-//            .map(_ => Redirect(routes.IntroductionController.onPageLoad()))
+          Future
+            .fromTry(userAnswers.selectPeriod(SelectedReturn(consecNo, periodStart, periodEnd)))
+            .flatMap(sessionRepository.set)
+            .map(_ => Redirect(routes.IntroductionController.onPageLoad()))
         }
     }
 }

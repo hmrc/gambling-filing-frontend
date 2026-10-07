@@ -33,13 +33,14 @@ class ContactHmrcController @Inject() (
   navigator: Navigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
+  journeyComplete: JourneyCompleteAction,
   val controllerComponents: MessagesControllerComponents,
   appConfig: FrontendAppConfig,
   view: ContactHmrcView
 ) extends BaseFilingController {
 
   def onPageLoad(mode: Mode): Action[AnyContent] =
-    (authorise andThen getData).async { implicit request =>
+    (authorise andThen getData andThen journeyComplete).async { implicit request =>
       request.userAnswers
         .flatMap(_.get(SelectReturnPage))
         .fold(

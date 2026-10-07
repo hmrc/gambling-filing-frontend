@@ -16,25 +16,23 @@
 
 package controllers.actions
 
-import models.Regime
-import models.requests.AuthorisedRequest
+import controllers.routes
+import models.requests.OptionalDataRequest
 import play.api.Logging
 import play.api.mvc.Results.Redirect
-import play.api.mvc.{ActionFilter, Result}
+import play.api.mvc.{ActionRefiner, Result}
 
-import java.util.regex.Pattern
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class JourneyCompleteActionImpl @Inject() (implicit val executionContext: ExecutionContext) extends JourneyCompleteAction with Logging {
 
-  override protected def filter[A](request: AuthorisedRequest[A]): Future[Option[Result]] = {
-    if (GRNValidator.validateRegNoRegime(request.regime, request.regNum)) {
-      Future.successful(None)
-    } else {
-      Future.successful(Some(Redirect(controllers.routes.AccessDeniedController.onPageLoad())))
+  override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, OptionalDataRequest[A]]] = {
+    request.userAnswers.map(_.journeyComplete) match {
+      case Some(false) => Future.successful(Right(request))
+      case _           => Future.successful(Left(Redirect(routes.SelectReturnController.onPageLoad())))
     }
   }
 }
 
-trait JourneyCompleteAction extends ActionFilter[AuthorisedRequest]
+trait JourneyCompleteAction extends ActionRefiner[OptionalDataRequest, OptionalDataRequest]

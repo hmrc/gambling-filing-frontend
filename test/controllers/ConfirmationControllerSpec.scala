@@ -18,10 +18,13 @@ package controllers
 
 import base.SpecBase
 import models.{Regime, SelectedReturn, SubmissionResult, UserAnswers}
+import org.mockito.Mockito.{times, verify}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{SelectReturnPage, SubmissionResultPage}
+import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
+import repositories.SessionRepository
 import views.html.ConfirmationView
 
 import java.time.LocalDate
@@ -73,6 +76,29 @@ class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
             request,
             messages(application)
           ).toString
+      }
+    }
+
+    "must return OK and update journeyComplete flag to true for a GET" in {
+      val mockSessionRepository = mock[SessionRepository]
+
+      val application =
+        applicationBuilder(
+          userAnswers = Some(userAnswersWithSelectedReturn),
+          regime      = Regime.MGD
+        ).overrides(
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        ).build()
+
+      running(application) {
+        val request = FakeRequest(GET, confirmationRoute).withSession("sessionId" -> "session-id-value")
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+
+        val userAnswersCaptor = org.mockito.ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository).set(userAnswersCaptor.capture())
+        userAnswersCaptor.getValue.journeyComplete.booleanValue() mustEqual true
       }
     }
 
@@ -130,6 +156,30 @@ class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
 
         redirectLocation(result).value mustEqual
           routes.DeclareAndSubmitController.onPageLoad().url
+      }
+    }
+
+    "sessionRepository.set must be called 0 times when SelectedReturn exists but SubmissionResult is missing" in {
+      val mockSessionRepository = mock[SessionRepository]
+
+      val application =
+        applicationBuilder(
+          userAnswers = Some(UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value),
+          regime = Regime.MGD
+        ).overrides(
+          bind[SessionRepository].toInstance(mockSessionRepository)
+        ).build()
+
+      running(application) {
+        val request = FakeRequest(GET, confirmationRoute).withSession("sessionId" -> "session-id-value")
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual routes.DeclareAndSubmitController.onPageLoad().url
+
+        val userAnswersCaptor = org.mockito.ArgumentCaptor.forClass(classOf[UserAnswers])
+        verify(mockSessionRepository, times(0)).set(userAnswersCaptor.capture())
       }
     }
   }

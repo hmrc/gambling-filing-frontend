@@ -20,6 +20,7 @@ import controllers.actions.*
 import pages.{SelectReturnPage, SubmissionResultPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import views.html.ConfirmationView
 
 import javax.inject.Inject
@@ -30,6 +31,7 @@ class ConfirmationController @Inject() (
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
+  sessionRepository: SessionRepository,
   view: ConfirmationView
 ) extends BaseFilingController {
 
@@ -39,11 +41,13 @@ class ConfirmationController @Inject() (
         for
           selectedReturn   <- request.userAnswers.flatMap(_.get(SelectReturnPage))
           submissionResult <- request.userAnswers.flatMap(_.get(SubmissionResultPage))
-        yield (selectedReturn, submissionResult)
+          updatedAnswers   <- request.userAnswers.map(_.copy(journeyComplete = true))
+        yield (selectedReturn, submissionResult, updatedAnswers)
 
       requiredAnswers.fold(
         Future.successful(Redirect(controllers.routes.DeclareAndSubmitController.onPageLoad()))
-      )((selectedReturn, submissionResult) =>
+      )((selectedReturn, submissionResult, updatedAnswers) =>
+        sessionRepository.set(updatedAnswers)
         Future.successful(
           Ok(
             view(

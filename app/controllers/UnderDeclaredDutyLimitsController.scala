@@ -35,6 +35,7 @@ class UnderDeclaredDutyLimitsController @Inject() (
   navigator: Navigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
+  journeyComplete: JourneyCompleteAction,
   formProvider: UnderDeclaredDutyLimitsFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: UnderDeclaredDutyLimitsView
@@ -43,7 +44,7 @@ class UnderDeclaredDutyLimitsController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
@@ -55,7 +56,7 @@ class UnderDeclaredDutyLimitsController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
