@@ -24,8 +24,12 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow
 
 object DutyBroughtForwardSummary {
 
-  def rows(answers: UserAnswers)(implicit messages: Messages): Seq[SummaryListRow] = {
-    val negativeDutyAnswer = answers.get(NegativeDutyPage)
+  def rows(
+    answers: UserAnswers
+  )(implicit messages: Messages): Seq[SummaryListRow] = {
+
+    val negativeDutyAnswer =
+      answers.get(NegativeDutyPage)
 
     val hasNegativeDuty = Some(
       CheckYourAnswersHelpers.yesNoOrActionLinkRow(
@@ -38,20 +42,26 @@ object DutyBroughtForwardSummary {
       )
     )
 
-    val screenerYes = negativeDutyAnswer.contains(true)
+    val screenerYes =
+      negativeDutyAnswer.contains(true)
 
-    val amountBroughtForwardAnswer = answers.get(NegativeDutyBroughtForwardInputPage)
-    val amountIsMissing = amountBroughtForwardAnswer.forall(_ == BigDecimal(0))
+    val amountBroughtForwardAnswer =
+      answers.get(NegativeDutyBroughtForwardInputPage)
+
+    val amountIsMissing =
+      amountBroughtForwardAnswer.isEmpty
 
     val amountBroughtForward =
       Option(
         CheckYourAnswersHelpers.currencyOrActionLinkRow(
           keyMsg        = "submittedReturn.previousReturnAmount",
-          amount        = amountBroughtForwardAnswer.map(_ * -1).getOrElse(BigDecimal(0)),
+          amount        = amountBroughtForwardAnswer.getOrElse(BigDecimal(0)),
           showValueLink = amountIsMissing,
           linkTextMsg   = "checkYourAnswers.enterAmount",
-          url           = routes.NegativeDutyBroughtForwardInputController.onPageLoad(CheckMode).url,
-          hiddenMsg     = "submittedReturn.previousReturnAmount"
+          url = routes.NegativeDutyBroughtForwardInputController
+            .onPageLoad(CheckMode)
+            .url,
+          hiddenMsg = "submittedReturn.previousReturnAmount"
         )
       ).filter(_ => screenerYes)
 

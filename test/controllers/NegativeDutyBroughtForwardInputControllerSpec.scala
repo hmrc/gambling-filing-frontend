@@ -67,7 +67,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       }
     }
 
-    "must populate the view correctly on a GET when the question has previously been answered" in {
+    "must populate the view with the stored negative value on a GET when the question has previously been answered" in {
 
       val userAnswers = userAnswersWithSelectedReturn.set(NegativeDutyBroughtForwardInputPage, validAnswer).success.value
 
@@ -109,9 +109,10 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       }
     }
 
-    "must store the absolute value when a negative amount is submitted" in {
+    "must store the canonical negative value when a negative amount is submitted" in {
       val negativeAmount = BigDecimal("-100.50")
       val mockSessionRepository = mock[SessionRepository]
+
       when(mockSessionRepository.set(any())) thenReturn Future.successful(true)
 
       val application =
@@ -125,15 +126,43 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       running(application) {
         val request =
           FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
-            .withFormUrlEncodedBody(("value", validAnswer.toString))
+            .withFormUrlEncodedBody(("value", negativeAmount.toString))
 
         val result = route(application, request).value
+
         status(result) mustEqual SEE_OTHER
 
-        val userAnswersCaptor: ArgumentCaptor[UserAnswers] = ArgumentCaptor.forClass(classOf[UserAnswers])
+        val userAnswersCaptor: ArgumentCaptor[UserAnswers] =
+          ArgumentCaptor.forClass(classOf[UserAnswers])
+
         verify(mockSessionRepository).set(userAnswersCaptor.capture())
 
-        userAnswersCaptor.getValue.get(NegativeDutyBroughtForwardInputPage).value mustEqual negativeAmount.abs
+        userAnswersCaptor.getValue.get(NegativeDutyBroughtForwardInputPage).value mustEqual negativeAmount
+      }
+    }
+
+    "must accept a valid positive amount" in {
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
+      running(application) {
+        val request = FakeRequest(POST, negativeDutyBroughtForwardInputRoute).withFormUrlEncodedBody("value" -> "100.50")
+        val result = route(application, request).value
+        status(result) mustEqual SEE_OTHER
+      }
+    }
+
+    "must return a Bad Request when zero is submitted" in {
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
+
+      running(application) {
+        val request = FakeRequest(POST, negativeDutyBroughtForwardInputRoute).withFormUrlEncodedBody("value" -> "0")
+        val boundForm = form.bind(Map("value" -> "0"))
+        val view = application.injector.instanceOf[NegativeDutyBroughtForwardInputView]
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -173,23 +202,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       }
     }
 
-    "must redirect to next page when a valid positive amount is submitted" in {
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
-
-      running(application) {
-        val request =
-          FakeRequest(POST, negativeDutyBroughtForwardInputRoute)
-            .withFormUrlEncodedBody(("value", "100.00"))
-
-        val result = route(application, request).value
-
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.CheckYourAnswersController.onPageLoad().url
-      }
-    }
-
-    "must return a Bad Request and errors when an amount of £1 billion is submitted" in {
+    "must return a Bad Request when an amount of £1 billion is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
 
@@ -207,7 +220,7 @@ class NegativeDutyBroughtForwardInputControllerSpec extends SpecBase with Mockit
       }
     }
 
-    "must return a Bad Request and errors when an amount of -£1 billion is submitted" in {
+    "must return a Bad Request when an amount of -£1 billion is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
 
