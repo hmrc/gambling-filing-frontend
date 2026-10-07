@@ -38,7 +38,7 @@ class CurrencyFormatterSpec extends AnyFreeSpec with Matchers {
     }
 
     "must round ties to the even penny (HALF_EVEN)" in {
-      currencyFormat(BigDecimal("12000.005")) mustEqual "£12,000"      // HALF_UP would give £12,000.01
+      currencyFormat(BigDecimal("12000.005")) mustEqual "£12,000" // HALF_UP would give £12,000.01
       currencyFormat(BigDecimal("12000.015")) mustEqual "£12,000.02"
       currencyFormat(BigDecimal("0.025")) mustEqual "£0.02"
     }
