@@ -132,7 +132,7 @@ class Navigator @Inject() () {
       }
 
     case DeclareAndSubmitPage =>
-      _ => routes.ReturnsSubmittedController.onPageLoad()
+      _ => routes.ReturnSubmittedController.onPageLoad()
 
     case _ =>
       _ => routes.IndexController.onPageLoad()

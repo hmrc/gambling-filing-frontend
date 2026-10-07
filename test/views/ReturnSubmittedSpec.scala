@@ -22,13 +22,13 @@ import org.jsoup.Jsoup
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Request
 import play.api.test.FakeRequest
-import views.html.ConfirmationView
+import views.html.ReturnSubmittedView
 
 import java.time.LocalDate
 
-class ReturnsSubmittedSpec extends SpecBase {
+class ReturnSubmittedSpec extends SpecBase {
 
-  "ConfirmationView" - {
+  "ReturnSubmittedView" - {
     "must render the page with the correct content" in new Setup {
 
       val html = view(
@@ -69,7 +69,7 @@ class ReturnsSubmittedSpec extends SpecBase {
   trait Setup {
 
     val app = applicationBuilder().build()
-    val view = app.injector.instanceOf[ConfirmationView]
+    val view = app.injector.instanceOf[ReturnSubmittedView]
     val selectedReturn = SelectedReturn(
       1,
       LocalDate.of(2025, 1, 1),

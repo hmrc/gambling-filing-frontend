@@ -328,7 +328,7 @@ class NavigatorSpec extends SpecBase {
           DeclareAndSubmitPage,
           NormalMode,
           emptyUserAnswers
-        ) mustBe routes.ReturnsSubmittedController.onPageLoad()
+        ) mustBe routes.ReturnSubmittedController.onPageLoad()
       }
 
     }
