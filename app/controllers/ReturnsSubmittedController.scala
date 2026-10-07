@@ -25,7 +25,7 @@ import views.html.ConfirmationView
 import javax.inject.Inject
 import scala.concurrent.Future
 
-class ConfirmationController @Inject() (
+class ReturnsSubmittedController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,

@@ -26,7 +26,7 @@ import views.html.ConfirmationView
 
 import java.time.LocalDate
 
-class ConfirmationViewSpec extends SpecBase {
+class ReturnsSubmittedSpec extends SpecBase {
 
   "ConfirmationView" - {
     "must render the page with the correct content" in new Setup {
@@ -46,6 +46,10 @@ class ConfirmationViewSpec extends SpecBase {
       doc.body.text must include(messages("confirmation.reference"))
 
       doc.body.text must include(acknowledgementReference)
+
+      doc.body.text must include(messages("confirmation.whatHappensNext.returnMessage"))
+
+      doc.body.text must include(messages("confirmation.whatHappensNext.contact"))
 
       doc.body.text must include(
         messages("confirmation.whatHappensNext.heading")
