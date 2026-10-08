@@ -24,6 +24,7 @@ import repositories.SessionRepository
 import views.html.ConfirmationView
 
 import javax.inject.Inject
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ConfirmationController @Inject() (
@@ -47,8 +48,7 @@ class ConfirmationController @Inject() (
       requiredAnswers.fold(
         Future.successful(Redirect(controllers.routes.DeclareAndSubmitController.onPageLoad()))
       )((selectedReturn, submissionResult, updatedAnswers) =>
-        sessionRepository.set(updatedAnswers)
-        Future.successful(
+        sessionRepository.set(updatedAnswers).map { _ =>
           Ok(
             view(
               acknowledgementReference = submissionResult.acknowledgementReference,
@@ -57,7 +57,7 @@ class ConfirmationController @Inject() (
               periodEndDate            = selectedReturn.periodEnd
             )
           )
-        )
+        }
       )
     }
 }

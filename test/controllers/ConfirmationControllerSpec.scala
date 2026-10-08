@@ -18,7 +18,8 @@ package controllers
 
 import base.SpecBase
 import models.{Regime, SelectedReturn, SubmissionResult, UserAnswers}
-import org.mockito.Mockito.{times, verify}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import pages.{SelectReturnPage, SubmissionResultPage}
 import play.api.inject.bind
@@ -28,6 +29,7 @@ import repositories.SessionRepository
 import views.html.ConfirmationView
 
 import java.time.LocalDate
+import scala.concurrent.Future
 
 class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
 
@@ -81,6 +83,7 @@ class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
 
     "must return OK and update journeyComplete flag to true for a GET" in {
       val mockSessionRepository = mock[SessionRepository]
+      when(mockSessionRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
 
       val application =
         applicationBuilder(
