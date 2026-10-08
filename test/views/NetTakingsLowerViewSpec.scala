@@ -54,6 +54,16 @@ class NetTakingsLowerViewSpec extends SpecBase {
       doc.select(".govuk-error-summary__list a").text must include(messages("netTakingsLower.error.required"))
     }
 
+    "must render the inline and summary error when 0 is submitted" in new Setup {
+
+      val boundForm = form.bind(Map("value" -> "0"))
+      val html = view(boundForm, NormalMode, selectedReturn)
+      val doc = Jsoup.parse(html.body)
+
+      doc.select(".govuk-error-summary__list a").text mustBe messages("netTakingsLower.error.zero")
+      doc.select("#value-error").text must include(messages("netTakingsLower.error.zero"))
+    }
+
     "must populate the input when form has a value" in new Setup {
 
       val boundForm = form.fill(BigDecimal("123.45"))

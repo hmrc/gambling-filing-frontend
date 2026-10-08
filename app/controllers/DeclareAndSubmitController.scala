@@ -38,6 +38,7 @@ class DeclareAndSubmitController @Inject() (
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
+  journeyComplete: JourneyCompleteAction,
   sessionRepository: SessionRepository,
   gamblingService: GamblingService,
   val controllerComponents: MessagesControllerComponents,
@@ -45,7 +46,7 @@ class DeclareAndSubmitController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseFilingController {
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
+  def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
@@ -61,7 +62,7 @@ class DeclareAndSubmitController @Inject() (
     }
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
+  def onSubmit(): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
     val language = if (messagesApi.preferred(request).lang.code == "cy") "CYM" else "ENG"

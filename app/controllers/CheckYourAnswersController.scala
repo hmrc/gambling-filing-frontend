@@ -17,7 +17,7 @@
 package controllers
 
 import com.google.inject.Inject
-import controllers.actions.{AuthorisedAction, DataRequiredAction, DataRetrievalAction, ValidateAction}
+import controllers.actions.*
 import models.NormalMode
 import navigation.CheckYourAnswersValidator
 import pages.{MachinesAvailablePage, NegativeDutyPage, SelectReturnPage}
@@ -34,13 +34,14 @@ class CheckYourAnswersController @Inject() (
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
+  journeyComplete: JourneyCompleteAction,
   requireData: DataRequiredAction,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView
 ) extends BaseFilingController {
 
-  def onPageLoad(): Action[AnyContent] =
-    (authorise andThen validate andThen getData andThen requireData) { implicit request =>
+  def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete andThen requireData) {
+    implicit request =>
 
       val answers = request.userAnswers
       answers
@@ -81,9 +82,9 @@ class CheckYourAnswersController @Inject() (
               )
           }
         }
-    }
+  }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
+  def onSubmit(): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
     request.userAnswers.flatMap(_.get(MachinesAvailablePage)) match {
       case None =>
         logger.info(s"no MachinesAvailable found for regNum=${request.regNum}")

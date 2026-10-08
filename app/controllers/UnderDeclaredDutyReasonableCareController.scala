@@ -35,6 +35,7 @@ class UnderDeclaredDutyReasonableCareController @Inject() (
   navigator: Navigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
+  journeyComplete: JourneyCompleteAction,
   formProvider: UnderDeclaredDutyReasonableCareFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: UnderDeclaredDutyReasonableCareView
@@ -43,7 +44,7 @@ class UnderDeclaredDutyReasonableCareController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
     Future.successful {
       request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
         case None =>
@@ -59,7 +60,7 @@ class UnderDeclaredDutyReasonableCareController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
