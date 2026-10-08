@@ -36,6 +36,7 @@ class MgdLowerRateController @Inject() (
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
+  journeyComplete: JourneyCompleteAction,
   formProvider: MgdLowerRateFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: MgdLowerRateView
@@ -44,7 +45,7 @@ class MgdLowerRateController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
@@ -55,7 +56,7 @@ class MgdLowerRateController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")

@@ -18,7 +18,7 @@ package controllers
 
 import base.SpecBase
 import models.SelectReturnTestData.{validResponseOpenReturns, zeroResponseOpenReturns}
-import models.{NormalMode, SelectedReturn, UserAnswers}
+import models.{SelectedReturn, UserAnswers}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{never, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -47,7 +47,7 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
   def userAnswersWithCachedPeriods: UserAnswers =
     UserAnswers(userAnswersId).set(OpenReturnPeriodsPage, validResponseOpenReturns).success.value
 
-  "OpenReturnsController" - {
+  "SelectReturnController" - {
 
     "must return OK and the correct view for a GET, caching the open periods in session" in {
 

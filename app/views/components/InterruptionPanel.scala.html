@@ -1,0 +1,45 @@
+@*
+ * Copyright 2026 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@this()
+
+@(
+    heading: Option[String] = None,
+    body: Option[String] = None,
+    link1Message: Option[String] = None,
+    link1Url: String,
+    link2Message: Option[String] = None,
+    link2Url: String
+)
+
+<div class="govuk-panel govuk-panel--interruption">
+    <h1 class="govuk-panel__title">
+        @heading.map { message => @message }
+    </h1>
+    <div class="govuk-panel__body">
+        <p class="govuk-body">@body.map { message => @message }</p>
+    </div>
+    <div class="govuk-panel__actions">
+        <div class="govuk-button-group">
+            <a href="@link1Url" role="button" draggable="false" class="govuk-button govuk-button--inverse" data-module="govuk-button">
+                @link1Message.map { message => @message }
+            </a>
+            <a class="govuk-link govuk-link--inverse" href="@link2Url">
+                @link2Message.map { message => @message }
+            </a>
+        </div>
+    </div>
+</div>

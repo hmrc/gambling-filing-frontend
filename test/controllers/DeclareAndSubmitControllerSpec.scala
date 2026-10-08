@@ -60,7 +60,7 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
     .set(TotalUnderDeclaredDutyPage, BigDecimal(7.77))
     .success
     .value
-    .set(NegativeDutyBroughtForwardInputPage, BigDecimal(1.99))
+    .set(NegativeDutyBroughtForwardInputPage, BigDecimal(-1.99))
     .success
     .value
 

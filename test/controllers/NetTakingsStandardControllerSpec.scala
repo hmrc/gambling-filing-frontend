@@ -131,6 +131,27 @@ class NetTakingsStandardControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must return a Bad Request and the zero error when 0 is submitted" in {
+
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, netTakingsStandardRoute)
+            .withFormUrlEncodedBody(("value", "0"))
+
+        val boundForm = form.bind(Map("value" -> "0"))
+
+        val view = application.injector.instanceOf[NetTakingsStandardView]
+
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
+        boundForm.errors.map(_.message) mustEqual Seq("netTakingsStandard.error.zero")
+        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
+      }
+    }
+
     "must redirect to SelectReturnController on a GET when no SelectedReturn is found in the session" in {
 
       val application = applicationBuilder(userAnswers = None).build()

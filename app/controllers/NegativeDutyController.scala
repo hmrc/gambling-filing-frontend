@@ -35,6 +35,7 @@ class NegativeDutyController @Inject() (
   navigator: Navigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
+  journeyComplete: JourneyCompleteAction,
   formProvider: NegativeDutyFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: NegativeDutyView
@@ -43,7 +44,7 @@ class NegativeDutyController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
@@ -57,7 +58,7 @@ class NegativeDutyController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
         logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")

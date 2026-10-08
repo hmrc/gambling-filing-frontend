@@ -55,7 +55,7 @@ class SubmitReturnRequestSpec extends AnyWordSpec with Matchers with OptionValue
     .set(TotalUnderDeclaredDutyPage, BigDecimal(7.77))
     .success
     .value
-    .set(NegativeDutyBroughtForwardInputPage, BigDecimal(1.99))
+    .set(NegativeDutyBroughtForwardInputPage, BigDecimal(-1.99))
     .success
     .value
 

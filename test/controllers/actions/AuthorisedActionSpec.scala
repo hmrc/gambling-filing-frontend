@@ -162,7 +162,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Organisation),
               Enrolments(
-                Set(Enrolment("HMRC-GTS-PBD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "XNA00003200000")), "Activated"))
+                Set(Enrolment("HMRC-GTS-PBD", Seq(EnrolmentIdentifier("HMRCGTSPBRN", "XNA00003200000")), "Activated"))
               )
             )
           )
@@ -192,7 +192,7 @@ class AuthorisedActionSpec extends SpecBase {
             `~`(
               Some(AffinityGroup.Organisation),
               Enrolments(
-                Set(Enrolment("HMRC-GTS-RGD", Seq(EnrolmentIdentifier("HMRCGTSGBRN", "XEA00003400000")), "Activated"))
+                Set(Enrolment("HMRC-GTS-RGD", Seq(EnrolmentIdentifier("HMRCGTSRGRN", "XEA00003400000")), "Activated"))
               )
             )
           )

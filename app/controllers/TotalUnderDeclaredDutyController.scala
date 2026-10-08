@@ -29,6 +29,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.TotalUnderDeclaredDutyView
 
 import javax.inject.Inject
+import scala.math.BigDecimal.RoundingMode
 import scala.concurrent.{ExecutionContext, Future}
 
 class TotalUnderDeclaredDutyController @Inject() (
@@ -37,6 +38,7 @@ class TotalUnderDeclaredDutyController @Inject() (
   navigator: Navigator,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
+  journeyComplete: JourneyCompleteAction,
   formProvider: TotalUnderDeclaredDutyFormProvider,
   appConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
@@ -45,7 +47,7 @@ class TotalUnderDeclaredDutyController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData) { implicit request =>
+  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete) { implicit request =>
     request.userAnswers
       .flatMap(_.get(SelectReturnPage))
       .fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
@@ -63,7 +65,7 @@ class TotalUnderDeclaredDutyController @Inject() (
       }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData).async { implicit request =>
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
     request.userAnswers
       .flatMap(_.get(SelectReturnPage))
       .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
@@ -101,7 +103,7 @@ class TotalUnderDeclaredDutyController @Inject() (
       lowerNetTakings + standardNetTakings + higherNetTakings
 
     val percentageOfTotalNetTakings =
-      totalNetTakings * appConfig.underDeclaredDutyPercentage
+      (totalNetTakings * appConfig.underDeclaredDutyPercentage).setScale(2, RoundingMode.HALF_EVEN)
 
     appConfig.underDeclaredDutyMinimumLimit.max(
       percentageOfTotalNetTakings.min(

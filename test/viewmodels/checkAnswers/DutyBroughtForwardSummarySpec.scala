@@ -27,6 +27,7 @@ import views.CurrencyFormatter
 class DutyBroughtForwardSummarySpec extends SpecBase {
 
   private def negativeDutyUrl = routes.NegativeDutyController.onPageLoad(CheckMode).url
+
   private def amountBroughtForwardUrl = routes.NegativeDutyBroughtForwardInputController.onPageLoad(CheckMode).url
 
   private def keys(rows: Seq[uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.SummaryListRow]): Seq[String] =
@@ -64,14 +65,8 @@ class DutyBroughtForwardSummarySpec extends SpecBase {
     "must show both rows when answered Yes and the amount has been submitted" in {
       implicit val msgs: Messages = messages(applicationBuilder().build())
 
-      val answers = emptyUserAnswers
-        .set(NegativeDutyPage, true)
-        .success
-        .value
-        .set(NegativeDutyBroughtForwardInputPage, BigDecimal(123.45))
-        .success
-        .value
-
+      val answers =
+        emptyUserAnswers.set(NegativeDutyPage, true).success.value.set(NegativeDutyBroughtForwardInputPage, BigDecimal("-123.45")).success.value
       val rows = DutyBroughtForwardSummary.rows(answers)
       val negativeDutyRow = rows.find(_.key.content == Text(msgs("negativeDuty.question"))).value
       val amountRow = rows.find(_.key.content == Text(msgs("submittedReturn.previousReturnAmount"))).value
@@ -79,7 +74,7 @@ class DutyBroughtForwardSummarySpec extends SpecBase {
       negativeDutyRow.value.content mustBe Text(msgs("site.yes"))
       negativeDutyRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
 
-      amountRow.value.content mustBe HtmlContent(CurrencyFormatter.formattedAmountHtml(BigDecimal(-123.45)))
+      amountRow.value.content mustBe HtmlContent(CurrencyFormatter.formattedAmountHtml(BigDecimal("-123.45")))
       amountRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
       amountRow.actions.value.items.head.href mustBe amountBroughtForwardUrl
 
@@ -93,27 +88,6 @@ class DutyBroughtForwardSummarySpec extends SpecBase {
       implicit val msgs: Messages = messages(applicationBuilder().build())
 
       val answers = emptyUserAnswers.set(NegativeDutyPage, true).success.value
-
-      val rows = DutyBroughtForwardSummary.rows(answers)
-      val amountRow = rows.find(_.key.content == Text(msgs("submittedReturn.previousReturnAmount"))).value
-
-      amountRow.value.content mustBe HtmlContent(
-        s"""<a class="govuk-link" href="$amountBroughtForwardUrl">${msgs("checkYourAnswers.enterAmount")}</a>"""
-      )
-      amountRow.actions mustBe None
-    }
-
-    "must show the amount row with an 'Enter amount' link when answered Yes and the amount is zero" in {
-      implicit val msgs: Messages = messages(applicationBuilder().build())
-
-      val answers = emptyUserAnswers
-        .set(NegativeDutyPage, true)
-        .success
-        .value
-        .set(NegativeDutyBroughtForwardInputPage, BigDecimal(0))
-        .success
-        .value
-
       val rows = DutyBroughtForwardSummary.rows(answers)
       val amountRow = rows.find(_.key.content == Text(msgs("submittedReturn.previousReturnAmount"))).value
 
