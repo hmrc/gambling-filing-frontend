@@ -47,7 +47,7 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
   def userAnswersWithCachedPeriods: UserAnswers =
     UserAnswers(userAnswersId).set(OpenReturnPeriodsPage, validResponseOpenReturns).success.value
 
-  "OpenReturnsController" - {
+  "SelectReturnController" - {
 
     "must return OK and the correct view for a GET, caching the open periods in session" in {
 

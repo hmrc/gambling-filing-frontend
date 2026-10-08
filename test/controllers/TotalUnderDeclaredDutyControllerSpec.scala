@@ -257,6 +257,24 @@ class TotalUnderDeclaredDutyControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must round the calculated maximum to 2dp using HALF_EVEN" in {
+      val userAnswers =
+        UserAnswers(userAnswersId)
+          .set(SelectReturnPage, selectedReturn)
+          .success
+          .value
+          .set(NetTakingsLowerPage, BigDecimal("1200000.50"))
+          .success
+          .value
+
+      val application = configuredApplicationBuilder(userAnswers = Some(userAnswers)).build()
+
+      running(application) {
+        val request = FakeRequest(POST, totalUnderDeclaredDutyRoute).withFormUrlEncodedBody("value" -> "12000.01")
+        status(route(application, request).value) mustEqual BAD_REQUEST
+      }
+    }
+
     "must use £10,000 as the minimum maximum when 1% of total net takings is less than £10,000" in {
 
       val userAnswers =

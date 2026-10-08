@@ -19,20 +19,32 @@ package forms
 import forms.mappings.Mappings
 import javax.inject.Inject
 import play.api.data.Form
+import play.api.data.validation.{Constraint, Invalid, Valid}
 
 class NegativeDutyBroughtForwardInputFormProvider @Inject() extends Mappings {
 
   def apply(): Form[BigDecimal] =
     Form(
-      "value" -> currency(
-        "negativeDutyBroughtForwardInput.error.required",
-        "negativeDutyBroughtForwardInput.error.invalid",
-        "negativeDutyBroughtForwardInput.error.range"
-      ).verifying(
-        firstError(
-          maximumCurrency(BigDecimal(1000000000), "negativeDutyBroughtForwardInput.error.range"),
-          minimumCurrency(BigDecimal(-1000000000), "negativeDutyBroughtForwardInput.error.range")
+      "value" ->
+        currency(
+          "negativeDutyBroughtForwardInput.error.required",
+          "negativeDutyBroughtForwardInput.error.invalid",
+          "negativeDutyBroughtForwardInput.error.range"
+        ).verifying(
+          validAmount
         )
-      )
     )
+
+  private def validAmount: Constraint[BigDecimal] =
+    Constraint { value =>
+      if (value == 0) {
+        Invalid("negativeDutyBroughtForwardInput.error.required")
+      } else if (value > BigDecimal(1000000000)) {
+        Invalid("negativeDutyBroughtForwardInput.error.range")
+      } else if (value < BigDecimal(-1000000000)) {
+        Invalid("negativeDutyBroughtForwardInput.error.range")
+      } else {
+        Valid
+      }
+    }
 }

@@ -29,7 +29,7 @@ class DeclaredSubmissionSpec extends AnyWordSpec with Matchers {
       validResponseDeclaredSubmission.netMGDPayableOnThisReturn mustBe BigDecimal(-127.55)
     }
 
-    "apply method reverses sign on amountBroughtForward correctly" in {
+    "apply method uses the canonical negative amountBroughtForward as-is" in {
       validResponseDeclaredSubmission.amountBroughtForward mustBe BigDecimal(-1.99)
     }
 
@@ -100,7 +100,7 @@ object DeclaredSubmissionTestData {
   val validResponseDeclaredSubmission = DeclaredSubmission(
     dutyPayableBeforeAdjustments        = -133.33,
     underDeclaredTaxFromPreviousPeriods = 7.77,
-    amountBroughtForward                = 1.99
+    amountBroughtForward                = -1.99
   )
 
   val zeroResponseDeclaredSubmission = DeclaredSubmission(
