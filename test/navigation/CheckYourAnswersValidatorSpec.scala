@@ -25,24 +25,24 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
   private val amount = BigDecimal(100)
 
   private def machinesComplete = emptyUserAnswers
-      .set(MachinesAvailablePage, 10L)
-      .success
-      .value
+    .set(MachinesAvailablePage, 10L)
+    .success
+    .value
 
   private def lowerComplete = machinesComplete
-      .set(NetTakingsLowerRatePage, false)
-      .success
-      .value
+    .set(NetTakingsLowerRatePage, false)
+    .success
+    .value
 
   private def standardComplete = lowerComplete
-      .set(NetTakingsStandardRatePage, false)
-      .success
-      .value
+    .set(NetTakingsStandardRatePage, false)
+    .success
+    .value
 
   private def higherComplete = standardComplete
-      .set(NetTakingsHigherRatePage, false)
-      .success
-      .value
+    .set(NetTakingsHigherRatePage, false)
+    .success
+    .value
 
   "CheckYourAnswersValidator" - {
 
@@ -62,9 +62,9 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
 
     "must return Lower Net Takings when Lower Rate is Yes and Net Takings is missing" in {
       val answers = machinesComplete
-          .set(NetTakingsLowerRatePage, true)
-          .success
-          .value
+        .set(NetTakingsLowerRatePage, true)
+        .success
+        .value
 
       CheckYourAnswersValidator
         .validateFirstIncompletePage(answers, NormalMode) mustBe
@@ -94,7 +94,7 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
     }
 
     "must return Higher Rate screener when it is missing" in {
-      
+
       CheckYourAnswersValidator
         .validateFirstIncompletePage(standardComplete, NormalMode) mustBe
         Some(controllers.routes.NetTakingsHigherRateController.onPageLoad(NormalMode))

@@ -36,7 +36,7 @@ object CheckYourAnswersValidator {
 
     incompletePages.flatten.headOption
   }
-  
+
   private def machines(answers: UserAnswers, mode: Mode): Seq[Option[Call]] =
     Seq(
       Option.when(
@@ -53,13 +53,11 @@ object CheckYourAnswersValidator {
       )(
         routes.NetTakingsLowerRateController.onPageLoad(mode)
       ),
-
       Option.when(
         answers.get(NetTakingsLowerRatePage).contains(true) && isMissingAmount(answers.get(NetTakingsLowerPage))
       )(
         routes.NetTakingsLowerController.onPageLoad(mode)
       ),
-
       Option.when(
         answers.get(NetTakingsLowerRatePage).contains(true) && isMissingAmount(answers.get(MgdLowerRatePage))
       )(
@@ -74,13 +72,11 @@ object CheckYourAnswersValidator {
       )(
         routes.NetTakingsStandardRateController.onPageLoad(mode)
       ),
-
       Option.when(
         answers.get(NetTakingsStandardRatePage).contains(true) && isMissingAmount(answers.get(NetTakingsStandardPage))
       )(
         routes.NetTakingsStandardController.onPageLoad(mode)
       ),
-
       Option.when(
         answers.get(NetTakingsStandardRatePage).contains(true) && isMissingAmount(answers.get(MgdStandardRatePage))
       )(
@@ -95,13 +91,11 @@ object CheckYourAnswersValidator {
       )(
         routes.NetTakingsHigherRateController.onPageLoad(mode)
       ),
-
       Option.when(
         answers.get(NetTakingsHigherRatePage).contains(true) && isMissingAmount(answers.get(NetTakingsHigherPage))
       )(
         routes.NetTakingsHigherController.onPageLoad(mode)
       ),
-
       Option.when(
         answers.get(NetTakingsHigherRatePage).contains(true) && isMissingAmount(answers.get(MgdHigherRatePage))
       )(
@@ -116,13 +110,11 @@ object CheckYourAnswersValidator {
       )(
         routes.UnderDeclaredDutyController.onPageLoad(mode)
       ),
-
       Option.when(
         answers.get(UnderDeclaredDutyPage).contains(true) && answers.get(UnderDeclaredDutyReasonableCarePage).isEmpty
       )(
         routes.UnderDeclaredDutyReasonableCareController.onPageLoad(mode)
       ),
-
       Option.when(
         answers.get(UnderDeclaredDutyPage).contains(true) &&
           answers
@@ -133,7 +125,6 @@ object CheckYourAnswersValidator {
         routes.UnderDeclaredDutyLimitsController
           .onPageLoad(mode)
       ),
-
       Option.when(
         answers.get(UnderDeclaredDutyPage).contains(true) &&
           answers
@@ -157,7 +148,6 @@ object CheckYourAnswersValidator {
       )(
         routes.NegativeDutyController.onPageLoad(mode)
       ),
-
       Option.when(
         answers.get(NegativeDutyPage).contains(true) && isMissingAmount(answers.get(NegativeDutyBroughtForwardInputPage))
       )(
