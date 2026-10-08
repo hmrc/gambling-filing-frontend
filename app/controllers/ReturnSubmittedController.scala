@@ -20,9 +20,11 @@ import controllers.actions.*
 import pages.{SelectReturnPage, SubmissionResultPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import views.html.ReturnSubmittedView
 
 import javax.inject.Inject
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
 class ReturnSubmittedController @Inject() (
@@ -30,6 +32,7 @@ class ReturnSubmittedController @Inject() (
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
+  sessionRepository: SessionRepository,
   view: ReturnSubmittedView
 ) extends BaseFilingController {
 
@@ -39,12 +42,13 @@ class ReturnSubmittedController @Inject() (
         for
           selectedReturn   <- request.userAnswers.flatMap(_.get(SelectReturnPage))
           submissionResult <- request.userAnswers.flatMap(_.get(SubmissionResultPage))
-        yield (selectedReturn, submissionResult)
+          updatedAnswers   <- request.userAnswers.map(_.copy(journeyComplete = true))
+        yield (selectedReturn, submissionResult, updatedAnswers)
 
       requiredAnswers.fold(
         Future.successful(Redirect(controllers.routes.DeclareAndSubmitController.onPageLoad()))
-      )((selectedReturn, submissionResult) =>
-        Future.successful(
+      )((selectedReturn, submissionResult, updatedAnswers) =>
+        sessionRepository.set(updatedAnswers).map { _ =>
           Ok(
             view(
               acknowledgementReference = submissionResult.acknowledgementReference,
@@ -53,7 +57,7 @@ class ReturnSubmittedController @Inject() (
               periodEndDate            = selectedReturn.periodEnd
             )
           )
-        )
+        }
       )
     }
 }

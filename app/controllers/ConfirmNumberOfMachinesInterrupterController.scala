@@ -29,12 +29,13 @@ class ConfirmNumberOfMachinesInterrupterController @Inject() (
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
+  journeyComplete: JourneyCompleteAction,
   val controllerComponents: MessagesControllerComponents,
   view: ConfirmNumberOfMachinesInterrupterView
 ) extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] =
-    (authorise andThen validate andThen getData).async { implicit request =>
+    (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
       Future.successful(Ok(view()))
     }
 }
