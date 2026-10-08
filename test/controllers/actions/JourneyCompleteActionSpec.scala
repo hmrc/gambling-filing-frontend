@@ -19,11 +19,15 @@ package controllers.actions
 import base.SpecBase
 import models.requests.OptionalDataRequest
 import models.{Regime, UserAnswers}
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{times, verify, when}
 import org.scalatestplus.mockito.MockitoSugar
 import play.api.http.Status.SEE_OTHER
+import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{defaultAwaitTimeout, redirectLocation, status}
+import repositories.SessionRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -31,7 +35,7 @@ import scala.language.postfixOps
 
 class JourneyCompleteActionSpec extends SpecBase with MockitoSugar {
 
-  class Harness extends JourneyCompleteActionImpl() {
+  class Harness(sessionRepository: SessionRepository) extends JourneyCompleteActionImpl(sessionRepository) {
     def callRefine[A](request: OptionalDataRequest[A]): Future[Either[Result, OptionalDataRequest[A]]] = refine(request)
   }
 
@@ -41,7 +45,8 @@ class JourneyCompleteActionSpec extends SpecBase with MockitoSugar {
 
       "must redirect to SelectReturnController when userAnswers is 'None' in the request" in {
 
-        val action = new Harness()
+        val sessionRepository = mock[SessionRepository]
+        val action = new Harness(sessionRepository)
 
         val resultEither = action.callRefine(OptionalDataRequest(FakeRequest(), "regNum123", Regime.MGD, None)).futureValue
 
@@ -59,8 +64,10 @@ class JourneyCompleteActionSpec extends SpecBase with MockitoSugar {
 
       "must redirect to SelectReturnController when userAnswers.journeyComplete is true in the request" in {
 
+        val sessionRepository = mock[SessionRepository]
+        when(sessionRepository.set(any())) thenReturn Future(true)
         val userAnswers = Some(UserAnswers("id").copy(journeyComplete = true))
-        val action = new Harness()
+        val action = new Harness(sessionRepository)
 
         val resultEither = action.callRefine(OptionalDataRequest(FakeRequest(), "regNum123", Regime.MGD, userAnswers)).futureValue
 
@@ -68,6 +75,11 @@ class JourneyCompleteActionSpec extends SpecBase with MockitoSugar {
           case Left(result) =>
             status(Future.successful(result)) mustEqual SEE_OTHER
             redirectLocation(Future.successful(result)) mustBe Some(controllers.routes.SelectReturnController.onPageLoad().url)
+
+            val userAnswersCaptor = org.mockito.ArgumentCaptor.forClass(classOf[UserAnswers])
+            verify(sessionRepository).set(userAnswersCaptor.capture())
+            userAnswersCaptor.getValue.journeyComplete.booleanValue() mustEqual false
+            userAnswersCaptor.getValue.data mustEqual Json.obj()
             true
           case Right(r) => false
         } mustBe true
@@ -75,15 +87,18 @@ class JourneyCompleteActionSpec extends SpecBase with MockitoSugar {
 
       "must forward the original request when userAnswers.journeyComplete is false" in {
 
+        val sessionRepository = mock[SessionRepository]
         val userAnswers = Some(UserAnswers("id").copy(journeyComplete = false))
         val optionalDataRequest = OptionalDataRequest(FakeRequest(), "regNum123", Regime.MGD, userAnswers)
-        val action = new Harness()
+        val action = new Harness(sessionRepository)
 
         val resultEither = action.callRefine(optionalDataRequest).futureValue
 
         resultEither match {
           case Right(result) =>
             result mustEqual optionalDataRequest
+            val userAnswersCaptor = org.mockito.ArgumentCaptor.forClass(classOf[UserAnswers])
+            verify(sessionRepository, times(0)).set(userAnswersCaptor.capture())
             true
           case Left(r) => false
         } mustBe true

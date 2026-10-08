@@ -19,18 +19,31 @@ package controllers.actions
 import controllers.routes
 import models.requests.OptionalDataRequest
 import play.api.Logging
+import play.api.libs.json.Json
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{ActionRefiner, Result}
+import repositories.SessionRepository
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class JourneyCompleteActionImpl @Inject() (implicit val executionContext: ExecutionContext) extends JourneyCompleteAction with Logging {
+class JourneyCompleteActionImpl @Inject() (
+  sessionRepository: SessionRepository
+)(implicit val executionContext: ExecutionContext)
+    extends JourneyCompleteAction
+    with Logging {
 
   override protected def refine[A](request: OptionalDataRequest[A]): Future[Either[Result, OptionalDataRequest[A]]] = {
-    request.userAnswers.map(_.journeyComplete) match {
-      case Some(false) => Future.successful(Right(request))
-      case _           => Future.successful(Left(Redirect(routes.SelectReturnController.onPageLoad())))
+    request.userAnswers match {
+      case Some(ua) =>
+        if (ua.journeyComplete) {
+          sessionRepository.set(ua.copy(data = Json.obj(), journeyComplete = false)).map { _ =>
+            Left(Redirect(routes.SelectReturnController.onPageLoad()))
+          }
+        } else {
+          Future.successful(Right(request))
+        }
+      case _ => Future.successful(Left(Redirect(routes.SelectReturnController.onPageLoad())))
     }
   }
 }
