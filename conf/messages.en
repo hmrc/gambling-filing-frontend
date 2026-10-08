@@ -169,6 +169,7 @@ netTakingsLower.hint = Enter pounds and pence, like £1,150.72
 netTakingsLower.error.required = Enter your net takings
 netTakingsLower.error.invalid = Enter your net takings in pounds and pence, like 1,510.72
 netTakingsLower.error.range = Your net takings must be between -£1 billion and £1 billion
+netTakingsLower.error.zero = Enter your net takings
 
 netTakingsStandard.title = What are your total net takings liable to the standard rate of duty?
 netTakingsStandard.heading = What are your total net takings liable to the standard rate of duty?
@@ -177,6 +178,7 @@ netTakingsStandard.hint = Enter pounds and pence, like £1,150.72
 netTakingsStandard.error.required = Enter your net takings
 netTakingsStandard.error.invalid = Enter your net takings in pounds and pence, like 1,510.72
 netTakingsStandard.error.range = Your net takings must be between -£1 billion and £1 billion
+netTakingsStandard.error.zero = Enter your net takings
 
 netTakingsHigher.title = What are your total net takings liable to the higher rate of duty?
 netTakingsHigher.heading = What are your total net takings liable to the higher rate of duty?
@@ -185,6 +187,7 @@ netTakingsHigher.hint = Enter pounds and pence, like £1,150.72
 netTakingsHigher.error.required = Enter your net takings
 netTakingsHigher.error.invalid = Enter your net takings in pounds and pence, like 1,510.72
 netTakingsHigher.error.range = Your net takings must be between -£1 billion and £1 billion
+netTakingsHigher.error.zero = Enter your net takings
 
 selectFiledReturn.title = Which period do you want to view?
 selectFiledReturn.caption = View filed return
