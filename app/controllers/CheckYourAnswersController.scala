@@ -19,6 +19,7 @@ package controllers
 import com.google.inject.Inject
 import controllers.actions.{AuthorisedAction, DataRequiredAction, DataRetrievalAction, ValidateAction}
 import models.NormalMode
+import navigation.CheckYourAnswersValidator
 import pages.{MachinesAvailablePage, NegativeDutyPage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -38,28 +39,49 @@ class CheckYourAnswersController @Inject() (
   view: CheckYourAnswersView
 ) extends BaseFilingController {
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData andThen requireData) { implicit request =>
+  def onPageLoad(): Action[AnyContent] =
+    (authorise andThen validate andThen getData andThen requireData) { implicit request =>
 
-    val answers = request.userAnswers
-    val backLink =
-      answers.get(NegativeDutyPage) match {
-        case Some(false) =>
-          Some(routes.NegativeDutyController.onPageLoad(NormalMode).url)
-        case _ =>
-          Some(routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode).url)
-      }
+      val answers = request.userAnswers
+      answers
+        .get(SelectReturnPage)
+        .fold(
+          Redirect(
+            controllers.routes.SelectReturnController.onPageLoad()
+          )
+        ) { selectedReturn =>
+          val missingAnswersPage = CheckYourAnswersValidator.validateFirstIncompletePage(answers, NormalMode)
 
-    answers.get(SelectReturnPage).fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
-      val machines = SummaryListViewModel(rows = MachinesAvailableSummary.rows(answers))
-      val lowerRate = SummaryListViewModel(rows = LowerRateSummary.rows(answers))
-      val standardRate = SummaryListViewModel(rows = StandardRateSummary.rows(answers))
-      val higherRate = SummaryListViewModel(rows = HigherRateSummary.rows(answers))
-      val underDeclaredDuty = SummaryListViewModel(rows = UnderDeclaredDutySummary.rows(answers))
-      val dutyBroughtForward = SummaryListViewModel(rows = DutyBroughtForwardSummary.rows(answers))
+          missingAnswersPage match {
+            case Some(nextPage) => Redirect(nextPage)
+            case None =>
+              val backLink = answers.get(NegativeDutyPage) match {
+                case Some(false) => Some(routes.NegativeDutyController.onPageLoad(NormalMode).url)
+                case _           => Some(routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode).url)
+              }
 
-      Ok(view(selectedReturn, machines, lowerRate, standardRate, higherRate, underDeclaredDuty, dutyBroughtForward, backLink))
+              val machines = SummaryListViewModel(rows = MachinesAvailableSummary.rows(answers))
+              val lowerRate = SummaryListViewModel(rows = LowerRateSummary.rows(answers))
+              val standardRate = SummaryListViewModel(rows = StandardRateSummary.rows(answers))
+              val higherRate = SummaryListViewModel(rows = HigherRateSummary.rows(answers))
+              val underDeclaredDuty = SummaryListViewModel(rows = UnderDeclaredDutySummary.rows(answers))
+              val dutyBroughtForward = SummaryListViewModel(rows = DutyBroughtForwardSummary.rows(answers))
+
+              Ok(
+                view(
+                  selectedReturn,
+                  machines,
+                  lowerRate,
+                  standardRate,
+                  higherRate,
+                  underDeclaredDuty,
+                  dutyBroughtForward,
+                  backLink
+                )
+              )
+          }
+        }
     }
-  }
 
   def onSubmit(): Action[AnyContent] = (authorise andThen validate andThen getData).async { implicit request =>
     request.userAnswers.flatMap(_.get(MachinesAvailablePage)) match {
