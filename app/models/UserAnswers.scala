@@ -66,6 +66,7 @@ final case class UserAnswers(
 
   def selectPeriod(newPeriod: SelectedReturn): Try[UserAnswers] = {
     val periodChanged = get(SelectReturnPage).exists(_ != newPeriod)
+    // set journeyComplete = false here as JourneyCompleteAction can't be added to SelectReturnController as otherwise gets stuck in an endless redirect loop
     val base = if (periodChanged || journeyComplete) copy(data = Json.obj(), journeyComplete = false) else this
     base.set(SelectReturnPage, newPeriod)
   }
