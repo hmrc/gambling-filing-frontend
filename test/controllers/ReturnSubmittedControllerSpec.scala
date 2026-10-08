@@ -26,12 +26,12 @@ import play.api.inject.bind
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
-import views.html.ConfirmationView
+import views.html.ReturnSubmittedView
 
 import java.time.LocalDate
 import scala.concurrent.Future
 
-class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
+class ReturnSubmittedControllerSpec extends SpecBase with MockitoSugar {
 
   val selectedReturn: SelectedReturn =
     SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
@@ -49,7 +49,7 @@ class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
       .value
 
   lazy val confirmationRoute: String =
-    routes.ConfirmationController.onPageLoad().url
+    routes.ReturnSubmittedController.onPageLoad().url
 
   "Confirmation Controller" - {
 
@@ -64,7 +64,7 @@ class ConfirmationControllerSpec extends SpecBase with MockitoSugar {
       running(application) {
         val request = FakeRequest(GET, confirmationRoute)
         val result = route(application, request).value
-        val view = application.injector.instanceOf[ConfirmationView]
+        val view = application.injector.instanceOf[ReturnSubmittedView]
 
         status(result) mustEqual OK
 

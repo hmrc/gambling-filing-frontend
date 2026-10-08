@@ -22,13 +22,13 @@ import org.jsoup.Jsoup
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.mvc.Request
 import play.api.test.FakeRequest
-import views.html.ConfirmationView
+import views.html.ReturnSubmittedView
 
 import java.time.LocalDate
 
-class ConfirmationViewSpec extends SpecBase {
+class ReturnSubmittedSpec extends SpecBase {
 
-  "ConfirmationView" - {
+  "ReturnSubmittedView" - {
     "must render the page with the correct content" in new Setup {
 
       val html = view(
@@ -47,19 +47,13 @@ class ConfirmationViewSpec extends SpecBase {
 
       doc.body.text must include(acknowledgementReference)
 
+      doc.body.text must include(messages("confirmation.whatHappensNext.returnMessage"))
+
+      doc.body.text must include(messages("confirmation.whatHappensNext.contact"))
+
       doc.body.text must include(
         messages("confirmation.whatHappensNext.heading")
       )
-
-      doc.body.text must include(
-        messages("confirmation.whatHappensNext.directDebit")
-      )
-
-      val helpdeskLink =
-        doc.select("""a[href="https://www.gov.uk/find-hmrc-contacts/technical-support-with-hmrc-online-services"]""")
-
-      helpdeskLink.text mustBe
-        messages("confirmation.helpdesk.link")
 
       val accountLink =
         doc
@@ -75,7 +69,7 @@ class ConfirmationViewSpec extends SpecBase {
   trait Setup {
 
     val app = applicationBuilder().build()
-    val view = app.injector.instanceOf[ConfirmationView]
+    val view = app.injector.instanceOf[ReturnSubmittedView]
     val selectedReturn = SelectedReturn(
       1,
       LocalDate.of(2025, 1, 1),

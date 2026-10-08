@@ -21,19 +21,19 @@ import pages.{SelectReturnPage, SubmissionResultPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
-import views.html.ConfirmationView
+import views.html.ReturnSubmittedView
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class ConfirmationController @Inject() (
+class ReturnSubmittedController @Inject() (
   override val messagesApi: MessagesApi,
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   val controllerComponents: MessagesControllerComponents,
   sessionRepository: SessionRepository,
-  view: ConfirmationView
+  view: ReturnSubmittedView
 ) extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] =

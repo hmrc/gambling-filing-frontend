@@ -21,7 +21,6 @@
 @this(
     layout: templates.Layout,
     paragraph: Paragraph,
-    paragraphWithLink: ParagraphMessageWithLink,
     heading: H1,
     govukPanel: GovukPanel
 )
@@ -52,42 +51,13 @@ showBackLink = false
         )
     )
 
-    @paragraph(
-        messages(
-            "confirmation.submission",
-            periodStartDate.format(DateTimeFormats.dateTimeFormat()(messages.lang)),
-            periodEndDate.format(DateTimeFormats.dateTimeFormat()(messages.lang)),
-            submissionDateTime
-        )
-    )
-
-    @paragraphWithLink(
-        message1 = Some(messages("confirmation.processing.p1")),
-        linkMessage = messages("confirmation.helpdesk.link"),
-        message2 = Some(messages("confirmation.processing.p2")),
-        linkUrl = "https://www.gov.uk/find-hmrc-contacts/technical-support-with-hmrc-online-services",
-        target = "_blank",
-        linkRel = "noopener noreferrer",
-        linkFullStop = false
-    )
-
     <h2 class="govuk-heading-m">
         @messages("confirmation.whatHappensNext.heading")
     </h2>
 
-    @paragraph(
-        messages("confirmation.whatHappensNext.directDebit")
-    )
+    @paragraph(messages("confirmation.whatHappensNext.returnMessage"))
 
-    @paragraphWithLink(
-        message1 = Some(messages("confirmation.whatHappensNext.paymentMethods.p1")),
-        linkMessage = messages("confirmation.whatHappensNext.paymentMethods.link"),
-        message2 = None,
-        linkUrl = "https://www.gov.uk/pay-machine-games-duty",
-        target = "_blank",
-        linkRel = "noopener noreferrer",
-        linkFullStop = false
-    )
+    @paragraph(messages("confirmation.whatHappensNext.contact"))
 
     <p class="govuk-body">
         <a class="govuk-link"
