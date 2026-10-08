@@ -44,7 +44,7 @@ showBackLink = false
                 <div>
                     ${messages("confirmation.reference")}
                     <br>
-                    <strong>$acknowledgementReference</strong>
+                    <strong>${acknowledgementReference.grouped(4).mkString(" ")}</strong>
                 </div>
                 """
             )
