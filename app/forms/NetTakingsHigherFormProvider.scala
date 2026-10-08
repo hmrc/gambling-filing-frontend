@@ -28,6 +28,6 @@ class NetTakingsHigherFormProvider @Inject() extends Mappings {
         "netTakingsHigher.error.required",
         "netTakingsHigher.error.invalid",
         "netTakingsHigher.error.range"
-      )
+      ).verifying("netTakingsHigher.error.zero", _ != BigDecimal(0))
     )
 }
