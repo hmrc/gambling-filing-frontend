@@ -18,7 +18,7 @@
 -- Recommend running via DBeaver for large scripts.
 -- ============================================================================
 
-SET DEFINE OFF;
+--SET DEFINE OFF;
 
 -- ============================================================================
 -- 0. CLEAN SLATE — Delete existing data for XWM00003001200
