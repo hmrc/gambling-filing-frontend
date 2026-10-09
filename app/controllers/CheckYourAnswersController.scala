@@ -51,7 +51,7 @@ class CheckYourAnswersController @Inject() (
             controllers.routes.SelectReturnController.onPageLoad()
           )
         ) { selectedReturn =>
-          val missingAnswersPage = CheckYourAnswersValidator.validateFirstIncompletePage(answers, NormalMode)
+          val missingAnswersPage = CheckYourAnswersValidator.checkForMissingAnswers(answers, NormalMode)
 
           missingAnswersPage match {
             case Some(nextPage) => Redirect(nextPage)

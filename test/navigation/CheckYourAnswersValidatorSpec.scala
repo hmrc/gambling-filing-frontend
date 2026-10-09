@@ -49,14 +49,14 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
     "must return Machines Available when machines is missing" in {
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(emptyUserAnswers, NormalMode) mustBe
+        .checkForMissingAnswers(emptyUserAnswers, NormalMode) mustBe
         Some(controllers.routes.MachinesAvailableController.onPageLoad(NormalMode))
     }
 
     "must return Lower Rate screener when it is missing" in {
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(machinesComplete, NormalMode) mustBe
+        .checkForMissingAnswers(machinesComplete, NormalMode) mustBe
         Some(controllers.routes.NetTakingsLowerRateController.onPageLoad(NormalMode))
     }
 
@@ -67,7 +67,7 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
         .value
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(answers, NormalMode) mustBe
+        .checkForMissingAnswers(answers, NormalMode) mustBe
         Some(controllers.routes.NetTakingsLowerController.onPageLoad(NormalMode))
     }
 
@@ -82,28 +82,28 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
           .value
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(answers, NormalMode) mustBe
+        .checkForMissingAnswers(answers, NormalMode) mustBe
         Some(controllers.routes.MgdLowerRateController.onPageLoad(NormalMode))
     }
 
     "must return Standard Rate screener when it is missing" in {
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(lowerComplete, NormalMode) mustBe
+        .checkForMissingAnswers(lowerComplete, NormalMode) mustBe
         Some(controllers.routes.NetTakingsStandardRateController.onPageLoad(NormalMode))
     }
 
     "must return Higher Rate screener when it is missing" in {
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(standardComplete, NormalMode) mustBe
+        .checkForMissingAnswers(standardComplete, NormalMode) mustBe
         Some(controllers.routes.NetTakingsHigherRateController.onPageLoad(NormalMode))
     }
 
     "must return Under Declared Duty when it is missing" in {
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(higherComplete, NormalMode) mustBe
+        .checkForMissingAnswers(higherComplete, NormalMode) mustBe
         Some(controllers.routes.UnderDeclaredDutyController.onPageLoad(NormalMode))
     }
 
@@ -115,7 +115,7 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
           .value
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(answers, NormalMode) mustBe
+        .checkForMissingAnswers(answers, NormalMode) mustBe
         Some(controllers.routes.UnderDeclaredDutyReasonableCareController.onPageLoad(NormalMode))
     }
 
@@ -130,7 +130,7 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
           .value
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(answers, NormalMode) mustBe
+        .checkForMissingAnswers(answers, NormalMode) mustBe
         Some(controllers.routes.UnderDeclaredDutyLimitsController.onPageLoad(NormalMode))
     }
 
@@ -148,7 +148,7 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
           .value
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(answers, NormalMode) mustBe
+        .checkForMissingAnswers(answers, NormalMode) mustBe
         Some(controllers.routes.TotalUnderDeclaredDutyController.onPageLoad(NormalMode))
     }
 
@@ -160,7 +160,7 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
           .value
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(answers, NormalMode) mustBe
+        .checkForMissingAnswers(answers, NormalMode) mustBe
         Some(controllers.routes.NegativeDutyController.onPageLoad(NormalMode))
     }
 
@@ -175,14 +175,14 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
           .value
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(answers, NormalMode) mustBe
+        .checkForMissingAnswers(answers, NormalMode) mustBe
         Some(controllers.routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode))
     }
 
     "must use CheckMode when supplied" in {
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(machinesComplete, CheckMode) mustBe
+        .checkForMissingAnswers(machinesComplete, CheckMode) mustBe
         Some(controllers.routes.NetTakingsLowerRateController.onPageLoad(CheckMode))
     }
 
@@ -197,7 +197,7 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
           .value
 
       CheckYourAnswersValidator
-        .validateFirstIncompletePage(answers, NormalMode) mustBe None
+        .checkForMissingAnswers(answers, NormalMode) mustBe None
     }
   }
 }

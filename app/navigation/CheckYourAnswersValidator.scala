@@ -18,139 +18,103 @@ package navigation
 
 import controllers.routes
 import models.{Mode, UserAnswers}
+import play.api.libs.json.Reads
 import play.api.mvc.Call
 import pages.*
 
 object CheckYourAnswersValidator {
 
-  private def isMissingAmount(value: Option[BigDecimal]): Boolean = value.forall(_ == BigDecimal(0))
+  def checkForMissingAnswers(answers: UserAnswers, mode: Mode): Option[Call] = {
+    implicit val ua: UserAnswers = answers
 
-  def validateFirstIncompletePage(answers: UserAnswers, mode: Mode): Option[Call] = {
     val incompletePages =
-      machines(answers, mode) ++
-        lowerRate(answers, mode) ++
-        standardRate(answers, mode) ++
-        higherRate(answers, mode) ++
-        underDeclaredDuty(answers, mode) ++
-        dutyBroughtForward(answers, mode)
+      machines(mode) ++
+        rateSection(
+          ratePage       = NetTakingsLowerRatePage,
+          rateCall       = routes.NetTakingsLowerRateController.onPageLoad(mode),
+          netTakingsPage = NetTakingsLowerPage,
+          netTakingsCall = routes.NetTakingsLowerController.onPageLoad(mode),
+          mgdPage        = MgdLowerRatePage,
+          mgdCall        = routes.MgdLowerRateController.onPageLoad(mode)
+        ) ++
+        rateSection(
+          ratePage       = NetTakingsStandardRatePage,
+          rateCall       = routes.NetTakingsStandardRateController.onPageLoad(mode),
+          netTakingsPage = NetTakingsStandardPage,
+          netTakingsCall = routes.NetTakingsStandardController.onPageLoad(mode),
+          mgdPage        = MgdStandardRatePage,
+          mgdCall        = routes.MgdStandardRateController.onPageLoad(mode)
+        ) ++
+        rateSection(
+          ratePage       = NetTakingsHigherRatePage,
+          rateCall       = routes.NetTakingsHigherRateController.onPageLoad(mode),
+          netTakingsPage = NetTakingsHigherPage,
+          netTakingsCall = routes.NetTakingsHigherController.onPageLoad(mode),
+          mgdPage        = MgdHigherRatePage,
+          mgdCall        = routes.MgdHigherRateController.onPageLoad(mode)
+        ) ++
+        underDeclaredDuty(mode) ++
+        dutyBroughtForward(mode)
 
     incompletePages.flatten.headOption
   }
 
-  private def machines(answers: UserAnswers, mode: Mode): Seq[Option[Call]] =
+  private def unanswered[A](page: QuestionPage[A])(implicit answers: UserAnswers, rds: Reads[A]): Boolean =
+    answers.get(page).isEmpty
+
+  private def answeredYes(page: QuestionPage[Boolean])(implicit answers: UserAnswers): Boolean =
+    answers.get(page).contains(true)
+
+  private def answeredNo(page: QuestionPage[Boolean])(implicit answers: UserAnswers): Boolean =
+    answers.get(page).contains(false)
+
+  private def missingAmount(page: QuestionPage[BigDecimal])(implicit answers: UserAnswers): Boolean =
+    answers.get(page).forall(_ == BigDecimal(0))
+
+  private def machines(mode: Mode)(implicit answers: UserAnswers): Seq[Option[Call]] =
     Seq(
-      Option.when(
-        answers.get(MachinesAvailablePage).isEmpty
-      )(
-        routes.MachinesAvailableController.onPageLoad(mode)
-      )
+      Option.when(unanswered(MachinesAvailablePage))(routes.MachinesAvailableController.onPageLoad(mode))
     )
 
-  private def lowerRate(answers: UserAnswers, mode: Mode): Seq[Option[Call]] =
+  private def rateSection(
+    ratePage: QuestionPage[Boolean],
+    rateCall: Call,
+    netTakingsPage: QuestionPage[BigDecimal],
+    netTakingsCall: Call,
+    mgdPage: QuestionPage[BigDecimal],
+    mgdCall: Call
+  )(implicit answers: UserAnswers): Seq[Option[Call]] = {
+    val rateApplies = answeredYes(ratePage)
     Seq(
-      Option.when(
-        answers.get(NetTakingsLowerRatePage).isEmpty
-      )(
-        routes.NetTakingsLowerRateController.onPageLoad(mode)
-      ),
-      Option.when(
-        answers.get(NetTakingsLowerRatePage).contains(true) && isMissingAmount(answers.get(NetTakingsLowerPage))
-      )(
-        routes.NetTakingsLowerController.onPageLoad(mode)
-      ),
-      Option.when(
-        answers.get(NetTakingsLowerRatePage).contains(true) && isMissingAmount(answers.get(MgdLowerRatePage))
-      )(
-        routes.MgdLowerRateController.onPageLoad(mode)
-      )
+      Option.when(unanswered(ratePage))(rateCall),
+      Option.when(rateApplies && missingAmount(netTakingsPage))(netTakingsCall),
+      Option.when(rateApplies && missingAmount(mgdPage))(mgdCall)
     )
+  }
 
-  private def standardRate(answers: UserAnswers, mode: Mode): Seq[Option[Call]] =
+  private def underDeclaredDuty(mode: Mode)(implicit answers: UserAnswers): Seq[Option[Call]] = {
+    val dutyUnderDeclared = answeredYes(UnderDeclaredDutyPage)
+    val reasonableCareFail = dutyUnderDeclared && answeredNo(UnderDeclaredDutyReasonableCarePage)
     Seq(
-      Option.when(
-        answers.get(NetTakingsStandardRatePage).isEmpty
-      )(
-        routes.NetTakingsStandardRateController.onPageLoad(mode)
-      ),
-      Option.when(
-        answers.get(NetTakingsStandardRatePage).contains(true) && isMissingAmount(answers.get(NetTakingsStandardPage))
-      )(
-        routes.NetTakingsStandardController.onPageLoad(mode)
-      ),
-      Option.when(
-        answers.get(NetTakingsStandardRatePage).contains(true) && isMissingAmount(answers.get(MgdStandardRatePage))
-      )(
-        routes.MgdStandardRateController.onPageLoad(mode)
-      )
-    )
-
-  private def higherRate(answers: UserAnswers, mode: Mode): Seq[Option[Call]] =
-    Seq(
-      Option.when(
-        answers.get(NetTakingsHigherRatePage).isEmpty
-      )(
-        routes.NetTakingsHigherRateController.onPageLoad(mode)
-      ),
-      Option.when(
-        answers.get(NetTakingsHigherRatePage).contains(true) && isMissingAmount(answers.get(NetTakingsHigherPage))
-      )(
-        routes.NetTakingsHigherController.onPageLoad(mode)
-      ),
-      Option.when(
-        answers.get(NetTakingsHigherRatePage).contains(true) && isMissingAmount(answers.get(MgdHigherRatePage))
-      )(
-        routes.MgdHigherRateController.onPageLoad(mode)
-      )
-    )
-
-  private def underDeclaredDuty(answers: UserAnswers, mode: Mode): Seq[Option[Call]] =
-    Seq(
-      Option.when(
-        answers.get(UnderDeclaredDutyPage).isEmpty
-      )(
-        routes.UnderDeclaredDutyController.onPageLoad(mode)
-      ),
-      Option.when(
-        answers.get(UnderDeclaredDutyPage).contains(true) && answers.get(UnderDeclaredDutyReasonableCarePage).isEmpty
-      )(
+      Option.when(unanswered(UnderDeclaredDutyPage))(routes.UnderDeclaredDutyController.onPageLoad(mode)),
+      Option.when(dutyUnderDeclared && unanswered(UnderDeclaredDutyReasonableCarePage))(
         routes.UnderDeclaredDutyReasonableCareController.onPageLoad(mode)
       ),
-      Option.when(
-        answers.get(UnderDeclaredDutyPage).contains(true) &&
-          answers
-            .get(UnderDeclaredDutyReasonableCarePage)
-            .contains(false) &&
-          answers.get(UnderDeclaredDutyLimitsPage).isEmpty
-      )(
-        routes.UnderDeclaredDutyLimitsController
-          .onPageLoad(mode)
+      Option.when(reasonableCareFail && unanswered(UnderDeclaredDutyLimitsPage))(
+        routes.UnderDeclaredDutyLimitsController.onPageLoad(mode)
       ),
       Option.when(
-        answers.get(UnderDeclaredDutyPage).contains(true) &&
-          answers
-            .get(UnderDeclaredDutyReasonableCarePage)
-            .contains(false) &&
-          answers
-            .get(UnderDeclaredDutyLimitsPage)
-            .contains(true) &&
-          isMissingAmount(
-            answers.get(TotalUnderDeclaredDutyPage)
-          )
+        reasonableCareFail && answeredYes(UnderDeclaredDutyLimitsPage) && missingAmount(TotalUnderDeclaredDutyPage)
       )(
         routes.TotalUnderDeclaredDutyController.onPageLoad(mode)
       )
     )
+  }
 
-  private def dutyBroughtForward(answers: UserAnswers, mode: Mode): Seq[Option[Call]] =
+  private def dutyBroughtForward(mode: Mode)(implicit answers: UserAnswers): Seq[Option[Call]] =
     Seq(
-      Option.when(
-        answers.get(NegativeDutyPage).isEmpty
-      )(
-        routes.NegativeDutyController.onPageLoad(mode)
-      ),
-      Option.when(
-        answers.get(NegativeDutyPage).contains(true) && isMissingAmount(answers.get(NegativeDutyBroughtForwardInputPage))
-      )(
+      Option.when(unanswered(NegativeDutyPage))(routes.NegativeDutyController.onPageLoad(mode)),
+      Option.when(answeredYes(NegativeDutyPage) && missingAmount(NegativeDutyBroughtForwardInputPage))(
         routes.NegativeDutyBroughtForwardInputController.onPageLoad(mode)
       )
     )
