@@ -23,6 +23,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import viewmodels.checkAnswers.CheckYourAnswersHelpers
 import viewmodels.govuk.SummaryListFluency
+import pages.*
+import viewmodels.checkAnswers.*
 import views.html.CheckYourAnswersView
 
 import java.time.LocalDate
@@ -48,75 +50,61 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
     "must return OK and the correct view for a GET" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithMachinesAvailable)).build()
+      val completeAnswers =
+        userAnswersWithMachinesAvailable
+          .set(NetTakingsLowerRatePage, false)
+          .success
+          .value
+          .set(NetTakingsStandardRatePage, false)
+          .success
+          .value
+          .set(NetTakingsHigherRatePage, false)
+          .success
+          .value
+          .set(UnderDeclaredDutyPage, false)
+          .success
+          .value
+          .set(NegativeDutyPage, false)
+          .success
+          .value
+
+      val application = applicationBuilder(userAnswers = Some(completeAnswers)).build()
 
       running(application) {
         val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
 
         val result = route(application, request).value
 
-        val backLink = Some(routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode).url)
+        val backLink = Some(routes.NegativeDutyController.onPageLoad(NormalMode).url)
 
         val view = application.injector.instanceOf[CheckYourAnswersView]
         implicit val msgs: play.api.i18n.Messages = messages(application)
-        val machines = SummaryListViewModel(
-          Seq(
-            CheckYourAnswersHelpers.textRow(
-              keyMsg    = "submittedReturn.noOfMachines",
-              answer    = "10",
-              changeUrl = Some(routes.MachinesAvailableController.onPageLoad(CheckMode).url),
-              hiddenMsg = Some("submittedReturn.noOfMachines")
-            )
-          )
-        )
-
-        val lowerRate = SummaryListViewModel(
-          Seq(setValueRow("netTakingsLowerRate.question", routes.NetTakingsLowerRateController.onPageLoad(CheckMode).url))
-        )
-        val standardRate = SummaryListViewModel(
-          Seq(setValueRow("netTakingsStandardRate.question", routes.NetTakingsStandardRateController.onPageLoad(CheckMode).url))
-        )
-        val higherRate = SummaryListViewModel(
-          Seq(setValueRow("netTakingsHigherRate.question", routes.NetTakingsHigherRateController.onPageLoad(CheckMode).url))
-        )
-        val underDeclaredDuty = SummaryListViewModel(
-          Seq(setValueRow("underDeclaredDuty.heading", routes.UnderDeclaredDutyController.onPageLoad(CheckMode).url))
-        )
-        val dutyBroughtForward = SummaryListViewModel(
-          Seq(setValueRow("negativeDuty.question", routes.NegativeDutyController.onPageLoad(CheckMode).url))
-        )
-
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(
-          selectedReturn,
-          machines,
-          lowerRate,
-          standardRate,
-          higherRate,
-          underDeclaredDuty,
-          dutyBroughtForward,
-          backLink
-        )(request, msgs).toString
-      }
-    }
-
-    "must return OK with a 'Enter number' link for machines available when it is unanswered" in {
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
-
-      running(application) {
-        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
-
-        val result = route(application, request).value
-
-        implicit val msgs: play.api.i18n.Messages = messages(application)
-        val machinesUrl = routes.MachinesAvailableController.onPageLoad(CheckMode).url
+        val machines =
+          SummaryListViewModel(rows = MachinesAvailableSummary.rows(completeAnswers))
+        val lowerRate =
+          SummaryListViewModel(rows = LowerRateSummary.rows(completeAnswers))
+        val standardRate =
+          SummaryListViewModel(rows = StandardRateSummary.rows(completeAnswers))
+        val higherRate =
+          SummaryListViewModel(rows = HigherRateSummary.rows(completeAnswers))
+        val underDeclaredDuty =
+          SummaryListViewModel(rows = UnderDeclaredDutySummary.rows(completeAnswers))
+        val dutyBroughtForward =
+          SummaryListViewModel(rows = DutyBroughtForwardSummary.rows(completeAnswers))
 
         status(result) mustEqual OK
 
-        val doc = org.jsoup.Jsoup.parse(contentAsString(result))
-        val link = doc.select(s"""a[href="$machinesUrl"]""").first()
-        link.text() mustEqual msgs("checkYourAnswers.enterNumber")
+        contentAsString(result) mustEqual
+          view(
+            selectedReturn,
+            machines,
+            lowerRate,
+            standardRate,
+            higherRate,
+            underDeclaredDuty,
+            dutyBroughtForward,
+            backLink
+          )(request, msgs).toString
       }
     }
 
@@ -146,6 +134,32 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
+    }
+  }
+
+  "must redirect to Machines Available when machines is unanswered" in {
+
+    val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
+    running(application) {
+      val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+      val result = route(application, request).value
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result).value mustEqual
+        routes.MachinesAvailableController.onPageLoad(NormalMode).url
+    }
+  }
+
+  "must redirect to Lower Rate screener when machines is answered and Lower Rate is unanswered" in {
+
+    val application = applicationBuilder(userAnswers = Some(userAnswersWithMachinesAvailable)).build()
+    running(application) {
+      val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+      val result = route(application, request).value
+      status(result) mustEqual SEE_OTHER
+
+      redirectLocation(result).value mustEqual
+        routes.NetTakingsLowerRateController.onPageLoad(NormalMode).url
     }
   }
 
