@@ -235,11 +235,7 @@ class Navigator @Inject() () {
 
   def nextPage(page: Page, mode: Mode, userAnswers: UserAnswers): Call =
     mode match {
-      case NormalMode =>
-        if (CheckYourAnswersValidator.checkForMissingAnswers(userAnswers, NormalMode).isEmpty)
-          routes.CheckYourAnswersController.onPageLoad()
-        else
-          normalRoutes(page)(userAnswers)
-      case CheckMode => checkRouteMap(page)(userAnswers)
+      case NormalMode => normalRoutes(page)(userAnswers)
+      case CheckMode  => checkRouteMap(page)(userAnswers)
     }
 }

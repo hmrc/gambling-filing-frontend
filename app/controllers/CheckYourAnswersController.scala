@@ -70,8 +70,8 @@ class CheckYourAnswersController @Inject() (
       val answers = request.userAnswers
 
       CheckYourAnswersValidator.checkForMissingAnswers(answers, CheckMode) match {
-        case Some(nextPage) =>
-          Future.successful(Redirect(nextPage))
+        case Some(missingAnswerPage) =>
+          Future.successful(Redirect(missingAnswerPage))
 
         case None =>
           val result =
