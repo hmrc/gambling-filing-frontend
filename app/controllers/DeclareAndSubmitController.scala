@@ -23,6 +23,7 @@ import pages.*
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
+import navigation.CheckYourAnswersValidator
 import services.GamblingService
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
@@ -47,18 +48,32 @@ class DeclareAndSubmitController @Inject() (
     extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-      case None =>
-        logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-      case Some(selectedReturn) =>
-        request.userAnswers.map(DeclaredSubmission.from) match {
-          case Some(declaredSubmission) =>
-            Future.successful(Ok(view(backNavigator.backPage(DeclareAndSubmitPage, NormalMode, request), selectedReturn, declaredSubmission)))
-          case _ =>
-            logger.info(s"[onPageLoad] Unable to calculate DeclaredSubmission for regNum=${request.regNum}")
-            Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+
+    request.userAnswers match {
+      case Some(answers) =>
+        CheckYourAnswersValidator.checkForMissingAnswers(answers, NormalMode) match {
+          case Some(missingPage) =>
+            logger.info(
+              s"Missing answers for regNum=${request.regNum}, redirecting to CYA: ${missingPage.url}"
+            )
+            Future.successful(
+              Redirect(controllers.routes.CheckYourAnswersController.onPageLoad())
+            )
+
+          case None =>
+            answers.get(SelectReturnPage) match {
+              case None =>
+                logger.info(s"no selectedReturn found for regNum=${request.regNum}")
+                Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+              case Some(selectedReturn) =>
+                val declaredSubmission = DeclaredSubmission.from(answers)
+                Future.successful(Ok(view(backNavigator.backPage(DeclareAndSubmitPage, NormalMode, request), selectedReturn, declaredSubmission)))
+
+            }
         }
+      case _ =>
+        logger.info(s"Unable to calculate DeclaredSubmission for regNum=${request.regNum}")
+        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
     }
   }
 

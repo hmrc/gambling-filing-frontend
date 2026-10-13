@@ -44,33 +44,70 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
 
   lazy val backUrl = Some(routes.CheckYourAnswersController.onPageLoad().url)
 
-  def userAnswersWithData: UserAnswers = UserAnswers(userAnswersId)
-    .set(SelectReturnPage, selectedReturn)
-    .success
-    .value
-    .set(MgdLowerRatePage, BigDecimal(-5.56))
-    .success
-    .value
-    .set(MgdStandardRatePage, BigDecimal(-44.44))
-    .success
-    .value
-    .set(MgdHigherRatePage, BigDecimal(-83.33))
-    .success
-    .value
-    .set(TotalUnderDeclaredDutyPage, BigDecimal(7.77))
-    .success
-    .value
-    .set(NegativeDutyBroughtForwardInputPage, BigDecimal(-1.99))
-    .success
-    .value
+  def userAnswersWithData: UserAnswers =
+    UserAnswers(userAnswersId)
+      .set(SelectReturnPage, selectedReturn)
+      .success
+      .value
+      .set(MgdLowerRatePage, BigDecimal(-5.56))
+      .success
+      .value
+      .set(MgdStandardRatePage, BigDecimal(-44.44))
+      .success
+      .value
+      .set(MgdHigherRatePage, BigDecimal(-83.33))
+      .success
+      .value
+      .set(TotalUnderDeclaredDutyPage, BigDecimal(7.77))
+      .success
+      .value
+      .set(NegativeDutyBroughtForwardInputPage, BigDecimal(-1.99))
+      .success
+      .value
+
+  def completeUserAnswersWithData: UserAnswers =
+    userAnswersWithData
+      .set(MachinesAvailablePage, 10L)
+      .success
+      .value
+      .set(NetTakingsLowerRatePage, true)
+      .success
+      .value
+      .set(NetTakingsLowerPage, BigDecimal(100))
+      .success
+      .value
+      .set(NetTakingsStandardRatePage, true)
+      .success
+      .value
+      .set(NetTakingsStandardPage, BigDecimal(100))
+      .success
+      .value
+      .set(NetTakingsHigherRatePage, true)
+      .success
+      .value
+      .set(NetTakingsHigherPage, BigDecimal(100))
+      .success
+      .value
+      .set(UnderDeclaredDutyPage, true)
+      .success
+      .value
+      .set(UnderDeclaredDutyReasonableCarePage, false)
+      .success
+      .value
+      .set(UnderDeclaredDutyLimitsPage, true)
+      .success
+      .value
+      .set(NegativeDutyPage, true)
+      .success
+      .value
 
   lazy val declareAndSubmitRoute: String = routes.DeclareAndSubmitController.onPageLoad().url
 
   "DeclareAndSubmit Controller" - {
 
-    "must return OK and the correct view for a GET when all values have been entered" in {
+    "must return OK and the correct view for a GET when all required answers are complete" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
+      val application = applicationBuilder(userAnswers = Some(completeUserAnswersWithData)).build()
 
       running(application) {
         val request = FakeRequest(GET, declareAndSubmitRoute)
@@ -80,13 +117,15 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[DeclareAndSubmitView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(backUrl, selectedReturn, validResponseDeclaredSubmission)(request, messages(application)).toString
+
+        contentAsString(result) mustEqual
+          view(backUrl, selectedReturn, validResponseDeclaredSubmission)(request, messages(application)).toString
       }
     }
 
-    "must return OK and the correct view for a GET when NO values have been entered" in {
+    "must redirect to Check Your Answers for a GET when required answers are missing" in {
 
-      def userAnswersWithNoData: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
+      val userAnswersWithNoData = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithNoData)).build()
 
@@ -95,10 +134,9 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
 
         val result = route(application, request).value
 
-        val view = application.injector.instanceOf[DeclareAndSubmitView]
+        status(result) mustEqual SEE_OTHER
 
-        status(result) mustEqual OK
-        contentAsString(result) mustEqual view(backUrl, selectedReturn, zeroResponseDeclaredSubmission)(request, messages(application)).toString
+        redirectLocation(result).value mustEqual routes.CheckYourAnswersController.onPageLoad().url
       }
     }
 
