@@ -220,6 +220,19 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must redirect to Check Your Answers for a GET when MachinesAvailablePage is 0" in {
+
+      val answers = completeUserAnswersWithData.set(MachinesAvailablePage, 0L).success.value
+      val application = applicationBuilder(userAnswers = Some(answers)).build()
+      running(application) {
+        val request = FakeRequest(GET, declareAndSubmitRoute)
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.CheckYourAnswersController.onPageLoad().url
+      }
+    }
+
     "must redirect to SelectReturnController on a POST when no SelectedReturn is found in the session" in {
 
       val application = applicationBuilder(userAnswers = None).build()
