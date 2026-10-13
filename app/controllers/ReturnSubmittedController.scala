@@ -24,8 +24,7 @@ import repositories.SessionRepository
 import views.html.ReturnSubmittedView
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ReturnSubmittedController @Inject() (
   override val messagesApi: MessagesApi,
@@ -34,7 +33,8 @@ class ReturnSubmittedController @Inject() (
   val controllerComponents: MessagesControllerComponents,
   sessionRepository: SessionRepository,
   view: ReturnSubmittedView
-) extends BaseFilingController {
+)(implicit ec: ExecutionContext)
+    extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen getData).async { implicit request =>
