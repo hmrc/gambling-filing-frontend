@@ -18,7 +18,8 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.actions.*
-import models.NormalMode
+import models.{CheckMode, NormalMode}
+import navigation.CheckYourAnswersValidator
 import pages.{MachinesAvailablePage, NegativeDutyPage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -63,15 +64,33 @@ class CheckYourAnswersController @Inject() (
       }
   }
 
-  def onSubmit(): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers.flatMap(_.get(MachinesAvailablePage)) match {
-      case None =>
-        logger.info(s"no MachinesAvailable found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-      case Some(machinesAvailable) if machinesAvailable > 0L =>
-        Future.successful(Redirect(controllers.routes.DeclareAndSubmitController.onPageLoad()))
-      case _ =>
-        Future.successful(Redirect(controllers.routes.ConfirmNumberOfMachinesInterrupterController.onPageLoad()))
+  def onSubmit(): Action[AnyContent] =
+    (authorise andThen validate andThen getData andThen journeyComplete andThen requireData).async { implicit request =>
+
+      val answers = request.userAnswers
+
+      CheckYourAnswersValidator.checkForMissingAnswers(answers, CheckMode) match {
+        case Some(missingAnswerPage) =>
+          Future.successful(Redirect(missingAnswerPage))
+
+        case None =>
+          val result =
+            answers.get(MachinesAvailablePage) match {
+              case None =>
+                logger.info(s"no MachinesAvailable found for regNum=${request.regNum}")
+                Redirect(controllers.routes.SelectReturnController.onPageLoad())
+
+              case Some(machinesAvailable) if machinesAvailable > 0L =>
+                Redirect(controllers.routes.DeclareAndSubmitController.onPageLoad())
+
+              case _ =>
+                Redirect(
+                  controllers.routes.ConfirmNumberOfMachinesInterrupterController.onPageLoad()
+                )
+            }
+
+          Future.successful(result)
+
+      }
     }
-  }
 }

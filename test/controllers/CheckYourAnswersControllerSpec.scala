@@ -23,6 +23,8 @@ import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import viewmodels.checkAnswers.CheckYourAnswersHelpers
 import viewmodels.govuk.SummaryListFluency
+import pages.*
+import viewmodels.checkAnswers.*
 import views.html.CheckYourAnswersView
 
 import java.time.LocalDate
@@ -151,51 +153,78 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
 
   "CheckYourAnswersController onSubmit" - {
 
-    "onSubmit must return SEE_OTHER and redirect to the correct page for a POST when MachinesAvailablePage is 0" in {
+    def completeAnswers(machines: Long): UserAnswers =
+      UserAnswers(userAnswersId)
+        .set(MachinesAvailablePage, machines)
+        .success
+        .value
+        .set(NetTakingsLowerRatePage, false)
+        .success
+        .value
+        .set(NetTakingsStandardRatePage, false)
+        .success
+        .value
+        .set(NetTakingsHigherRatePage, false)
+        .success
+        .value
+        .set(UnderDeclaredDutyPage, false)
+        .success
+        .value
+        .set(NegativeDutyPage, false)
+        .success
+        .value
 
-      def userAnswersWithData: UserAnswers = UserAnswers(userAnswersId).set(MachinesAvailablePage, 0L).success.value
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
+    "must redirect to the first missing answer in CheckMode" in {
+      val answers = userAnswersWithMachinesAvailable
+      val application = applicationBuilder(userAnswers = Some(answers)).build()
 
       running(application) {
-        val request = FakeRequest(POST, routes.CheckYourAnswersController.onSubmit().url)
 
+        val request = FakeRequest(POST, routes.CheckYourAnswersController.onSubmit().url)
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.NetTakingsLowerRateController.onPageLoad(CheckMode).url
+      }
+    }
+
+    "onSubmit must return SEE_OTHER and redirect to the correct page for a POST when MachinesAvailablePage is 0" in {
+
+      val application = applicationBuilder(userAnswers = Some(completeAnswers(0L))).build()
+
+      running(application) {
+        val request = FakeRequest(POST, routes.CheckYourAnswersController.onSubmit().url)
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
         redirectLocation(result).value mustEqual routes.ConfirmNumberOfMachinesInterrupterController.onPageLoad().url
       }
     }
 
     "onSubmit must return SEE_OTHER and redirect to the correct page for a POST when MachinesAvailablePage is 1" in {
-
-      def userAnswersWithData: UserAnswers = UserAnswers(userAnswersId).set(MachinesAvailablePage, 1L).success.value
-
-      val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
+      val application = applicationBuilder(userAnswers = Some(completeAnswers(1L))).build()
 
       running(application) {
         val request = FakeRequest(POST, routes.CheckYourAnswersController.onSubmit().url)
-
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
+
         redirectLocation(result).value mustEqual routes.DeclareAndSubmitController.onPageLoad().url
       }
     }
-
-    "onSubmit must return SEE_OTHER and redirect to the correct page for a POST when MachinesAvailablePage is None" in {
-
-      def userAnswersWithData: UserAnswers = UserAnswers(userAnswersId)
-
+    "onSubmit must redirect to Machines Available in CheckMode when MachinesAvailablePage is None" in {
+      val userAnswersWithData = UserAnswers(userAnswersId)
       val application = applicationBuilder(userAnswers = Some(userAnswersWithData)).build()
 
       running(application) {
         val request = FakeRequest(POST, routes.CheckYourAnswersController.onSubmit().url)
-
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
+
+        redirectLocation(result).value mustEqual routes.MachinesAvailableController.onPageLoad(CheckMode).url
       }
     }
   }
