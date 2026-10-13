@@ -45,7 +45,7 @@ class ReturnSubmittedSpec extends SpecBase {
 
       doc.body.text must include(messages("confirmation.reference"))
 
-      doc.body.text must include(acknowledgementReference)
+      doc.body.text must include(acknowledgementReference.grouped(4).mkString(" "))
 
       doc.body.text must include(messages("confirmation.whatHappensNext.returnMessage"))
 
@@ -77,7 +77,7 @@ class ReturnSubmittedSpec extends SpecBase {
     )
 
     val acknowledgementReference =
-      "4JTF BAXM GJXS TKM"
+      "4JTFBAXMGJXSTKM"
 
     val submissionDateTime =
       "6 June 2015 at 11:10 am"
