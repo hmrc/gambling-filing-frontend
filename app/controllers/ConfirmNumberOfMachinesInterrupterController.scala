@@ -17,12 +17,15 @@
 package controllers
 
 import controllers.actions.*
+import models.CheckMode
+import pages.ConfirmNumberOfMachinesInterrupterPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import views.html.ConfirmNumberOfMachinesInterrupterView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ConfirmNumberOfMachinesInterrupterController @Inject() (
   override val messagesApi: MessagesApi,
@@ -30,12 +33,30 @@ class ConfirmNumberOfMachinesInterrupterController @Inject() (
   validate: ValidateAction,
   getData: DataRetrievalAction,
   journeyComplete: JourneyCompleteAction,
+  requireData: DataRequiredAction,
+  sessionRepository: SessionRepository,
   val controllerComponents: MessagesControllerComponents,
   view: ConfirmNumberOfMachinesInterrupterView
-) extends BaseFilingController {
+)(implicit ec: ExecutionContext)
+    extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
       Future.successful(Ok(view()))
+    }
+
+  def onSubmit(value: Boolean): Action[AnyContent] =
+    (authorise andThen validate andThen getData andThen journeyComplete andThen requireData).async { implicit request =>
+
+      Future
+        .fromTry(request.userAnswers.set(ConfirmNumberOfMachinesInterrupterPage, value))
+        .flatMap(sessionRepository.set)
+        .map { _ =>
+          if (value) {
+            Redirect(controllers.routes.DeclareAndSubmitController.onPageLoad())
+          } else {
+            Redirect(controllers.routes.MachinesAvailableController.onPageLoad(CheckMode))
+          }
+        }
     }
 }

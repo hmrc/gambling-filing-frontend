@@ -41,17 +41,24 @@ class ConfirmNumberOfMachinesInterrupterViewSpec extends SpecBase {
       doc.select(".govuk-button").text mustBe messages("confirm.machines.interrupter.button.yes")
       doc.select("div.govuk-panel__actions div.govuk-button-group a.govuk-link").text mustBe messages("confirm.machines.interrupter.button.no")
 
-      private val link1 = doc.select(s"div.govuk-panel__actions div.govuk-button-group a.govuk-button")
+      val link1 = doc.select("div.govuk-panel__actions div.govuk-button-group a.govuk-button")
+
       link1.isEmpty mustBe false
       link1.text mustBe messages("confirm.machines.interrupter.button.yes")
-      link1.attr("href") mustBe controllers.routes.DeclareAndSubmitController.onPageLoad().url
+
+      link1.attr("href") mustBe controllers.routes.ConfirmNumberOfMachinesInterrupterController.onSubmit(true).url
+
       link1.attr("target") mustBe ""
       link1.attr("rel") mustBe ""
 
-      private val link2 = doc.select(s"div.govuk-panel__actions div.govuk-button-group a.govuk-link")
+      val link2 = doc.select("div.govuk-panel__actions div.govuk-button-group a.govuk-link")
+
       link2.isEmpty mustBe false
+
       link2.text mustBe messages("confirm.machines.interrupter.button.no")
-      link2.attr("href") mustBe controllers.routes.MachinesAvailableController.onPageLoad(CheckMode).url
+
+      link2.attr("href") mustBe controllers.routes.ConfirmNumberOfMachinesInterrupterController.onSubmit(false).url
+
       link2.attr("target") mustBe ""
       link2.attr("rel") mustBe ""
     }
@@ -63,7 +70,6 @@ class ConfirmNumberOfMachinesInterrupterViewSpec extends SpecBase {
 
       doc.select(".govuk-back-link").attr("href") mustBe "#"
     }
-
   }
 
   trait Setup {

@@ -16,11 +16,18 @@
 
 package pages
 
+import models.UserAnswers
 import play.api.libs.json.JsPath
+
+import scala.util.Try
 
 case object MachinesAvailablePage extends QuestionPage[Long] {
 
   override def path: JsPath = JsPath \ toString
 
   override def toString: String = "machinesAvailable"
+
+  override def cleanup(value: Option[Long], userAnswers: UserAnswers): Try[UserAnswers] =
+    userAnswers.remove(ConfirmNumberOfMachinesInterrupterPage)
+
 }

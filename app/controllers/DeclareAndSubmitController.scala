@@ -17,11 +17,12 @@
 package controllers
 
 import controllers.actions.*
+import models.requests.OptionalDataRequest
 import models.{DeclaredSubmission, NormalMode, SubmitReturnRequest, UserAnswers}
 import navigation.{BackNavigator, Navigator}
 import pages.*
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.SessionRepository
 import navigation.CheckYourAnswersValidator
 import services.GamblingService
@@ -56,28 +57,22 @@ class DeclareAndSubmitController @Inject() (
             case Some(missingPage) =>
               logger.info(s"Missing answers for regNum=${request.regNum}, redirecting to CYA: ${missingPage.url}")
               Future.successful(Redirect(controllers.routes.CheckYourAnswersController.onPageLoad()))
+
             case None =>
+              val zeroMachinesConfirmed = answers.get(ConfirmNumberOfMachinesInterrupterPage).contains(true)
               answers.get(MachinesAvailablePage) match {
-                case Some(0L) =>
-                  logger.info(s"MachinesAvailable is 0 for regNum=${request.regNum}, redirecting to CYA")
+                case Some(0L) if !zeroMachinesConfirmed =>
+                  logger.info(s"Zero machines not confirmed for regNum=${request.regNum}, redirecting to CYA")
                   Future.successful(Redirect(controllers.routes.CheckYourAnswersController.onPageLoad()))
-                case Some(_) =>
-                  answers.get(SelectReturnPage) match {
-                    case None =>
-                      logger.info(s"no selectedReturn found for regNum=${request.regNum}")
-                      Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-                    case Some(selectedReturn) =>
-                      val declaredSubmission = DeclaredSubmission.from(answers)
-                      Future.successful(
-                        Ok(view(backNavigator.backPage(DeclareAndSubmitPage, NormalMode, request), selectedReturn, declaredSubmission))
-                      )
-                  }
+                case Some(_) => renderDeclareAndSubmit(answers)
                 case None =>
+                  logger.info(s"No MachinesAvailable found for regNum=${request.regNum}, redirecting to CYA")
                   Future.successful(Redirect(controllers.routes.CheckYourAnswersController.onPageLoad()))
               }
           }
+
         case None =>
-          logger.info(s"Unable to calculate DeclaredSubmission for regNum=${request.regNum}")
+          logger.info(s"No UserAnswers found for regNum=${request.regNum}")
           Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
       }
     }
@@ -111,4 +106,17 @@ class DeclareAndSubmitController @Inject() (
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
       }
   }
+
+  private def renderDeclareAndSubmit(
+    answers: UserAnswers
+  )(implicit request: OptionalDataRequest[AnyContent]): Future[Result] =
+    answers.get(SelectReturnPage) match {
+      case Some(selectedReturn) =>
+        val declaredSubmission = DeclaredSubmission.from(answers)
+        Future.successful(Ok(view(backNavigator.backPage(DeclareAndSubmitPage, NormalMode, request), selectedReturn, declaredSubmission)))
+
+      case None =>
+        logger.info(s"No selectedReturn found for regNum=${request.regNum}")
+        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+    }
 }
