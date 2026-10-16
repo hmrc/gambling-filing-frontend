@@ -128,4 +128,4 @@ POST       /declare-submit                              controllers.DeclareAndSu
 GET        /return-submitted                             controllers.ReturnSubmittedController.onPageLoad()
 
 GET        /confirm-number-of-machines                 controllers.ConfirmNumberOfMachinesInterrupterController.onPageLoad()
-GET       /confirm-number-of-machines/:value          controllers.ConfirmNumberOfMachinesInterrupterController.onSubmit(value: Boolean)
+POST       /confirm-number-of-machines                 controllers.ConfirmNumberOfMachinesInterrupterController.onSubmit()

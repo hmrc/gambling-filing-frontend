@@ -41,26 +41,24 @@ class ConfirmNumberOfMachinesInterrupterViewSpec extends SpecBase {
       doc.select(".govuk-button").text mustBe messages("confirm.machines.interrupter.button.yes")
       doc.select("div.govuk-panel__actions div.govuk-button-group a.govuk-link").text mustBe messages("confirm.machines.interrupter.button.no")
 
-      val link1 = doc.select("div.govuk-panel__actions div.govuk-button-group a.govuk-button")
+      val yesForm = doc.select("div.govuk-panel__actions form")
 
-      link1.isEmpty mustBe false
-      link1.text mustBe messages("confirm.machines.interrupter.button.yes")
+      yesForm.isEmpty mustBe false
+      yesForm.attr("method").equalsIgnoreCase("POST") mustBe true
+      yesForm.attr("action") mustBe controllers.routes.ConfirmNumberOfMachinesInterrupterController.onSubmit().url
 
-      link1.attr("href") mustBe controllers.routes.ConfirmNumberOfMachinesInterrupterController.onSubmit(true).url
+      val yesButton = yesForm.select("div.govuk-button-group button.govuk-button")
 
-      link1.attr("target") mustBe ""
-      link1.attr("rel") mustBe ""
+      yesButton.isEmpty mustBe false
+      yesButton.text mustBe messages("confirm.machines.interrupter.button.yes")
 
-      val link2 = doc.select("div.govuk-panel__actions div.govuk-button-group a.govuk-link")
+      val noLink = doc.select("div.govuk-panel__actions div.govuk-button-group a.govuk-link")
 
-      link2.isEmpty mustBe false
-
-      link2.text mustBe messages("confirm.machines.interrupter.button.no")
-
-      link2.attr("href") mustBe controllers.routes.ConfirmNumberOfMachinesInterrupterController.onSubmit(false).url
-
-      link2.attr("target") mustBe ""
-      link2.attr("rel") mustBe ""
+      noLink.isEmpty mustBe false
+      noLink.text mustBe messages("confirm.machines.interrupter.button.no")
+      noLink.attr("href") mustBe controllers.routes.MachinesAvailableController.onPageLoad(CheckMode).url
+      noLink.attr("target") mustBe ""
+      noLink.attr("rel") mustBe ""
     }
 
     "must render the back link" in new Setup {

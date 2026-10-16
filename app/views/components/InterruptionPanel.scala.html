@@ -14,16 +14,16 @@
  * limitations under the License.
  *@
 
-@this()
+@this(formHelper: FormWithCSRF)
 
 @(
     heading: Option[String] = None,
     body: Option[String] = None,
     link1Message: Option[String] = None,
-    link1Url: String,
+    link1Action: Call,
     link2Message: Option[String] = None,
     link2Url: String
-)
+)(implicit request: Request[_], messages: Messages)
 
 <div class="govuk-panel govuk-panel--interruption">
     <h1 class="govuk-panel__title">
@@ -33,13 +33,15 @@
         <p class="govuk-body">@body.map { message => @message }</p>
     </div>
     <div class="govuk-panel__actions">
-        <div class="govuk-button-group">
-            <a href="@link1Url" role="button" draggable="false" class="govuk-button govuk-button--inverse" data-module="govuk-button">
-                @link1Message.map { message => @message }
-            </a>
-            <a class="govuk-link govuk-link--inverse" href="@link2Url">
-                @link2Message.map { message => @message }
-            </a>
-        </div>
+        @formHelper(action = link1Action) {
+            <div class="govuk-button-group">
+                <button type="submit" draggable="false" class="govuk-button govuk-button--inverse" data-module="govuk-button">
+                    @link1Message.map { message => @message }
+                </button>
+                <a class="govuk-link govuk-link--inverse" href="@link2Url">
+                    @link2Message.map { message => @message }
+                </a>
+            </div>
+        }
     </div>
 </div>

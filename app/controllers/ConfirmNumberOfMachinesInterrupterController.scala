@@ -17,7 +17,6 @@
 package controllers
 
 import controllers.actions.*
-import models.CheckMode
 import pages.ConfirmNumberOfMachinesInterrupterPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -45,18 +44,11 @@ class ConfirmNumberOfMachinesInterrupterController @Inject() (
       Future.successful(Ok(view()))
     }
 
-  def onSubmit(value: Boolean): Action[AnyContent] =
+  def onSubmit(): Action[AnyContent] =
     (authorise andThen validate andThen getData andThen journeyComplete andThen requireData).async { implicit request =>
-
       Future
-        .fromTry(request.userAnswers.set(ConfirmNumberOfMachinesInterrupterPage, value))
+        .fromTry(request.userAnswers.set(ConfirmNumberOfMachinesInterrupterPage, true))
         .flatMap(sessionRepository.set)
-        .map { _ =>
-          if (value) {
-            Redirect(controllers.routes.DeclareAndSubmitController.onPageLoad())
-          } else {
-            Redirect(controllers.routes.MachinesAvailableController.onPageLoad(CheckMode))
-          }
-        }
+        .map(_ => Redirect(controllers.routes.DeclareAndSubmitController.onPageLoad()))
     }
 }

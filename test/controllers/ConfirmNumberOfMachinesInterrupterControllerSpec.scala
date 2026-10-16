@@ -17,7 +17,7 @@
 package controllers
 
 import base.SpecBase
-import models.{CheckMode, UserAnswers}
+import models.UserAnswers
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
@@ -54,7 +54,7 @@ class ConfirmNumberOfMachinesInterrupterControllerSpec extends SpecBase with Moc
       }
     }
 
-    "onSubmit must save true and redirect to Declare and Submit when Yes is selected" in {
+    "onSubmit must save the confirmation and redirect to Declare and Submit" in {
 
       val userAnswers = UserAnswers(userAnswersId).set(MachinesAvailablePage, 0L).success.value
       val mockSessionRepository = mock[SessionRepository]
@@ -65,7 +65,7 @@ class ConfirmNumberOfMachinesInterrupterControllerSpec extends SpecBase with Moc
           .build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.ConfirmNumberOfMachinesInterrupterController.onSubmit(true).url)
+        val request = FakeRequest(POST, routes.ConfirmNumberOfMachinesInterrupterController.onSubmit().url)
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
@@ -77,24 +77,16 @@ class ConfirmNumberOfMachinesInterrupterControllerSpec extends SpecBase with Moc
       }
     }
 
-    "onSubmit must save false and redirect to Machines Available when No is selected" in {
-      val userAnswers = UserAnswers(userAnswersId).set(MachinesAvailablePage, 0L).success.value
-      val mockSessionRepository = mock[SessionRepository]
-      when(mockSessionRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+    "onSubmit must redirect to Select Return when no user answers are present" in {
 
-      val application = applicationBuilder(userAnswers = Some(userAnswers))
-        .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
-        .build()
+      val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request = FakeRequest(GET, routes.ConfirmNumberOfMachinesInterrupterController.onSubmit(false).url)
+        val request = FakeRequest(POST, routes.ConfirmNumberOfMachinesInterrupterController.onSubmit().url)
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-
-        redirectLocation(result).value mustEqual routes.MachinesAvailableController.onPageLoad(CheckMode).url
-        val expectedAnswers = userAnswers.set(ConfirmNumberOfMachinesInterrupterPage, false).success.value
-        verify(mockSessionRepository).set(expectedAnswers)
+        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
       }
     }
   }
