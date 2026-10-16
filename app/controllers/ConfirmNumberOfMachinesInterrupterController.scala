@@ -17,12 +17,14 @@
 package controllers
 
 import controllers.actions.*
+import pages.ConfirmNumberOfMachinesInterrupterPage
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SessionRepository
 import views.html.ConfirmNumberOfMachinesInterrupterView
 
 import javax.inject.Inject
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class ConfirmNumberOfMachinesInterrupterController @Inject() (
   override val messagesApi: MessagesApi,
@@ -30,12 +32,23 @@ class ConfirmNumberOfMachinesInterrupterController @Inject() (
   validate: ValidateAction,
   getData: DataRetrievalAction,
   journeyComplete: JourneyCompleteAction,
+  requireData: DataRequiredAction,
+  sessionRepository: SessionRepository,
   val controllerComponents: MessagesControllerComponents,
   view: ConfirmNumberOfMachinesInterrupterView
-) extends BaseFilingController {
+)(implicit ec: ExecutionContext)
+    extends BaseFilingController {
 
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
       Future.successful(Ok(view()))
+    }
+
+  def onSubmit(): Action[AnyContent] =
+    (authorise andThen validate andThen getData andThen journeyComplete andThen requireData).async { implicit request =>
+      Future
+        .fromTry(request.userAnswers.set(ConfirmNumberOfMachinesInterrupterPage, true))
+        .flatMap(sessionRepository.set)
+        .map(_ => Redirect(controllers.routes.DeclareAndSubmitController.onPageLoad()))
     }
 }

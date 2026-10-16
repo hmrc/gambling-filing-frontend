@@ -178,6 +178,20 @@ class DeclareAndSubmitControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must return OK when MachinesAvailablePage is 0 and zero machines have been confirmed" in {
+
+      val answers =
+        completeUserAnswersWithData.set(MachinesAvailablePage, 0L).success.value.set(ConfirmNumberOfMachinesInterrupterPage, true).success.value
+      val application = applicationBuilder(userAnswers = Some(answers)).build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.DeclareAndSubmitController.onPageLoad().url)
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+      }
+    }
+
     "must redirect to SystemErrorController when the submission call fails" in {
 
       val mockSessionRepository = mock[SessionRepository]
