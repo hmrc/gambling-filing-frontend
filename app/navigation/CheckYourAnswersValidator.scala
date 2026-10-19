@@ -88,7 +88,7 @@ object CheckYourAnswersValidator {
     Seq(
       Option.when(unanswered(ratePage))(rateCall),
       Option.when(rateApplies && missingAmount(netTakingsPage))(netTakingsCall),
-      Option.when(rateApplies && missingAmount(mgdPage))(mgdCall)
+      Option.when(rateApplies && unanswered(mgdPage))(mgdCall)
     )
   }
 

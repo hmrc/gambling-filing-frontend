@@ -57,7 +57,7 @@ object HigherRateSummary {
       ).filter(_ => screenerYes)
 
     val correctedDutyAmount = answers.get(MgdHigherRatePage)
-    val correctedDutyIsMissing = correctedDutyAmount.forall(_ == BigDecimal(0))
+    val correctedDutyIsMissing = correctedDutyAmount.isEmpty
 
     val dutyDue =
       netTakings.flatMap(_ =>

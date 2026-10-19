@@ -165,5 +165,31 @@ class StandardRateSummarySpec extends SpecBase {
         )
       }
     }
+
+    "when the screener is Yes, net takings is answered and MGD is zero" - {
+      "must show the zero value with a Change link" in {
+        implicit val msgs: Messages = messages(applicationBuilder().build())
+
+        val answers = emptyUserAnswers
+          .set(NetTakingsStandardRatePage, true)
+          .success
+          .value
+          .set(NetTakingsStandardPage, BigDecimal(123.45))
+          .success
+          .value
+          .set(MgdStandardRatePage, BigDecimal(0))
+          .success
+          .value
+
+        val rows = StandardRateSummary.rows(answers)
+
+        val dutyDueRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueStdRate"))).value
+
+        dutyDueRow.value.content mustBe
+          HtmlContent(views.CurrencyFormatter.formattedAmountHtml(BigDecimal(0)))
+        dutyDueRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
+        dutyDueRow.actions.value.items.head.href mustBe mgdStandardUrl
+      }
+    }
   }
 }

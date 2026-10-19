@@ -86,6 +86,24 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
         Some(controllers.routes.MgdLowerRateController.onPageLoad(NormalMode))
     }
 
+    "must move past Lower MGD to the Standard Rate screener when MGD is zero" in {
+      val answers =
+        machinesComplete
+          .set(NetTakingsLowerRatePage, true)
+          .success
+          .value
+          .set(NetTakingsLowerPage, amount)
+          .success
+          .value
+          .set(MgdLowerRatePage, BigDecimal(0))
+          .success
+          .value
+
+      CheckYourAnswersValidator
+        .checkForMissingAnswers(answers, NormalMode) mustBe
+        Some(controllers.routes.NetTakingsStandardRateController.onPageLoad(NormalMode))
+    }
+
     "must return Standard Rate screener when it is missing" in {
 
       CheckYourAnswersValidator
