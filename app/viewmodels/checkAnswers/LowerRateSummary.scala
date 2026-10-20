@@ -57,7 +57,7 @@ object LowerRateSummary {
       ).filter(_ => screenerYes)
 
     val mgdAmount = answers.get(MgdLowerRatePage)
-    val mgdIsMissing = mgdAmount.forall(_ == BigDecimal(0))
+    val mgdIsMissing = mgdAmount.isEmpty
 
     val dutyDue =
       netTakings.flatMap(_ =>

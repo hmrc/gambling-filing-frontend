@@ -165,5 +165,30 @@ class LowerRateSummarySpec extends SpecBase {
       }
     }
 
+    "when the screener is Yes, net takings is answered and MGD is zero" - {
+      "must show the zero value with a Change link" in {
+        implicit val msgs: Messages = messages(applicationBuilder().build())
+
+        val answers = emptyUserAnswers
+          .set(NetTakingsLowerRatePage, true)
+          .success
+          .value
+          .set(NetTakingsLowerPage, BigDecimal(123.45))
+          .success
+          .value
+          .set(MgdLowerRatePage, BigDecimal(0))
+          .success
+          .value
+
+        val rows = LowerRateSummary.rows(answers)
+
+        val dutyDueRow = rows.find(_.key.content == Text(msgs("checkYourAnswers.totalDueLowerRate"))).value
+
+        dutyDueRow.value.content mustBe
+          HtmlContent(views.CurrencyFormatter.formattedAmountHtml(BigDecimal(0)))
+        dutyDueRow.actions.value.items.head.content mustBe Text(msgs("site.change"))
+        dutyDueRow.actions.value.items.head.href mustBe mgdLowerUrl
+      }
+    }
   }
 }
