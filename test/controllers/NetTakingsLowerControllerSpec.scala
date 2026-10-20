@@ -18,18 +18,20 @@ package controllers
 
 import base.SpecBase
 import forms.NetTakingsLowerFormProvider
-import models.{NormalMode, SelectedReturn, UserAnswers}
+import models.{CheckMode, NormalMode, SelectedReturn, UserAnswers}
 import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
-import org.mockito.Mockito.when
+import org.mockito.Mockito.{verify, when}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{NetTakingsLowerPage, SelectReturnPage}
+import pages.{NetTakingsLowerPage, SelectReturnPage, TotalUnderDeclaredDutyPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import repositories.SessionRepository
 import views.html.NetTakingsLowerView
+import scala.util.Success
+import utils.UnderDeclareDutyCalculator
 
 import java.time.LocalDate
 import scala.concurrent.Future
@@ -111,14 +113,103 @@ class NetTakingsLowerControllerSpec extends SpecBase with MockitoSugar {
       }
     }
 
+    "must revalidate Under Declared Duty in CheckMode and save the updated answers" in {
+
+      val userAnswers =
+        userAnswersWithSelectedReturn
+          .set(NetTakingsLowerPage, BigDecimal(200))
+          .success
+          .value
+          .set(TotalUnderDeclaredDutyPage, BigDecimal(15000))
+          .success
+          .value
+
+      val updatedAnswers = userAnswers.set(NetTakingsLowerPage, validAnswer).success.value
+      val revalidatedAnswers = updatedAnswers.remove(TotalUnderDeclaredDutyPage).success.value
+      val mockSessionRepository = mock[SessionRepository]
+      val mockUnderDeclareDutyCalculator = mock[UnderDeclareDutyCalculator]
+
+      when(
+        mockUnderDeclareDutyCalculator.revalidateUnderDeclaredDuty(updatedAnswers)
+      ).thenReturn(
+        Success(revalidatedAnswers)
+      )
+
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[UnderDeclareDutyCalculator].toInstance(mockUnderDeclareDutyCalculator)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, routes.NetTakingsLowerController.onSubmit(CheckMode).url).withFormUrlEncodedBody(("value", validAnswer.toString))
+
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual onwardRoute.url
+
+        verify(mockUnderDeclareDutyCalculator).revalidateUnderDeclaredDuty(updatedAnswers)
+
+        verify(mockSessionRepository).set(revalidatedAnswers)
+      }
+    }
+
+    "must keep Under Declared Duty in CheckMode when it is still valid" in {
+
+      val userAnswers =
+        userAnswersWithSelectedReturn
+          .set(NetTakingsLowerPage, BigDecimal(200))
+          .success
+          .value
+          .set(TotalUnderDeclaredDutyPage, BigDecimal(5000))
+          .success
+          .value
+
+      val updatedAnswers = userAnswers.set(NetTakingsLowerPage, validAnswer).success.value
+      val mockSessionRepository = mock[SessionRepository]
+      val mockUnderDeclareDutyCalculator = mock[UnderDeclareDutyCalculator]
+
+      when(mockUnderDeclareDutyCalculator.revalidateUnderDeclaredDuty(updatedAnswers)).thenReturn(Success(updatedAnswers))
+
+      when(mockSessionRepository.set(any())).thenReturn(Future.successful(true))
+
+      val application =
+        applicationBuilder(userAnswers = Some(userAnswers))
+          .overrides(
+            bind[Navigator].toInstance(new FakeNavigator(onwardRoute)),
+            bind[SessionRepository].toInstance(mockSessionRepository),
+            bind[UnderDeclareDutyCalculator].toInstance(mockUnderDeclareDutyCalculator)
+          )
+          .build()
+
+      running(application) {
+        val request =
+          FakeRequest(POST, routes.NetTakingsLowerController.onSubmit(CheckMode).url).withFormUrlEncodedBody(("value", validAnswer.toString))
+        val result = route(application, request).value
+
+        status(result) mustEqual SEE_OTHER
+
+        redirectLocation(result).value mustEqual onwardRoute.url
+
+        verify(mockUnderDeclareDutyCalculator).revalidateUnderDeclaredDuty(updatedAnswers)
+        verify(mockSessionRepository).set(updatedAnswers)
+      }
+    }
+
     "must return a Bad Request and errors when invalid data is submitted" in {
 
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, netTakingsLowerRoute)
-            .withFormUrlEncodedBody(("value", "invalid value"))
+        val request = FakeRequest(POST, netTakingsLowerRoute).withFormUrlEncodedBody(("value", "invalid value"))
 
         val boundForm = form.bind(Map("value" -> "invalid value"))
 
@@ -127,7 +218,9 @@ class NetTakingsLowerControllerSpec extends SpecBase with MockitoSugar {
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
-        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
+
+        contentAsString(result) mustEqual
+          view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -136,19 +229,18 @@ class NetTakingsLowerControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, netTakingsLowerRoute)
-            .withFormUrlEncodedBody(("value", "0"))
+        val request = FakeRequest(POST, netTakingsLowerRoute).withFormUrlEncodedBody(("value", "0"))
 
         val boundForm = form.bind(Map("value" -> "0"))
-
         val view = application.injector.instanceOf[NetTakingsLowerView]
-
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
+
         boundForm.errors.map(_.message) mustEqual Seq("netTakingsLower.error.zero")
-        contentAsString(result) mustEqual view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
+
+        contentAsString(result) mustEqual
+          view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
@@ -158,11 +250,12 @@ class NetTakingsLowerControllerSpec extends SpecBase with MockitoSugar {
 
       running(application) {
         val request = FakeRequest(GET, netTakingsLowerRoute)
-
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
+
+        redirectLocation(result).value mustEqual
+          routes.SelectReturnController.onPageLoad().url
       }
     }
 
@@ -171,10 +264,7 @@ class NetTakingsLowerControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = None).build()
 
       running(application) {
-        val request =
-          FakeRequest(POST, netTakingsLowerRoute)
-            .withFormUrlEncodedBody(("value", validAnswer.toString))
-
+        val request = FakeRequest(POST, netTakingsLowerRoute).withFormUrlEncodedBody(("value", validAnswer.toString))
         val result = route(application, request).value
 
         status(result) mustEqual SEE_OTHER

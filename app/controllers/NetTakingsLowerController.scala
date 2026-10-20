@@ -20,6 +20,8 @@ import controllers.actions.*
 import forms.NetTakingsLowerFormProvider
 import models.{Mode, UserAnswers}
 import navigation.Navigator
+import utils.UnderDeclareDutyCalculator
+import models.CheckMode
 import pages.{NetTakingsLowerPage, SelectReturnPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -39,6 +41,7 @@ class NetTakingsLowerController @Inject() (
   getData: DataRetrievalAction,
   journeyComplete: JourneyCompleteAction,
   formProvider: NetTakingsLowerFormProvider,
+  underDeclareDutyCalculator: UnderDeclareDutyCalculator,
   val controllerComponents: MessagesControllerComponents,
   view: NetTakingsLowerView
 )(implicit ec: ExecutionContext)
@@ -68,8 +71,16 @@ class NetTakingsLowerController @Inject() (
               val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
               for {
                 updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsLowerPage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(NetTakingsLowerPage, mode, updatedAnswers))
+                answers <-
+                  if (mode == CheckMode) {
+                    Future.fromTry(underDeclareDutyCalculator.revalidateUnderDeclaredDuty(updatedAnswers))
+                  } else {
+                    Future.successful(updatedAnswers)
+                  }
+
+                _ <- sessionRepository.set(answers)
+
+              } yield Redirect(navigator.nextPage(NetTakingsLowerPage, mode, answers))
             }
           )
       }
