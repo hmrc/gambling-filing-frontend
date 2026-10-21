@@ -18,16 +18,20 @@ package controllers
 
 import com.google.inject.Inject
 import controllers.actions.*
-import models.{CheckMode, NormalMode}
+import models.{CheckMode, NormalMode, UserAnswers}
+import scala.util.Try
 import navigation.CheckYourAnswersValidator
-import pages.{MachinesAvailablePage, NegativeDutyPage, SelectReturnPage}
+import pages.*
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import viewmodels.checkAnswers.*
 import viewmodels.govuk.summarylist.*
 import views.html.CheckYourAnswersView
 
-import scala.concurrent.Future
+import config.FrontendAppConfig
+import repositories.SessionRepository
+
+import scala.concurrent.{ExecutionContext, Future}
 
 class CheckYourAnswersController @Inject() (
   override val messagesApi: MessagesApi,
@@ -36,33 +40,49 @@ class CheckYourAnswersController @Inject() (
   getData: DataRetrievalAction,
   journeyComplete: JourneyCompleteAction,
   requireData: DataRequiredAction,
+  sessionRepository: SessionRepository,
+  appConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
   view: CheckYourAnswersView
-) extends BaseFilingController {
+)(implicit ec: ExecutionContext)
+    extends BaseFilingController {
 
-  def onPageLoad(): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete andThen requireData) {
-    implicit request =>
+  def onPageLoad(): Action[AnyContent] =
+    (authorise andThen validate andThen getData andThen journeyComplete andThen requireData).async { implicit request =>
 
       val answers = request.userAnswers
-      val backLink =
-        answers.get(NegativeDutyPage) match {
-          case Some(false) =>
-            Some(routes.NegativeDutyController.onPageLoad(NormalMode).url)
-          case _ =>
-            Some(routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode).url)
-        }
 
-      answers.get(SelectReturnPage).fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
-        val machines = SummaryListViewModel(rows = MachinesAvailableSummary.rows(answers))
-        val lowerRate = SummaryListViewModel(rows = LowerRateSummary.rows(answers))
-        val standardRate = SummaryListViewModel(rows = StandardRateSummary.rows(answers))
-        val higherRate = SummaryListViewModel(rows = HigherRateSummary.rows(answers))
-        val underDeclaredDuty = SummaryListViewModel(rows = UnderDeclaredDutySummary.rows(answers))
-        val dutyBroughtForward = SummaryListViewModel(rows = DutyBroughtForwardSummary.rows(answers))
-
-        Ok(view(selectedReturn, machines, lowerRate, standardRate, higherRate, underDeclaredDuty, dutyBroughtForward, backLink))
+      // Clear an out-of-range UDD amount so the user can enter a new value from CYA.
+      val updatedAnswers = if (!isValidUnderDeclaredDuty(answers)) {
+        answers.remove(TotalUnderDeclaredDutyPage)
+      } else {
+        Try(answers)
       }
-  }
+
+      for {
+        updatedAnswers <- Future.fromTry(updatedAnswers)
+        _              <- sessionRepository.set(updatedAnswers)
+      } yield {
+        val backLink =
+          updatedAnswers.get(NegativeDutyPage) match {
+            case Some(false) =>
+              Some(routes.NegativeDutyController.onPageLoad(NormalMode).url)
+            case _ =>
+              Some(routes.NegativeDutyBroughtForwardInputController.onPageLoad(NormalMode).url)
+          }
+
+        updatedAnswers.get(SelectReturnPage).fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
+          val machines = SummaryListViewModel(rows = MachinesAvailableSummary.rows(updatedAnswers))
+          val lowerRate = SummaryListViewModel(rows = LowerRateSummary.rows(updatedAnswers))
+          val standardRate = SummaryListViewModel(rows = StandardRateSummary.rows(updatedAnswers))
+          val higherRate = SummaryListViewModel(rows = HigherRateSummary.rows(updatedAnswers))
+          val underDeclaredDuty = SummaryListViewModel(rows = UnderDeclaredDutySummary.rows(updatedAnswers))
+          val dutyBroughtForward = SummaryListViewModel(rows = DutyBroughtForwardSummary.rows(updatedAnswers))
+
+          Ok(view(selectedReturn, machines, lowerRate, standardRate, higherRate, underDeclaredDuty, dutyBroughtForward, backLink))
+        }
+      }
+    }
 
   def onSubmit(): Action[AnyContent] =
     (authorise andThen validate andThen getData andThen journeyComplete andThen requireData).async { implicit request =>
@@ -93,4 +113,26 @@ class CheckYourAnswersController @Inject() (
 
       }
     }
+
+  private def isValidUnderDeclaredDuty(answers: UserAnswers): Boolean = {
+
+    val totalNetTakings =
+      answers.get(NetTakingsLowerPage).getOrElse(BigDecimal(0)) +
+        answers.get(NetTakingsStandardPage).getOrElse(BigDecimal(0)) +
+        answers.get(NetTakingsHigherPage).getOrElse(BigDecimal(0))
+
+    // Recalculate the maximum UDD allowed using the latest net takings.
+    val percentageOfTotalNetTakings =
+      (totalNetTakings * appConfig.underDeclaredDutyPercentage)
+        .setScale(2, BigDecimal.RoundingMode.HALF_EVEN)
+
+    val maximumAllowed =
+      appConfig.underDeclaredDutyMinimumLimit.max(
+        percentageOfTotalNetTakings.min(appConfig.underDeclaredDutyMaximumLimit)
+      )
+
+    answers
+      .get(TotalUnderDeclaredDutyPage)
+      .exists(_ <= maximumAllowed)
+  }
 }

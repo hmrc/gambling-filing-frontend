@@ -24,12 +24,19 @@ import play.api.test.Helpers.*
 import viewmodels.checkAnswers.CheckYourAnswersHelpers
 import viewmodels.govuk.SummaryListFluency
 import pages.*
+import repositories.SessionRepository
 import viewmodels.checkAnswers.*
 import views.html.CheckYourAnswersView
+import org.mockito.ArgumentMatchers.any
+import org.mockito.Mockito.{verify, when}
+import org.scalatestplus.mockito.MockitoSugar
+import play.api.inject.bind
+
+import scala.concurrent.Future
 
 import java.time.LocalDate
 
-class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
+class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency with MockitoSugar {
 
   val selectedReturn: SelectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
@@ -227,5 +234,66 @@ class CheckYourAnswersControllerSpec extends SpecBase with SummaryListFluency {
         redirectLocation(result).value mustEqual routes.MachinesAvailableController.onPageLoad(CheckMode).url
       }
     }
+
+    "must remove Under Declared Duty when it is above the recalculated maximum" in {
+
+      val answers =
+        userAnswersWithSelectedReturn
+          .set(NetTakingsLowerPage, BigDecimal("1000000"))
+          .success
+          .value
+          .set(TotalUnderDeclaredDutyPage, BigDecimal("15000"))
+          .success
+          .value
+
+      val expectedAnswers = answers.remove(TotalUnderDeclaredDutyPage).success.value
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+
+      val application =
+        applicationBuilder(userAnswers = Some(answers))
+          .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+        val result = route(application, request).value
+
+        status(result) mustEqual OK
+
+        verify(mockSessionRepository).set(expectedAnswers)
+      }
+    }
+
+    "must keep Under Declared Duty when it is within the recalculated maximum" in {
+
+      val answers =
+        userAnswersWithSelectedReturn
+          .set(NetTakingsLowerPage, BigDecimal("1000000"))
+          .success
+          .value
+          .set(TotalUnderDeclaredDutyPage, BigDecimal("10000"))
+          .success
+          .value
+
+      val mockSessionRepository = mock[SessionRepository]
+
+      when(mockSessionRepository.set(any[UserAnswers])).thenReturn(Future.successful(true))
+
+      val application =
+        applicationBuilder(userAnswers = Some(answers))
+          .overrides(bind[SessionRepository].toInstance(mockSessionRepository))
+          .build()
+
+      running(application) {
+        val request = FakeRequest(GET, routes.CheckYourAnswersController.onPageLoad().url)
+        val result = route(application, request).value
+        status(result) mustEqual OK
+
+        verify(mockSessionRepository).set(answers)
+      }
+    }
+
   }
 }
