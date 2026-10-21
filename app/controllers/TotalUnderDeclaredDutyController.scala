@@ -16,12 +16,12 @@
 
 package controllers
 
+import config.FrontendAppConfig
 import controllers.actions.*
 import forms.TotalUnderDeclaredDutyFormProvider
 import models.{Mode, UserAnswers}
 import navigation.Navigator
-import utils.UnderDeclareDutyCalculator
-import pages.*
+import pages.{NetTakingsHigherPage, NetTakingsLowerPage, NetTakingsStandardPage, SelectReturnPage, TotalUnderDeclaredDutyPage}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -29,6 +29,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
 import views.html.TotalUnderDeclaredDutyView
 
 import javax.inject.Inject
+import scala.math.BigDecimal.RoundingMode
 import scala.concurrent.{ExecutionContext, Future}
 
 class TotalUnderDeclaredDutyController @Inject() (
@@ -39,7 +40,7 @@ class TotalUnderDeclaredDutyController @Inject() (
   getData: DataRetrievalAction,
   journeyComplete: JourneyCompleteAction,
   formProvider: TotalUnderDeclaredDutyFormProvider,
-  underDeclareDutyCalculator: UnderDeclareDutyCalculator,
+  appConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
   view: TotalUnderDeclaredDutyView
 )(implicit ec: ExecutionContext)
@@ -52,7 +53,7 @@ class TotalUnderDeclaredDutyController @Inject() (
       .fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
 
         val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-        val maximumAllowed = underDeclareDutyCalculator.calculateMaximumAllowed(userAnswers)
+        val maximumAllowed = calculateMaximumAllowed(userAnswers)
         val form = formProvider(maximumAllowed)
 
         val preparedForm =
@@ -70,7 +71,7 @@ class TotalUnderDeclaredDutyController @Inject() (
       .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
 
         val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-        val maximumAllowed = underDeclareDutyCalculator.calculateMaximumAllowed(userAnswers)
+        val maximumAllowed = calculateMaximumAllowed(userAnswers)
 
         formProvider(maximumAllowed)
           .bindFromRequest()
@@ -88,27 +89,27 @@ class TotalUnderDeclaredDutyController @Inject() (
       }
   }
 
-//  private def calculateMaximumAllowed(userAnswers: UserAnswers): BigDecimal = {
-//    val lowerNetTakings =
-//      userAnswers.get(NetTakingsLowerPage).getOrElse(BigDecimal(0))
-//
-//    val standardNetTakings =
-//      userAnswers.get(NetTakingsStandardPage).getOrElse(BigDecimal(0))
-//
-//    val higherNetTakings =
-//      userAnswers.get(NetTakingsHigherPage).getOrElse(BigDecimal(0))
-//
-//    val totalNetTakings =
-//      lowerNetTakings + standardNetTakings + higherNetTakings
-//
-//    val percentageOfTotalNetTakings =
-//      (totalNetTakings * appConfig.underDeclaredDutyPercentage).setScale(2, RoundingMode.HALF_EVEN)
-//
-//    appConfig.underDeclaredDutyMinimumLimit.max(
-//      percentageOfTotalNetTakings.min(
-//        appConfig.underDeclaredDutyMaximumLimit
-//      )
-//    )
-//  }
+  private def calculateMaximumAllowed(userAnswers: UserAnswers): BigDecimal = {
+    val lowerNetTakings =
+      userAnswers.get(NetTakingsLowerPage).getOrElse(BigDecimal(0))
+
+    val standardNetTakings =
+      userAnswers.get(NetTakingsStandardPage).getOrElse(BigDecimal(0))
+
+    val higherNetTakings =
+      userAnswers.get(NetTakingsHigherPage).getOrElse(BigDecimal(0))
+
+    val totalNetTakings =
+      lowerNetTakings + standardNetTakings + higherNetTakings
+
+    val percentageOfTotalNetTakings =
+      (totalNetTakings * appConfig.underDeclaredDutyPercentage).setScale(2, RoundingMode.HALF_EVEN)
+
+    appConfig.underDeclaredDutyMinimumLimit.max(
+      percentageOfTotalNetTakings.min(
+        appConfig.underDeclaredDutyMaximumLimit
+      )
+    )
+  }
 
 }
