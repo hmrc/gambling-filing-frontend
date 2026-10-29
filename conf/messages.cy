@@ -288,7 +288,7 @@ confirmation.title = Return submitted
 confirmation.heading = Return submitted
 confirmation.reference = Your reference number is
 confirmation.whatHappensNext.heading = What happens next?
-confirmation.whatHappensNext.returnMessage = We''ve received your return. It may take up to 48 hours for your return to be viewable in your submitted returns.
+confirmation.whatHappensNext.returnMessage = We’ve received your return. It may take up to 48 hours for your return to be viewable in your submitted returns.
 confirmation.whatHappensNext.contact = We will contact you if we need more information.
 confirmation.returnToAccount = Return to manage your Machine Games Duty
 
