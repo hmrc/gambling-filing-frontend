@@ -16,8 +16,8 @@
 
 package controllers
 
-import controllers.actions.{AuthorisedAction, DataRetrievalAction, ValidateAction}
-import models.SortBy
+import controllers.actions.{AuthenticatedAction, AuthorisedAction, DataRetrievalAction, GRNValidator, ValidateAction}
+import models.{Regime, SortBy}
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import services.GamblingService
@@ -29,6 +29,7 @@ import scala.concurrent.ExecutionContext
 
 class SubmittedReturnsController @Inject() (
   val controllerComponents: MessagesControllerComponents,
+  authenticate: AuthenticatedAction,
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
@@ -37,6 +38,17 @@ class SubmittedReturnsController @Inject() (
   submittedReturnView: SubmittedReturnView
 )(implicit ec: ExecutionContext)
     extends BaseFilingController {
+
+  def landing(mgdRegNumber: String): Action[AnyContent] =
+    authenticate { implicit request =>
+      val regNum = mgdRegNumber.toUpperCase().trim
+      if (GRNValidator.validateRegNum(Regime.MGD, regNum)) {
+        Redirect(routes.SubmittedReturnsController.onPageLoad()).addingToSession("regNum" -> regNum)
+      } else {
+        logger.warn(s"invalid mgdRegNumber, redirecting to access denied")
+        Redirect(controllers.routes.AccessDeniedController.onPageLoad())
+      }
+    }
 
   def onPageLoad(): Action[AnyContent] =
     (authorise andThen validate andThen getData).async { implicit request =>
