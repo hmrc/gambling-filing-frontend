@@ -181,13 +181,13 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual BAD_REQUEST
 
-        boundForm.errors.exists(_.message == "mgdStandardRate.error.mustBeGreaterThanNetTakings") mustBe true
+        boundForm.errors.exists(_.message == "mgdStandardRate.error.dutyExceedsNetTakings") mustBe true
         contentAsString(result) mustEqual
           view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
-    "must redirect when Standard Level net takings are missing" in {
+    "must return Bad Request when Standard Level net takings are missing" in {
       val userAnswers =
         UserAnswers(userAnswersId)
           .set(SelectReturnPage, selectedReturn)
@@ -197,11 +197,13 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
 
       running(application) {
-        val request = FakeRequest(GET, mgdStandardRateRoute)
+        val request =
+          FakeRequest(POST, mgdStandardRateRoute)
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
+
         val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
+        status(result) mustEqual BAD_REQUEST
       }
     }
   }

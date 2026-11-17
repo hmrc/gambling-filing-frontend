@@ -46,42 +46,36 @@ class MgdLowerRateController @Inject() (
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
-        logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
+        logger.info(s" no selectedReturn found for regNum=${request.regNum}")
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-      case Some(selectedReturn) =>
-        request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
-          case None => Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-          case Some(netTakings) =>
-            val form = formProvider(netTakings)
-            val preparedForm = request.userAnswers.flatMap(_.get(MgdLowerRatePage)).fold(form)(form.fill)
 
-            Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
-        }
+      case Some(selectedReturn) =>
+        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsLowerPage)).getOrElse(BigDecimal(0))
+        val form = formProvider(netTakings)
+        val preparedForm = request.userAnswers.flatMap(_.get(MgdLowerRatePage)).fold(form)(form.fill)
+
+        Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
     }
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+    request.userAnswers.flatMap(answers => answers.get(SelectReturnPage).map(selectedReturn => (answers, selectedReturn))) match {
       case None =>
-        logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
+        logger.info(s" no selectedReturn found for regNum=${request.regNum}")
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-      case Some(selectedReturn) =>
-        request.userAnswers.flatMap(_.get(NetTakingsLowerPage)) match {
-          case None => Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-          case Some(netTakings) =>
-            formProvider(netTakings)
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
-                value => {
-                  val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-                  for {
-                    updatedAnswers <- Future.fromTry(userAnswers.set(MgdLowerRatePage, value))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(navigator.nextPage(MgdLowerRatePage, mode, updatedAnswers))
-                }
-              )
-        }
+
+      case Some((userAnswers, selectedReturn)) =>
+        val netTakings = userAnswers.get(NetTakingsLowerPage).getOrElse(BigDecimal(0))
+        formProvider(netTakings)
+          .bindFromRequest()
+          .fold(
+            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+            value =>
+              for {
+                updatedAnswers <- Future.fromTry(userAnswers.set(MgdLowerRatePage, value))
+                _              <- sessionRepository.set(updatedAnswers)
+              } yield Redirect(navigator.nextPage(MgdLowerRatePage, mode, updatedAnswers))
+          )
     }
   }
 }

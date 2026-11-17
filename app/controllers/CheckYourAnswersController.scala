@@ -52,12 +52,7 @@ class CheckYourAnswersController @Inject() (
 
       val answers = request.userAnswers
 
-      // Clear an out-of-range UDD amount so the user can enter a new value from CYA.
-//      val updatedAnswers = if (!isValidUnderDeclaredDuty(answers)) {
-//        answers.remove(TotalUnderDeclaredDutyPage)
-//      } else {
-//        Try(answers)
-//      }
+      // Clear an out-of-range UDD & MGD Net takings amount so the user can enter a new value from CYA.
       val updatedAnswers = for {
         lower    <- if (!isValidLowerRate(answers)) answers.remove(MgdLowerRatePage) else Try(answers)
         standard <- if (!isValidStandardRate(lower)) lower.remove(MgdStandardRatePage) else Try(lower)

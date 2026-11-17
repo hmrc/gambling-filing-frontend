@@ -38,7 +38,7 @@ class MgdLowerRateFormProvider @Inject() extends Mappings {
   private def validAmount(netTakings: BigDecimal): Constraint[BigDecimal] =
     Constraint { value =>
       if (value > netTakings) {
-        Invalid("mgdLowerRate.error.mustBeGreaterThanNetTakings")
+        Invalid("mgdLowerRate.error.dutyExceedsNetTakings")
       } else {
         Valid
       }

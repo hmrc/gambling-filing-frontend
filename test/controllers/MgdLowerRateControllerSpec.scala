@@ -214,13 +214,13 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual BAD_REQUEST
 
-        boundForm.errors.exists(_.message == "mgdLowerRate.error.mustBeGreaterThanNetTakings") mustBe true
+        boundForm.errors.exists(_.message == "mgdLowerRate.error.dutyExceedsNetTakings") mustBe true
         contentAsString(result) mustEqual
           view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
       }
     }
 
-    "must redirect when Lower Level net takings are missing" in {
+    "must return Bad Request when Lower Level net takings are missing" in {
       val userAnswers =
         UserAnswers(userAnswersId)
           .set(SelectReturnPage, selectedReturn)
@@ -228,13 +228,13 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
           .value
 
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-
       running(application) {
-        val request = FakeRequest(GET, mgdLowerRateRoute)
+        val request =
+          FakeRequest(POST, mgdLowerRateRoute)
+            .withFormUrlEncodedBody(("value", validAnswer.toString))
         val result = route(application, request).value
 
-        status(result) mustEqual SEE_OTHER
-        redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
+        status(result) mustEqual BAD_REQUEST
       }
     }
   }
