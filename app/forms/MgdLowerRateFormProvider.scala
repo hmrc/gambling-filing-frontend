@@ -17,17 +17,31 @@
 package forms
 
 import forms.mappings.Mappings
+
 import javax.inject.Inject
 import play.api.data.Form
+import play.api.data.validation.{Constraint, Invalid, Valid}
 
 class MgdLowerRateFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[BigDecimal] =
+  def apply(netTakings: BigDecimal): Form[BigDecimal] =
     Form(
       "value" -> currency(
         "mgdLowerRate.error.required",
         "mgdLowerRate.error.invalid",
         "mgdLowerRate.error.range"
+      ).verifying(
+        validAmount(netTakings)
       )
     )
+
+  private def validAmount(netTakings: BigDecimal): Constraint[BigDecimal] =
+    Constraint { value =>
+      if (value > netTakings) {
+        Invalid("mgdLowerRate.error.mustBeGreaterThanNetTakings")
+      } else {
+        Valid
+      }
+    }
+
 }

@@ -67,7 +67,8 @@ class MgdLowerRateViewSpec extends SpecBase {
   trait Setup {
     val app = applicationBuilder().build()
     val view = app.injector.instanceOf[MgdLowerRateView]
-    val form = new MgdLowerRateFormProvider()()
+    val netTakings: BigDecimal = BigDecimal("18000")
+    val form = new MgdLowerRateFormProvider()(netTakings)
     val selectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
     implicit val request: play.api.mvc.Request[?] = FakeRequest()

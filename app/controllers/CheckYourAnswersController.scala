@@ -53,11 +53,17 @@ class CheckYourAnswersController @Inject() (
       val answers = request.userAnswers
 
       // Clear an out-of-range UDD amount so the user can enter a new value from CYA.
-      val updatedAnswers = if (!isValidUnderDeclaredDuty(answers)) {
-        answers.remove(TotalUnderDeclaredDutyPage)
-      } else {
-        Try(answers)
-      }
+//      val updatedAnswers = if (!isValidUnderDeclaredDuty(answers)) {
+//        answers.remove(TotalUnderDeclaredDutyPage)
+//      } else {
+//        Try(answers)
+//      }
+      val updatedAnswers = for {
+        lower    <- if (!isValidLowerRate(answers)) answers.remove(MgdLowerRatePage) else Try(answers)
+        standard <- if (!isValidStandardRate(lower)) lower.remove(MgdStandardRatePage) else Try(lower)
+        higher   <- if (!isValidHigherRate(standard)) standard.remove(MgdHigherRatePage) else Try(standard)
+        result   <- if (!isValidUnderDeclaredDuty(higher)) higher.remove(TotalUnderDeclaredDutyPage) else Try(higher)
+      } yield result
 
       for {
         updatedAnswers <- Future.fromTry(updatedAnswers)
@@ -135,4 +141,14 @@ class CheckYourAnswersController @Inject() (
       .get(TotalUnderDeclaredDutyPage)
       .exists(_ <= maximumAllowed)
   }
+
+  private def isValidLowerRate(answers: UserAnswers): Boolean =
+    answers.get(MgdLowerRatePage).forall(rate => answers.get(NetTakingsLowerPage).exists(rate <= _))
+
+  private def isValidStandardRate(answers: UserAnswers): Boolean =
+    answers.get(MgdStandardRatePage).forall(rate => answers.get(NetTakingsStandardPage).exists(rate <= _))
+
+  private def isValidHigherRate(answers: UserAnswers): Boolean =
+    answers.get(MgdHigherRatePage).forall(rate => answers.get(NetTakingsHigherPage).exists(rate <= _))
+
 }
