@@ -138,12 +138,11 @@ class CheckYourAnswersController @Inject() (
   }
 
   private def isValidLowerRate(answers: UserAnswers): Boolean =
-    answers.get(MgdLowerRatePage).forall(rate => answers.get(NetTakingsLowerPage).exists(rate <= _))
+    answers.get(MgdLowerRatePage).forall(rate => answers.get(NetTakingsLowerPage).exists(netTakings => rate.abs < netTakings.abs))
 
   private def isValidStandardRate(answers: UserAnswers): Boolean =
-    answers.get(MgdStandardRatePage).forall(rate => answers.get(NetTakingsStandardPage).exists(rate <= _))
+    answers.get(MgdStandardRatePage).forall(rate => answers.get(NetTakingsStandardPage).exists(netTakings => rate.abs < netTakings.abs))
 
   private def isValidHigherRate(answers: UserAnswers): Boolean =
-    answers.get(MgdHigherRatePage).forall(rate => answers.get(NetTakingsHigherPage).exists(rate <= _))
-
+    answers.get(MgdHigherRatePage).forall(rate => answers.get(NetTakingsHigherPage).exists(netTakings => rate.abs < netTakings.abs))
 }
