@@ -50,7 +50,7 @@ class MgdLowerRateController @Inject() (
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
 
       case Some(selectedReturn) =>
-        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsLowerPage)).getOrElse(BigDecimal(0))
+        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsLowerPage))
         val form = formProvider(netTakings)
         val preparedForm = request.userAnswers.flatMap(_.get(MgdLowerRatePage)).fold(form)(form.fill)
 
@@ -65,7 +65,7 @@ class MgdLowerRateController @Inject() (
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
 
       case Some((userAnswers, selectedReturn)) =>
-        val netTakings = userAnswers.get(NetTakingsLowerPage).getOrElse(BigDecimal(0))
+        val netTakings = userAnswers.get(NetTakingsLowerPage)
         formProvider(netTakings)
           .bindFromRequest()
           .fold(

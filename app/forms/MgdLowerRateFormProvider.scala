@@ -24,7 +24,7 @@ import play.api.data.validation.{Constraint, Invalid, Valid}
 
 class MgdLowerRateFormProvider @Inject() extends Mappings {
 
-  def apply(netTakings: BigDecimal): Form[BigDecimal] =
+  def apply(netTakings: Option[BigDecimal]): Form[BigDecimal] =
     Form(
       "value" -> currency(
         "mgdLowerRate.error.required",
@@ -35,12 +35,12 @@ class MgdLowerRateFormProvider @Inject() extends Mappings {
       )
     )
 
-  private def validAmount(netTakings: BigDecimal): Constraint[BigDecimal] =
+  private def validAmount(netTakings: Option[BigDecimal]): Constraint[BigDecimal] =
     Constraint { value =>
-      if (value > netTakings) {
-        Invalid("mgdLowerRate.error.dutyExceedsNetTakings")
-      } else {
+      if (netTakings.exists(value <= _)) {
         Valid
+      } else {
+        Invalid("mgdLowerRate.error.dutyExceedsNetTakings")
       }
     }
 

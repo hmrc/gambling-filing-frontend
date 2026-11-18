@@ -49,7 +49,7 @@ class MgdStandardRateController @Inject() (
         logger.info(s" no selectedReturn found for regNum=${request.regNum}")
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
       case Some(selectedReturn) =>
-        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsStandardPage)).getOrElse(BigDecimal(0))
+        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsStandardPage))
         val form = formProvider(netTakings)
         val preparedForm = request.userAnswers.flatMap(_.get(MgdStandardRatePage)).fold(form)(form.fill)
 
@@ -64,7 +64,7 @@ class MgdStandardRateController @Inject() (
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
 
       case Some((userAnswers, selectedReturn)) =>
-        val netTakings = userAnswers.get(NetTakingsStandardPage).getOrElse(BigDecimal(0))
+        val netTakings = userAnswers.get(NetTakingsStandardPage)
 
         formProvider(netTakings)
           .bindFromRequest()

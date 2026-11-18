@@ -24,7 +24,7 @@ import javax.inject.Inject
 
 class MgdHigherRateFormProvider @Inject() extends Mappings {
 
-  def apply(netTakings: BigDecimal): Form[BigDecimal] =
+  def apply(netTakings: Option[BigDecimal]): Form[BigDecimal] =
     Form(
       "value" -> currency(
         "mgdHigherRate.error.required",
@@ -35,12 +35,12 @@ class MgdHigherRateFormProvider @Inject() extends Mappings {
       )
     )
 
-  private def validAmount(netTakings: BigDecimal): Constraint[BigDecimal] =
+  private def validAmount(netTakings: Option[BigDecimal]): Constraint[BigDecimal] =
     Constraint { value =>
-      if (value > netTakings) {
-        Invalid("mgdHigherRate.error.dutyExceedsNetTakings")
-      } else {
+      if (netTakings.exists(value <= _)) {
         Valid
+      } else {
+        Invalid("mgdHigherRate.error.dutyExceedsNetTakings")
       }
     }
 }

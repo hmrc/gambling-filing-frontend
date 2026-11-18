@@ -41,7 +41,7 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
   val netTakings: BigDecimal = BigDecimal("2000")
   val validAnswer: BigDecimal = BigDecimal("1000")
   val invalidAmount: BigDecimal = BigDecimal("2500")
-  val form = formProvider(netTakings)
+  val form = formProvider(Some(netTakings))
 
   def onwardRoute = Call("GET", "/foo")
 
@@ -203,13 +203,11 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return Bad Request when MGD Lower Rate exceeds net takings" in {
-      val userAnswers = userAnswersWithSelectedReturn
-      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
-
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
       running(application) {
         val request = FakeRequest(POST, mgdLowerRateRoute).withFormUrlEncodedBody(("value", invalidAmount.toString))
         val result = route(application, request).value
-        val boundForm = formProvider(netTakings).bind(Map("value" -> invalidAmount.toString))
+        val boundForm = formProvider(Some(netTakings)).bind(Map("value" -> invalidAmount.toString))
         val view = application.injector.instanceOf[MgdLowerRateView]
 
         status(result) mustEqual BAD_REQUEST
@@ -221,17 +219,10 @@ class MgdLowerRateControllerSpec extends SpecBase with MockitoSugar {
     }
 
     "must return Bad Request when Lower Level net takings are missing" in {
-      val userAnswers =
-        UserAnswers(userAnswersId)
-          .set(SelectReturnPage, selectedReturn)
-          .success
-          .value
-
+      val userAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
       val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
       running(application) {
-        val request =
-          FakeRequest(POST, mgdLowerRateRoute)
-            .withFormUrlEncodedBody(("value", validAnswer.toString))
+        val request = FakeRequest(POST, mgdLowerRateRoute).withFormUrlEncodedBody(("value", "500"))
         val result = route(application, request).value
 
         status(result) mustEqual BAD_REQUEST
