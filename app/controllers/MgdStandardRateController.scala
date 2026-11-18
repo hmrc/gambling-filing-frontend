@@ -58,23 +58,26 @@ class MgdStandardRateController @Inject() (
   }
 
   def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers.flatMap(answers => answers.get(SelectReturnPage).map(selectedReturn => (answers, selectedReturn))) match {
+    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
-        logger.info(s" no selectedReturn found for regNum=${request.regNum}")
+        logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
 
-      case Some((userAnswers, selectedReturn)) =>
-        val netTakings = userAnswers.get(NetTakingsStandardPage)
-
+      case Some(selectedReturn) =>
+        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsStandardPage))
         formProvider(netTakings)
           .bindFromRequest()
           .fold(
             formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
-            value =>
+            value => {
+              val userAnswers = request.userAnswers.get
               for {
                 updatedAnswers <- Future.fromTry(userAnswers.set(MgdStandardRatePage, value))
                 _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(MgdStandardRatePage, mode, updatedAnswers))
+              } yield Redirect(
+                navigator.nextPage(MgdStandardRatePage, mode, updatedAnswers)
+              )
+            }
           )
     }
   }
