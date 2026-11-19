@@ -58,26 +58,30 @@ class MgdLowerRateController @Inject() (
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-      case None =>
-        logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
+    request.userAnswers match {
+      case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+      case Some(userAnswers) =>
+        userAnswers.get(SelectReturnPage) match {
+          case None =>
+            logger.info(s" no selectedReturn found for regNum=${request.regNum}")
+            Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
 
-      case Some(selectedReturn) =>
-        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsLowerPage))
-        formProvider(netTakings)
-          .bindFromRequest()
-          .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
-            value => {
-              val userAnswers = request.userAnswers.get
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(MgdLowerRatePage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(MgdLowerRatePage, mode, updatedAnswers))
-            }
-          )
+          case Some(selectedReturn) =>
+            val netTakings = userAnswers.get(NetTakingsLowerPage)
+            formProvider(netTakings)
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(userAnswers.set(MgdLowerRatePage, value))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(
+                    navigator.nextPage(MgdLowerRatePage, mode, updatedAnswers)
+                  )
+              )
+        }
     }
   }
 }
