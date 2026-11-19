@@ -19,6 +19,7 @@ package forms.mappings
 import play.api.data.FormError
 import play.api.data.format.Formatter
 import models.Enumerable
+import utils.Utils.removeSpaces
 
 import scala.util.control.Exception.nonFatalCatch
 
@@ -28,9 +29,9 @@ trait Formatters {
 
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
       data.get(key) match {
-        case None                      => Left(Seq(FormError(key, errorKey, args)))
-        case Some(s) if s.trim.isEmpty => Left(Seq(FormError(key, errorKey, args)))
-        case Some(s)                   => Right(s)
+        case None                               => Left(Seq(FormError(key, errorKey, args)))
+        case Some(s) if removeSpaces(s).isEmpty => Left(Seq(FormError(key, errorKey, args)))
+        case Some(s)                            => Right(s)
       }
 
     override def unbind(key: String, value: String): Map[String, String] =
@@ -102,7 +103,7 @@ trait Formatters {
       override def bind(key: String, data: Map[String, String]) =
         baseFormatter
           .bind(key, data)
-          .map(_.replace(",", ""))
+          .map(removeSpaces(_).replace(",", ""))
           .flatMap {
             case s if s.matches(decimalRegexp) =>
               Left(Seq(FormError(key, wholeNumberKey, args)))
@@ -151,7 +152,7 @@ trait Formatters {
       override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], BigDecimal] =
         baseFormatter
           .bind(key, data)
-          .map(_.replace(",", "").replace(" ", "").replace("£", ""))
+          .map(removeSpaces(_).replace(",", "").replace("£", ""))
           .flatMap {
             case s if !s.matches(validCurrency) =>
               Left(Seq(FormError(key, invalidKey, args)))

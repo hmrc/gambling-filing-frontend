@@ -22,6 +22,13 @@ object Utils {
   val emptyString = ""
   val firstRadioId = "value_0"
 
+  // Any run of whitespace, including non-breaking and other Unicode spaces
+  private val whitespaceRegex = """[\s\p{Z}]+"""
+
+  // Removes all whitespace from user input, e.g. " 1 000 " -> "1000"
+  def removeSpaces(value: String): String =
+    value.replaceAll(whitespaceRegex, "")
+
   def withIds(items: Seq[RadioItem], prefix: String = "value"): Seq[RadioItem] =
     items.zipWithIndex.map { case (item, i) => item.copy(id = Some(s"${prefix}_$i")) }
 }
