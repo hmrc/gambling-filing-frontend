@@ -17,10 +17,12 @@
 @import views.html.components._
 @import models.OpenReturnPeriods
 @import utils.DateTimeFormats
+@import config.FrontendAppConfig
 
 @this(
     govukTable: GovukTable,
     layout: templates.Layout,
+    appConfig: FrontendAppConfig,
     govukButton: GovukButton,
     govukPanel: GovukPanel,
     h2: H2,
@@ -59,7 +61,8 @@ model.openPeriods.zipWithIndex.map { case (item, i) =>
 }
 
 @layout(
-    pageTitle     = titleNoForm(messages(if(model.openPeriods.isEmpty) "selectReturn.empty.title" else "selectReturn.title"))
+    pageTitle     = titleNoForm(messages(if(model.openPeriods.isEmpty) "selectReturn.empty.title" else "selectReturn.title")),
+    backLink      = Some(s"${appConfig.gamblingManagementHomeUrl.stripSuffix("/")}/manage-your-machine-games-duty")
 ) {
 
     <span class="govuk-caption-l" data-testid="open-returns-caption">
