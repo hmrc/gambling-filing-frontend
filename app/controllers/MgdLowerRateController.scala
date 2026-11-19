@@ -20,7 +20,7 @@ import controllers.actions.*
 import forms.MgdLowerRateFormProvider
 import models.{Mode, UserAnswers}
 import navigation.Navigator
-import pages.{MgdLowerRatePage, SelectReturnPage}
+import pages.{MgdLowerRatePage, NetTakingsLowerPage, SelectReturnPage}
 import play.api.i18n.MessagesApi
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SessionRepository
@@ -43,37 +43,45 @@ class MgdLowerRateController @Inject() (
 )(implicit ec: ExecutionContext)
     extends BaseFilingController {
 
-  val form = formProvider()
-
   def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
     request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
       case None =>
-        logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
+        logger.info(s" no selectedReturn found for regNum=${request.regNum}")
         Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+
       case Some(selectedReturn) =>
+        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsLowerPage))
+        val form = formProvider(netTakings)
         val preparedForm = request.userAnswers.flatMap(_.get(MgdLowerRatePage)).fold(form)(form.fill)
+
         Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
     }
   }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-      case None =>
-        logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-      case Some(selectedReturn) =>
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(MgdLowerRatePage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(MgdLowerRatePage, mode, updatedAnswers))
-            }
-          )
+  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
+    request.userAnswers match {
+      case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+      case Some(userAnswers) =>
+        userAnswers.get(SelectReturnPage) match {
+          case None =>
+            logger.info(s" no selectedReturn found for regNum=${request.regNum}")
+            Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+
+          case Some(selectedReturn) =>
+            val netTakings = userAnswers.get(NetTakingsLowerPage)
+            formProvider(netTakings)
+              .bindFromRequest()
+              .fold(
+                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+                value =>
+                  for {
+                    updatedAnswers <- Future.fromTry(userAnswers.set(MgdLowerRatePage, value))
+                    _              <- sessionRepository.set(updatedAnswers)
+                  } yield Redirect(
+                    navigator.nextPage(MgdLowerRatePage, mode, updatedAnswers)
+                  )
+              )
+        }
     }
   }
 }

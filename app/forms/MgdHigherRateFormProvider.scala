@@ -18,17 +18,29 @@ package forms
 
 import forms.mappings.Mappings
 import play.api.data.Form
+import play.api.data.validation.{Constraint, Invalid, Valid}
 
 import javax.inject.Inject
 
 class MgdHigherRateFormProvider @Inject() extends Mappings {
 
-  def apply(): Form[BigDecimal] =
+  def apply(netTakings: Option[BigDecimal]): Form[BigDecimal] =
     Form(
       "value" -> currency(
         "mgdHigherRate.error.required",
         "mgdHigherRate.error.invalid",
         "mgdHigherRate.error.range"
+      ).verifying(
+        validAmount(netTakings)
       )
     )
+
+  private def validAmount(netTakings: Option[BigDecimal]): Constraint[BigDecimal] =
+    Constraint { value =>
+      if (netTakings.exists(amount => value.abs < amount.abs)) {
+        Valid
+      } else {
+        Invalid("mgdHigherRate.error.dutyExceedsNetTakings")
+      }
+    }
 }
