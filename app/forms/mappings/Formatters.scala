@@ -29,9 +29,9 @@ trait Formatters {
 
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], String] =
       data.get(key) match {
-        case None                               => Left(Seq(FormError(key, errorKey, args)))
+        case None                                  => Left(Seq(FormError(key, errorKey, args)))
         case Some(s) if normaliseSpaces(s).isEmpty => Left(Seq(FormError(key, errorKey, args)))
-        case Some(s)                            => Right(s)
+        case Some(s)                               => Right(s)
       }
 
     override def unbind(key: String, value: String): Map[String, String] =
