@@ -27,22 +27,22 @@ class UtilsSpec extends AnyWordSpec with Matchers {
 
     "remove leading, trailing and inner spaces" in {
 
-      Utils.removeSpaces("  1 000   000 ") mustBe "1000000"
+      Utils.normaliseSpaces("  1 000   000 ") mustBe "1000000"
     }
 
     "remove tabs and newlines" in {
 
-      Utils.removeSpaces("1\t000\n") mustBe "1000"
+      Utils.normaliseSpaces("1\t000\n") mustBe "1000"
     }
 
     "remove non-breaking and other Unicode spaces" in {
 
-      Utils.removeSpaces("\u00A01\u00A0000\u2007000\u00A0") mustBe "1000000"
+      Utils.normaliseSpaces("\u00A01\u00A0000\u2007000\u00A0") mustBe "1000000"
     }
 
     "return an empty string for whitespace-only input" in {
 
-      Utils.removeSpaces(" \t\u00A0 ") mustBe ""
+      Utils.normaliseSpaces(" \t\u00A0 ") mustBe ""
     }
   }
 

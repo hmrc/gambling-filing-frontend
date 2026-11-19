@@ -26,7 +26,7 @@ object Utils {
   private val whitespaceRegex = """[\s\p{Z}]+"""
 
   // Removes all whitespace from user input, e.g. " 1 000 " -> "1000"
-  def removeSpaces(value: String): String =
+  def normaliseSpaces(value: String): String =
     value.replaceAll(whitespaceRegex, "")
 
   def withIds(items: Seq[RadioItem], prefix: String = "value"): Seq[RadioItem] =
