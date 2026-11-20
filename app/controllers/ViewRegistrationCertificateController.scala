@@ -91,7 +91,7 @@ class ViewRegistrationCertificateController @Inject() (
           Ok(
             view(
               certificate,
-              appConfig.gamblingManagementHomeUrl,
+              appConfig.managementFrontendUrl,
               displayName,
               displayLabelKey,
               formattedAddress

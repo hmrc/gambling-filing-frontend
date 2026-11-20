@@ -17,10 +17,12 @@
 @import views.html.components._
 @import models.OpenReturnPeriods
 @import utils.DateTimeFormats
+@import config.FrontendAppConfig
 
 @this(
     govukTable: GovukTable,
     layout: templates.Layout,
+    appConfig: FrontendAppConfig,
     govukButton: GovukButton,
     govukPanel: GovukPanel,
     h2: H2,
@@ -29,7 +31,7 @@
     govukSummaryList: GovukSummaryList
 )
 
-@(regNumber: String, model: OpenReturnPeriods, backLink: Option[String])(implicit request: Request[_], messages: Messages)
+@(regNumber: String, model: OpenReturnPeriods)(implicit request: Request[_], messages: Messages)
 
 @periodLink(consecNo: Int, label: String) = {
     <a href="@routes.SelectReturnController.selectOpenPeriod(consecNo)" class="govuk-link">@label</a>
@@ -60,7 +62,7 @@ model.openPeriods.zipWithIndex.map { case (item, i) =>
 
 @layout(
     pageTitle     = titleNoForm(messages(if(model.openPeriods.isEmpty) "selectReturn.empty.title" else "selectReturn.title")),
-    backLink = backLink
+    backLink      = Some(s"${appConfig.managementFrontendUrl}manage-your-machine-games-duty")
 ) {
 
     <span class="govuk-caption-l" data-testid="open-returns-caption">

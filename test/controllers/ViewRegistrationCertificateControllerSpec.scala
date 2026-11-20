@@ -66,7 +66,7 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
       returnPeriodEndDates = Seq.empty
     )
 
-  private val managementUrl = "http://localhost:10400/gambling/"
+  private val managementUrl = "http://localhost:10400/manage-gambling-tax/"
 
   "ViewRegistrationCertificateController" - {
 
@@ -226,7 +226,7 @@ class ViewRegistrationCertificateControllerSpec extends SpecBase with MockitoSug
 
         verify(mockView).apply(
           eqTo(partnershipCert),
-          eqTo("http://localhost:10400/gambling/"),
+          eqTo("http://localhost:10400/manage-gambling-tax/"),
           eqTo("Partner Business Ltd"),
           eqTo("viewRegistrationCertificate.label.partnership"),
           any()

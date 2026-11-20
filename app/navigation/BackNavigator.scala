@@ -29,9 +29,6 @@ class BackNavigator @Inject() () {
 
   private val normalBackRoutes: Page => UserAnswers => Call = {
 
-    case OpenReturnPeriodsPage =>
-      _ => routes.IndexController.onPageLoad()
-
     case IntroductionPage =>
       _ => routes.SelectReturnController.onPageLoad()
 
@@ -46,9 +43,6 @@ class BackNavigator @Inject() () {
   }
 
   private val checkBackRouteMap: Page => UserAnswers => Call = {
-
-    case OpenReturnPeriodsPage =>
-      _ => routes.IndexController.onPageLoad()
 
     case IntroductionPage =>
       _ => routes.CheckYourAnswersController.onPageLoad()

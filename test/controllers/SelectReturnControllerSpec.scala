@@ -40,10 +40,6 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
 
   lazy val OpenReturnsRoute: String = routes.SelectReturnController.onPageLoad().url
 
-  val backUrl = Some(
-    routes.IndexController.onPageLoad().url
-  )
-
   def userAnswersWithCachedPeriods: UserAnswers =
     UserAnswers(userAnswersId).set(OpenReturnPeriodsPage, validResponseOpenReturns).success.value
 
@@ -75,7 +71,7 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SelectReturnView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(regNumber, validResponseOpenReturns, backUrl)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(regNumber, validResponseOpenReturns)(request, messages(application)).toString
 
         val captor = org.mockito.ArgumentCaptor.forClass(classOf[UserAnswers])
         verify(mockSessionRepository).set(captor.capture())
@@ -110,7 +106,7 @@ class SelectReturnControllerSpec extends SpecBase with MockitoSugar {
         val view = application.injector.instanceOf[SelectReturnView]
 
         status(result) mustEqual OK
-        contentAsString(result) mustEqual view(regNumber, zeroResponseOpenReturns, backUrl)(request, messages(application)).toString
+        contentAsString(result) mustEqual view(regNumber, zeroResponseOpenReturns)(request, messages(application)).toString
       }
     }
 
