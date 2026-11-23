@@ -68,6 +68,11 @@ class MappingsSpec extends AnyFreeSpec with Matchers with OptionValues with Mapp
       result.errors must contain(FormError("value", "error.required"))
     }
 
+    "must not bind a string of non-breaking spaces only" in {
+      val result = testForm.bind(Map("value" -> "\u00A0\u00A0"))
+      result.errors must contain(FormError("value", "error.required"))
+    }
+
     "must return a custom error message" in {
       val form = Form("value" -> text("custom.error"))
       val result = form.bind(Map("value" -> ""))
@@ -146,6 +151,50 @@ class MappingsSpec extends AnyFreeSpec with Matchers with OptionValues with Mapp
     }
   }
 
+  "long" - {
+
+    val testForm: Form[Long] =
+      Form(
+        "value" -> long()
+      )
+
+    "must bind a valid whole number" in {
+      testForm.bind(Map("value" -> "12")).get mustEqual 12L
+    }
+
+    "must bind a number with commas" in {
+      testForm.bind(Map("value" -> "1,000")).get mustEqual 1000L
+    }
+
+    "must bind a number with leading and trailing spaces" in {
+      testForm.bind(Map("value" -> "  12  ")).get mustEqual 12L
+    }
+
+    "must bind a number with spaces and commas" in {
+      testForm.bind(Map("value" -> " 1,000 000 ")).get mustEqual 1000000L
+    }
+
+    "must bind a number with tabs, non-breaking and other Unicode spaces" in {
+      testForm.bind(Map("value" -> "\u00A01\u00A0000\t")).get mustEqual 1000L
+    }
+
+    "must not bind a decimal" in {
+      testForm.bind(Map("value" -> " 1.5 ")).errors must contain(FormError("value", "error.wholeNumber"))
+    }
+
+    "must not bind non-numeric characters" in {
+      testForm.bind(Map("value" -> "abc")).errors must contain(FormError("value", "error.nonNumeric"))
+    }
+
+    "must not bind a value of whitespace only, including non-breaking spaces" in {
+      testForm.bind(Map("value" -> " \t\u00A0 ")).errors must contain(FormError("value", "error.required"))
+    }
+
+    "must unbind a valid value" in {
+      testForm.fill(123L).apply("value").value.value mustEqual "123"
+    }
+  }
+
   "enumerable" - {
 
     val testForm = Form(
@@ -193,6 +242,18 @@ class MappingsSpec extends AnyFreeSpec with Matchers with OptionValues with Mapp
     "must bind a valid number with spaces, commas and `£` characters" in {
       val result = testForm.bind(Map("value" -> "£ 1,234 . 01"))
       result.get mustEqual 1234.01
+    }
+
+    "must bind a value with leading and trailing spaces" in {
+      testForm.bind(Map("value" -> "  100.50  ")).get mustEqual BigDecimal("100.50")
+    }
+
+    "must bind a value with tabs, non-breaking and other Unicode spaces" in {
+      testForm.bind(Map("value" -> "\u00A0£1\u00A0000.50\t")).get mustEqual BigDecimal("1000.50")
+    }
+
+    "must not bind a value of whitespace only, including non-breaking spaces" in {
+      testForm.bind(Map("value" -> " \t\u00A0 ")).errors must contain(FormError("value", "error.required"))
     }
 
     "must bind negative numbers" in {

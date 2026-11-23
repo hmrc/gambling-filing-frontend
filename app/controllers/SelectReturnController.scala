@@ -19,7 +19,6 @@ package controllers
 import controllers.SelectReturnController.SortBy
 import controllers.actions.{AuthenticatedAction, AuthorisedAction, DataRetrievalAction, GRNValidator, ValidateAction}
 import models.{NormalMode, Regime, SelectedReturn, UserAnswers}
-import navigation.BackNavigator
 import pages.OpenReturnPeriodsPage
 import play.api.mvc.Results.Redirect
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -38,7 +37,6 @@ class SelectReturnController @Inject() (
   authorise: AuthorisedAction,
   validate: ValidateAction,
   getData: DataRetrievalAction,
-  backNavigator: BackNavigator,
   sessionRepository: SessionRepository,
   gamblingService: GamblingService,
   openReturnsView: SelectReturnView
@@ -70,14 +68,7 @@ class SelectReturnController @Inject() (
             .flatMap(sessionRepository.set)
             .map(_ =>
               Ok(
-                openReturnsView(regNum,
-                                openReturnPeriods,
-                                backNavigator.backPage(
-                                  OpenReturnPeriodsPage,
-                                  NormalMode,
-                                  request
-                                )
-                               )
+                openReturnsView(regNum, openReturnPeriods)
               )
             )
         }
