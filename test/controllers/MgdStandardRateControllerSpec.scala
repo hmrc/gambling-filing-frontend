@@ -23,7 +23,7 @@ import navigation.{FakeNavigator, Navigator}
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mockito.when
 import org.scalatestplus.mockito.MockitoSugar
-import pages.{MgdStandardRatePage, SelectReturnPage}
+import pages.{MgdStandardRatePage, NetTakingsStandardPage, SelectReturnPage}
 import play.api.inject.bind
 import play.api.mvc.Call
 import play.api.test.FakeRequest
@@ -37,15 +37,23 @@ import scala.concurrent.Future
 class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
 
   val formProvider = new MgdStandardRateFormProvider()
-  val form = formProvider()
+
+  val netTakings: BigDecimal = BigDecimal("2000")
+  val validAnswer: BigDecimal = BigDecimal("1000")
+  val invalidAmount: BigDecimal = BigDecimal("2500")
+  val form = formProvider(Some(netTakings))
 
   def onwardRoute = Call("GET", "/foo")
 
-  val validAnswer: BigDecimal = BigDecimal(100)
-
   val selectedReturn: SelectedReturn = SelectedReturn(1, LocalDate.of(2025, 1, 1), LocalDate.of(2025, 3, 31))
 
-  def userAnswersWithSelectedReturn: UserAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
+  def userAnswersWithSelectedReturn: UserAnswers = UserAnswers(userAnswersId)
+    .set(SelectReturnPage, selectedReturn)
+    .success
+    .value
+    .set(NetTakingsStandardPage, netTakings)
+    .success
+    .value
 
   lazy val mgdStandardRateRoute = routes.MgdStandardRateController.onPageLoad(NormalMode).url
 
@@ -158,6 +166,33 @@ class MgdStandardRateControllerSpec extends SpecBase with MockitoSugar {
 
         status(result) mustEqual SEE_OTHER
         redirectLocation(result).value mustEqual routes.SelectReturnController.onPageLoad().url
+      }
+    }
+
+    "must return Bad Request when MGD Standard Rate exceeds net takings" in {
+      val application = applicationBuilder(userAnswers = Some(userAnswersWithSelectedReturn)).build()
+      running(application) {
+        val request = FakeRequest(POST, mgdStandardRateRoute).withFormUrlEncodedBody(("value", invalidAmount.toString))
+        val result = route(application, request).value
+        val boundForm = formProvider(Some(netTakings)).bind(Map("value" -> invalidAmount.toString))
+        val view = application.injector.instanceOf[MgdStandardRateView]
+
+        status(result) mustEqual BAD_REQUEST
+
+        boundForm.errors.exists(_.message == "mgdStandardRate.error.dutyExceedsNetTakings") mustBe true
+        contentAsString(result) mustEqual
+          view(boundForm, NormalMode, selectedReturn)(request, messages(application)).toString
+      }
+    }
+
+    "must return Bad Request when Standard Level net takings are missing" in {
+      val userAnswers = UserAnswers(userAnswersId).set(SelectReturnPage, selectedReturn).success.value
+      val application = applicationBuilder(userAnswers = Some(userAnswers)).build()
+      running(application) {
+        val request = FakeRequest(POST, mgdStandardRateRoute).withFormUrlEncodedBody(("value", invalidAmount.toString))
+        val result = route(application, request).value
+
+        status(result) mustEqual BAD_REQUEST
       }
     }
   }

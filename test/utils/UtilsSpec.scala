@@ -23,6 +23,29 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 class UtilsSpec extends AnyWordSpec with Matchers {
 
+  "Utils.removeSpaces" should {
+
+    "remove leading, trailing and inner spaces" in {
+
+      Utils.normaliseSpaces("  1 000   000 ") mustBe "1000000"
+    }
+
+    "remove tabs and newlines" in {
+
+      Utils.normaliseSpaces("1\t000\n") mustBe "1000"
+    }
+
+    "remove non-breaking and other Unicode spaces" in {
+
+      Utils.normaliseSpaces("\u00A01\u00A0000\u2007000\u00A0") mustBe "1000000"
+    }
+
+    "return an empty string for whitespace-only input" in {
+
+      Utils.normaliseSpaces(" \t\u00A0 ") mustBe ""
+    }
+  }
+
   "Utils.withIds" should {
 
     "add sequential ids with default prefix" in {

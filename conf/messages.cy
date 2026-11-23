@@ -110,6 +110,7 @@ mgdLowerRate.hint = Enter 5% of your net takings for the lower rate of duty in p
 mgdLowerRate.error.required = Enter how much MGD at the lower rate you owe
 mgdLowerRate.error.invalid = Enter your lower rate MGD in pounds and pence, like 1,510.72
 mgdLowerRate.error.range = Your lower rate MGD must be between -£1 billion and £1 billion
+mgdLowerRate.error.dutyExceedsNetTakings = Enter an amount of duty that is less than or equal to the total net takings
 
 mgdStandardRate.title = How much MGD at the standard rate do you owe?
 mgdStandardRate.heading = How much MGD at the standard rate do you owe?
@@ -118,6 +119,7 @@ mgdStandardRate.hint = Enter 20% of your net takings for the standard rate of du
 mgdStandardRate.error.required = Enter how much MGD at the standard rate you owe
 mgdStandardRate.error.invalid = Enter your standard rate MGD in pounds and pence, like 1,510.72
 mgdStandardRate.error.range = Your standard rate MGD must be between -£1 billion and £1 billion
+mgdStandardRate.error.dutyExceedsNetTakings = Enter an amount of duty that is less than or equal to the total net takings
 
 netTakingsLower.title = What are your total net takings liable to the lower rate of duty?
 netTakingsLower.heading = What are your total net takings liable to the lower rate of duty?
@@ -226,6 +228,7 @@ mgdHigherRate.hint = Enter 25% of your net takings for the higher rate of duty i
 mgdHigherRate.error.required = Enter how much MGD at the higher rate you owe
 mgdHigherRate.error.invalid = Enter your higher rate MGD in pounds and pence
 mgdHigherRate.error.range = Your MGD must be between -£1 billion and £1 billion
+mgdHigherRate.error.dutyExceedsNetTakings = Enter an amount of duty that is less than or equal to the total net takings
 
 underDeclaredDutyLimits.title = Under-declared duty limits
 underDeclaredDutyLimits.heading = Under-declared duty limits
