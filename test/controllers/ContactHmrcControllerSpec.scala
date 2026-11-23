@@ -20,7 +20,7 @@ import base.SpecBase
 import config.FrontendAppConfig
 import models.{CheckMode, NormalMode, Regime, SelectedReturn, UserAnswers}
 import org.scalatestplus.mockito.MockitoSugar
-import pages.SelectReturnPage
+import pages.{SelectReturnPage, UnderDeclaredDutyPage, UnderDeclaredDutyReasonableCarePage}
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*
 import views.html.ContactHmrcView
@@ -78,8 +78,16 @@ class ContactHmrcControllerSpec extends SpecBase with MockitoSugar {
 
       val application =
         applicationBuilder(
-          userAnswers = Some(userAnswersWithSelectedReturn),
-          regime      = Regime.MGD
+          userAnswers = Some(
+            userAnswersWithSelectedReturn
+              .set(UnderDeclaredDutyPage, true)
+              .success
+              .value
+              .set(UnderDeclaredDutyReasonableCarePage, true)
+              .success
+              .value
+          ),
+          regime = Regime.MGD
         ).build()
 
       running(application) {

@@ -218,4 +218,55 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
         .checkForMissingAnswers(answers, NormalMode) mustBe None
     }
   }
+
+  "isReachable" - {
+
+    def userAnswers(answers: (QuestionPage[Boolean], Boolean)*) =
+      answers.foldLeft(emptyUserAnswers)((acc, a) => acc.set(a._1, a._2).success.value)
+
+    def isReachable(page: Page, answers: models.UserAnswers) = CheckYourAnswersValidator.isReachable(page)(answers)
+
+    "rate child pages are only reachable when their rate screener is Yes" in {
+      Seq(
+        NetTakingsLowerRatePage    -> Seq(NetTakingsLowerPage, MgdLowerRatePage),
+        NetTakingsStandardRatePage -> Seq(NetTakingsStandardPage, MgdStandardRatePage),
+        NetTakingsHigherRatePage   -> Seq(NetTakingsHigherPage, MgdHigherRatePage)
+      ).foreach { case (screener, children) =>
+        children.foreach { child =>
+          isReachable(child, userAnswers(screener -> true)) mustBe true
+          isReachable(child, userAnswers(screener -> false)) mustBe false
+          isReachable(child, emptyUserAnswers) mustBe false
+        }
+      }
+    }
+
+    "under-declared duty child pages are only reachable down the branch their parent answers lead to" in {
+      isReachable(UnderDeclaredDutyReasonableCarePage, userAnswers(UnderDeclaredDutyPage -> true)) mustBe true
+      isReachable(UnderDeclaredDutyReasonableCarePage, userAnswers(UnderDeclaredDutyPage -> false)) mustBe false
+
+      val careFailed = Seq(UnderDeclaredDutyPage -> true, UnderDeclaredDutyReasonableCarePage -> false)
+      isReachable(UnderDeclaredDutyLimitsPage, userAnswers(careFailed*)) mustBe true
+      isReachable(UnderDeclaredDutyLimitsPage, userAnswers(UnderDeclaredDutyPage -> true, UnderDeclaredDutyReasonableCarePage -> true)) mustBe false
+      isReachable(UnderDeclaredDutyLimitsPage, userAnswers(UnderDeclaredDutyPage -> false)) mustBe false
+
+      isReachable(TotalUnderDeclaredDutyPage, userAnswers((careFailed :+ (UnderDeclaredDutyLimitsPage -> true))*)) mustBe true
+      isReachable(TotalUnderDeclaredDutyPage, userAnswers((careFailed :+ (UnderDeclaredDutyLimitsPage -> false))*)) mustBe false
+      isReachable(TotalUnderDeclaredDutyPage, userAnswers(UnderDeclaredDutyPage -> false)) mustBe false
+
+      isReachable(ContactHmrcPage, userAnswers(UnderDeclaredDutyPage -> true, UnderDeclaredDutyReasonableCarePage -> true)) mustBe true
+      isReachable(ContactHmrcPage, userAnswers((careFailed :+ (UnderDeclaredDutyLimitsPage -> false))*)) mustBe true
+      isReachable(ContactHmrcPage, userAnswers((careFailed :+ (UnderDeclaredDutyLimitsPage -> true))*)) mustBe false
+      isReachable(ContactHmrcPage, userAnswers(UnderDeclaredDutyPage -> false)) mustBe false
+    }
+
+    "negative duty input is only reachable when negative duty is Yes" in {
+      isReachable(NegativeDutyBroughtForwardInputPage, userAnswers(NegativeDutyPage -> true)) mustBe true
+      isReachable(NegativeDutyBroughtForwardInputPage, userAnswers(NegativeDutyPage -> false)) mustBe false
+    }
+
+    "top-level questions are always reachable" in {
+      Seq(MachinesAvailablePage, NetTakingsLowerRatePage, UnderDeclaredDutyPage, NegativeDutyPage)
+        .foreach(isReachable(_, emptyUserAnswers) mustBe true)
+    }
+  }
 }

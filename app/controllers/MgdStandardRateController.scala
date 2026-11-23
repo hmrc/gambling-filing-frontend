@@ -37,50 +37,53 @@ class MgdStandardRateController @Inject() (
   validate: ValidateAction,
   getData: DataRetrievalAction,
   journeyComplete: JourneyCompleteAction,
+  reachable: ReachablePageFilter,
   formProvider: MgdStandardRateFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: MgdStandardRateView
 )(implicit ec: ExecutionContext)
     extends BaseFilingController {
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-      case None =>
-        logger.info(s" no selectedReturn found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-      case Some(selectedReturn) =>
-        val netTakings = request.userAnswers.flatMap(_.get(NetTakingsStandardPage))
-        val form = formProvider(netTakings)
-        val preparedForm = request.userAnswers.flatMap(_.get(MgdStandardRatePage)).fold(form)(form.fill)
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    (authorise andThen validate andThen getData andThen journeyComplete andThen reachable(MgdStandardRatePage, mode)).async { implicit request =>
+      request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+        case None =>
+          logger.info(s" no selectedReturn found for regNum=${request.regNum}")
+          Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+        case Some(selectedReturn) =>
+          val netTakings = request.userAnswers.flatMap(_.get(NetTakingsStandardPage))
+          val form = formProvider(netTakings)
+          val preparedForm = request.userAnswers.flatMap(_.get(MgdStandardRatePage)).fold(form)(form.fill)
 
-        Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
+          Future.successful(Ok(view(preparedForm, mode, selectedReturn)))
+      }
     }
-  }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers match {
-      case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
-      case Some(userAnswers) =>
-        userAnswers.get(SelectReturnPage) match {
-          case None =>
-            logger.info(s" no selectedReturn found for regNum=${request.regNum}")
-            Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen journeyComplete andThen reachable(MgdStandardRatePage, mode)).async { implicit request =>
+      request.userAnswers match {
+        case None => Future.successful(Redirect(controllers.routes.JourneyRecoveryController.onPageLoad()))
+        case Some(userAnswers) =>
+          userAnswers.get(SelectReturnPage) match {
+            case None =>
+              logger.info(s" no selectedReturn found for regNum=${request.regNum}")
+              Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
 
-          case Some(selectedReturn) =>
-            val netTakings = userAnswers.get(NetTakingsStandardPage)
-            formProvider(netTakings)
-              .bindFromRequest()
-              .fold(
-                formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
-                value =>
-                  for {
-                    updatedAnswers <- Future.fromTry(userAnswers.set(MgdStandardRatePage, value))
-                    _              <- sessionRepository.set(updatedAnswers)
-                  } yield Redirect(
-                    navigator.nextPage(MgdStandardRatePage, mode, updatedAnswers)
-                  )
-              )
-        }
+            case Some(selectedReturn) =>
+              val netTakings = userAnswers.get(NetTakingsStandardPage)
+              formProvider(netTakings)
+                .bindFromRequest()
+                .fold(
+                  formWithErrors => Future.successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+                  value =>
+                    for {
+                      updatedAnswers <- Future.fromTry(userAnswers.set(MgdStandardRatePage, value))
+                      _              <- sessionRepository.set(updatedAnswers)
+                    } yield Redirect(
+                      navigator.nextPage(MgdStandardRatePage, mode, updatedAnswers)
+                    )
+                )
+          }
+      }
     }
-  }
 }
