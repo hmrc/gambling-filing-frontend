@@ -62,7 +62,7 @@ model.openPeriods.zipWithIndex.map { case (item, i) =>
 
 @layout(
     pageTitle     = titleNoForm(messages(if(model.openPeriods.isEmpty) "selectReturn.empty.title" else "selectReturn.title")),
-    backLink      = Some(s"${appConfig.managementFrontendUrl}manage-your-machine-games-duty")
+    backLink      = Some(s"${appConfig.managementFrontendUrl}/manage-your-machine-games-duty")
 ) {
 
     <span class="govuk-caption-l" data-testid="open-returns-caption">
