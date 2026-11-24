@@ -38,6 +38,7 @@ class NetTakingsStandardController @Inject() (
   validate: ValidateAction,
   getData: DataRetrievalAction,
   journeyComplete: JourneyCompleteAction,
+  reachable: ReachablePageFilter,
   formProvider: NetTakingsStandardFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: NetTakingsStandardView
@@ -47,33 +48,35 @@ class NetTakingsStandardController @Inject() (
 
   val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete) { implicit request =>
-    request.userAnswers
-      .flatMap(_.get(SelectReturnPage))
-      .fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
-        val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsStandardPage)).fold(form)(form.fill)
-        Ok(view(preparedForm, mode, selectedReturn))
-      }
-  }
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    (authorise andThen validate andThen getData andThen journeyComplete andThen reachable(NetTakingsStandardPage, mode)) { implicit request =>
+      request.userAnswers
+        .flatMap(_.get(SelectReturnPage))
+        .fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
+          val preparedForm = request.userAnswers.flatMap(_.get(NetTakingsStandardPage)).fold(form)(form.fill)
+          Ok(view(preparedForm, mode, selectedReturn))
+        }
+    }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen validate andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers
-      .flatMap(_.get(SelectReturnPage))
-      .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future
-                .successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsStandardPage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(NetTakingsStandardPage, mode, updatedAnswers))
-            }
-          )
-      }
-  }
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (authorise andThen validate andThen getData andThen journeyComplete andThen reachable(NetTakingsStandardPage, mode)).async { implicit request =>
+      request.userAnswers
+        .flatMap(_.get(SelectReturnPage))
+        .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future
+                  .successful(BadRequest(view(formWithErrors, mode, selectedReturn))),
+              value => {
+                val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+                for {
+                  updatedAnswers <- Future.fromTry(userAnswers.set(NetTakingsStandardPage, value))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(NetTakingsStandardPage, mode, updatedAnswers))
+              }
+            )
+        }
+    }
 }

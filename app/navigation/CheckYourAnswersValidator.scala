@@ -59,6 +59,23 @@ object CheckYourAnswersValidator {
     incompletePages.flatten.headOption
   }
 
+  def isReachable(page: Page)(implicit answers: UserAnswers): Boolean = {
+    val udd = answeredYes(UnderDeclaredDutyPage)
+    page match {
+      case NetTakingsLowerPage | MgdLowerRatePage       => answeredYes(NetTakingsLowerRatePage)
+      case NetTakingsStandardPage | MgdStandardRatePage => answeredYes(NetTakingsStandardRatePage)
+      case NetTakingsHigherPage | MgdHigherRatePage     => answeredYes(NetTakingsHigherRatePage)
+      case UnderDeclaredDutyReasonableCarePage          => udd
+      case UnderDeclaredDutyLimitsPage                  => udd && answeredNo(UnderDeclaredDutyReasonableCarePage)
+      case TotalUnderDeclaredDutyPage =>
+        udd && answeredNo(UnderDeclaredDutyReasonableCarePage) && answeredYes(UnderDeclaredDutyLimitsPage)
+      case ContactHmrcPage =>
+        udd && (answeredYes(UnderDeclaredDutyReasonableCarePage) || answeredNo(UnderDeclaredDutyLimitsPage))
+      case NegativeDutyBroughtForwardInputPage => answeredYes(NegativeDutyPage)
+      case _                                   => true
+    }
+  }
+
   private def unanswered[A](page: QuestionPage[A])(implicit answers: UserAnswers, rds: Reads[A]): Boolean =
     answers.get(page).isEmpty
 

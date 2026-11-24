@@ -39,6 +39,7 @@ class TotalUnderDeclaredDutyController @Inject() (
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   journeyComplete: JourneyCompleteAction,
+  reachable: ReachablePageFilter,
   formProvider: TotalUnderDeclaredDutyFormProvider,
   appConfig: FrontendAppConfig,
   val controllerComponents: MessagesControllerComponents,
@@ -47,47 +48,49 @@ class TotalUnderDeclaredDutyController @Inject() (
     extends FrontendBaseController
     with I18nSupport {
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete) { implicit request =>
-    request.userAnswers
-      .flatMap(_.get(SelectReturnPage))
-      .fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen journeyComplete andThen reachable(TotalUnderDeclaredDutyPage, mode)) { implicit request =>
+      request.userAnswers
+        .flatMap(_.get(SelectReturnPage))
+        .fold(Redirect(controllers.routes.SelectReturnController.onPageLoad())) { selectedReturn =>
 
-        val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-        val maximumAllowed = calculateMaximumAllowed(userAnswers)
-        val form = formProvider(maximumAllowed)
+          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+          val maximumAllowed = calculateMaximumAllowed(userAnswers)
+          val form = formProvider(maximumAllowed)
 
-        val preparedForm =
-          userAnswers.get(TotalUnderDeclaredDutyPage).fold(form)(form.fill)
+          val preparedForm =
+            userAnswers.get(TotalUnderDeclaredDutyPage).fold(form)(form.fill)
 
-        Ok(
-          view(preparedForm, mode, selectedReturn)
-        )
-      }
-  }
-
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers
-      .flatMap(_.get(SelectReturnPage))
-      .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
-
-        val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-        val maximumAllowed = calculateMaximumAllowed(userAnswers)
-
-        formProvider(maximumAllowed)
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future.successful(
-                BadRequest(view(formWithErrors, mode, selectedReturn))
-              ),
-            value =>
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(TotalUnderDeclaredDutyPage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(TotalUnderDeclaredDutyPage, mode, updatedAnswers))
+          Ok(
+            view(preparedForm, mode, selectedReturn)
           )
-      }
-  }
+        }
+    }
+
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen journeyComplete andThen reachable(TotalUnderDeclaredDutyPage, mode)).async { implicit request =>
+      request.userAnswers
+        .flatMap(_.get(SelectReturnPage))
+        .fold(Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))) { selectedReturn =>
+
+          val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+          val maximumAllowed = calculateMaximumAllowed(userAnswers)
+
+          formProvider(maximumAllowed)
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(
+                  BadRequest(view(formWithErrors, mode, selectedReturn))
+                ),
+              value =>
+                for {
+                  updatedAnswers <- Future.fromTry(userAnswers.set(TotalUnderDeclaredDutyPage, value))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(TotalUnderDeclaredDutyPage, mode, updatedAnswers))
+            )
+        }
+    }
 
   private def calculateMaximumAllowed(userAnswers: UserAnswers): BigDecimal = {
     val lowerNetTakings =

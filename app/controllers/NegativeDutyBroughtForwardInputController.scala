@@ -36,6 +36,7 @@ class NegativeDutyBroughtForwardInputController @Inject() (
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   journeyComplete: JourneyCompleteAction,
+  reachable: ReachablePageFilter,
   formProvider: NegativeDutyBroughtForwardInputFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: NegativeDutyBroughtForwardInputView
@@ -44,45 +45,47 @@ class NegativeDutyBroughtForwardInputController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-      case None =>
-        logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-      case Some(selectedReturn) =>
-        val preparedForm = request.userAnswers.flatMap(_.get(NegativeDutyBroughtForwardInputPage)).fold(form)(form.fill)
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen journeyComplete andThen reachable(NegativeDutyBroughtForwardInputPage, mode)).async { implicit request =>
+      request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+        case None =>
+          logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
+          Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+        case Some(selectedReturn) =>
+          val preparedForm = request.userAnswers.flatMap(_.get(NegativeDutyBroughtForwardInputPage)).fold(form)(form.fill)
 
-        Future.successful(
-          Ok(view(preparedForm, mode, selectedReturn))
-        )
-    }
-  }
-
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-      case None =>
-        logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-      case Some(selectedReturn) =>
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future.successful(
-                BadRequest(
-                  view(formWithErrors, mode, selectedReturn)
-                )
-              ),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
-
-              for {
-                // we store the value as -ve irrspecitve of if user adds -ve sign or not.
-                updatedAnswers <- Future.fromTry(userAnswers.set(NegativeDutyBroughtForwardInputPage, -value.abs))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(NegativeDutyBroughtForwardInputPage, mode, updatedAnswers))
-            }
+          Future.successful(
+            Ok(view(preparedForm, mode, selectedReturn))
           )
+      }
     }
-  }
+
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen journeyComplete andThen reachable(NegativeDutyBroughtForwardInputPage, mode)).async { implicit request =>
+      request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+        case None =>
+          logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
+          Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+        case Some(selectedReturn) =>
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(
+                  BadRequest(
+                    view(formWithErrors, mode, selectedReturn)
+                  )
+                ),
+              value => {
+                val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+
+                for {
+                  // we store the value as -ve irrspecitve of if user adds -ve sign or not.
+                  updatedAnswers <- Future.fromTry(userAnswers.set(NegativeDutyBroughtForwardInputPage, -value.abs))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(NegativeDutyBroughtForwardInputPage, mode, updatedAnswers))
+              }
+            )
+      }
+    }
 }

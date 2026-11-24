@@ -36,6 +36,7 @@ class UnderDeclaredDutyReasonableCareController @Inject() (
   authorise: AuthorisedAction,
   getData: DataRetrievalAction,
   journeyComplete: JourneyCompleteAction,
+  reachable: ReachablePageFilter,
   formProvider: UnderDeclaredDutyReasonableCareFormProvider,
   val controllerComponents: MessagesControllerComponents,
   view: UnderDeclaredDutyReasonableCareView
@@ -44,46 +45,48 @@ class UnderDeclaredDutyReasonableCareController @Inject() (
 
   private val form = formProvider()
 
-  def onPageLoad(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
-    Future.successful {
-      request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-        case None =>
-          logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
-          Redirect(controllers.routes.SelectReturnController.onPageLoad())
-        case Some(selectedReturn) =>
-          val preparedForm = request.userAnswers
-            .flatMap(_.get(UnderDeclaredDutyReasonableCarePage))
-            .fold(form)(value => form.fill(value))
+  def onPageLoad(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen journeyComplete andThen reachable(UnderDeclaredDutyReasonableCarePage, mode)).async { implicit request =>
+      Future.successful {
+        request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+          case None =>
+            logger.info(s"[onPageLoad] no selectedReturn found for regNum=${request.regNum}")
+            Redirect(controllers.routes.SelectReturnController.onPageLoad())
+          case Some(selectedReturn) =>
+            val preparedForm = request.userAnswers
+              .flatMap(_.get(UnderDeclaredDutyReasonableCarePage))
+              .fold(form)(value => form.fill(value))
 
-          Ok(view(preparedForm, mode, selectedReturn))
+            Ok(view(preparedForm, mode, selectedReturn))
+        }
       }
     }
-  }
 
-  def onSubmit(mode: Mode): Action[AnyContent] = (authorise andThen getData andThen journeyComplete).async { implicit request =>
-    request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
-      case None =>
-        logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
-        Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
-      case Some(selectedReturn) =>
-        form
-          .bindFromRequest()
-          .fold(
-            formWithErrors =>
-              Future.successful(
-                BadRequest(
-                  view(formWithErrors, mode, selectedReturn)
-                )
-              ),
-            value => {
-              val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
+  def onSubmit(mode: Mode): Action[AnyContent] =
+    (authorise andThen getData andThen journeyComplete andThen reachable(UnderDeclaredDutyReasonableCarePage, mode)).async { implicit request =>
+      request.userAnswers.flatMap(_.get(SelectReturnPage)) match {
+        case None =>
+          logger.info(s"[onSubmit] no selectedReturn found for regNum=${request.regNum}")
+          Future.successful(Redirect(controllers.routes.SelectReturnController.onPageLoad()))
+        case Some(selectedReturn) =>
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(
+                  BadRequest(
+                    view(formWithErrors, mode, selectedReturn)
+                  )
+                ),
+              value => {
+                val userAnswers = request.userAnswers.getOrElse(UserAnswers(request.regNum))
 
-              for {
-                updatedAnswers <- Future.fromTry(userAnswers.set(UnderDeclaredDutyReasonableCarePage, value))
-                _              <- sessionRepository.set(updatedAnswers)
-              } yield Redirect(navigator.nextPage(UnderDeclaredDutyReasonableCarePage, mode, updatedAnswers))
-            }
-          )
+                for {
+                  updatedAnswers <- Future.fromTry(userAnswers.set(UnderDeclaredDutyReasonableCarePage, value))
+                  _              <- sessionRepository.set(updatedAnswers)
+                } yield Redirect(navigator.nextPage(UnderDeclaredDutyReasonableCarePage, mode, updatedAnswers))
+              }
+            )
+      }
     }
-  }
 }
