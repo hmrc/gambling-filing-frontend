@@ -62,11 +62,14 @@ object CheckYourAnswersValidator {
   def isReachable(page: Page)(implicit answers: UserAnswers): Boolean = {
     val udd = answeredYes(UnderDeclaredDutyPage)
     page match {
-      case NetTakingsLowerPage | MgdLowerRatePage       => answeredYes(NetTakingsLowerRatePage)
-      case NetTakingsStandardPage | MgdStandardRatePage => answeredYes(NetTakingsStandardRatePage)
-      case NetTakingsHigherPage | MgdHigherRatePage     => answeredYes(NetTakingsHigherRatePage)
-      case UnderDeclaredDutyReasonableCarePage          => udd
-      case UnderDeclaredDutyLimitsPage                  => udd && answeredNo(UnderDeclaredDutyReasonableCarePage)
+      case NetTakingsLowerPage                 => answeredYes(NetTakingsLowerRatePage)
+      case NetTakingsStandardPage              => answeredYes(NetTakingsStandardRatePage)
+      case NetTakingsHigherPage                => answeredYes(NetTakingsHigherRatePage)
+      case MgdLowerRatePage                    => answeredYes(NetTakingsLowerRatePage) && !missingAmount(NetTakingsLowerPage)
+      case MgdStandardRatePage                 => answeredYes(NetTakingsStandardRatePage) && !missingAmount(NetTakingsStandardPage)
+      case MgdHigherRatePage                   => answeredYes(NetTakingsHigherRatePage) && !missingAmount(NetTakingsHigherPage)
+      case UnderDeclaredDutyReasonableCarePage => udd
+      case UnderDeclaredDutyLimitsPage         => udd && answeredNo(UnderDeclaredDutyReasonableCarePage)
       case TotalUnderDeclaredDutyPage =>
         udd && answeredNo(UnderDeclaredDutyReasonableCarePage) && answeredYes(UnderDeclaredDutyLimitsPage)
       case ContactHmrcPage =>

@@ -226,17 +226,29 @@ class CheckYourAnswersValidatorSpec extends SpecBase {
 
     def isReachable(page: Page, answers: models.UserAnswers) = CheckYourAnswersValidator.isReachable(page)(answers)
 
-    "rate child pages are only reachable when their rate screener is Yes" in {
-      Seq(
-        NetTakingsLowerRatePage    -> Seq(NetTakingsLowerPage, MgdLowerRatePage),
-        NetTakingsStandardRatePage -> Seq(NetTakingsStandardPage, MgdStandardRatePage),
-        NetTakingsHigherRatePage   -> Seq(NetTakingsHigherPage, MgdHigherRatePage)
-      ).foreach { case (screener, children) =>
-        children.foreach { child =>
-          isReachable(child, userAnswers(screener -> true)) mustBe true
-          isReachable(child, userAnswers(screener -> false)) mustBe false
-          isReachable(child, emptyUserAnswers) mustBe false
-        }
+    val rateFlows = Seq(
+      (NetTakingsLowerRatePage, NetTakingsLowerPage, MgdLowerRatePage),
+      (NetTakingsStandardRatePage, NetTakingsStandardPage, MgdStandardRatePage),
+      (NetTakingsHigherRatePage, NetTakingsHigherPage, MgdHigherRatePage)
+    )
+
+    "net takings pages are only reachable when their rate screener is Yes" in {
+      rateFlows.foreach { case (screener, netTakings, _) =>
+        isReachable(netTakings, userAnswers(screener -> true)) mustBe true
+        isReachable(netTakings, userAnswers(screener -> false)) mustBe false
+        isReachable(netTakings, emptyUserAnswers) mustBe false
+      }
+    }
+
+    "MGD due pages are only reachable when their rate screener is Yes and net takings has been entered" in {
+      rateFlows.foreach { case (screener, netTakings, mgd) =>
+        def withNetTakings(amount: BigDecimal) = userAnswers(screener -> true).set(netTakings, amount).success.value
+
+        isReachable(mgd, withNetTakings(amount)) mustBe true
+        isReachable(mgd, userAnswers(screener -> true)) mustBe false
+        isReachable(mgd, withNetTakings(BigDecimal(0))) mustBe false
+        isReachable(mgd, userAnswers(screener -> false)) mustBe false
+        isReachable(mgd, emptyUserAnswers) mustBe false
       }
     }
 

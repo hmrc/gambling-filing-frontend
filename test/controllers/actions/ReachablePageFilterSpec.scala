@@ -77,6 +77,16 @@ class ReachablePageFilterSpec extends SpecBase {
       }
     }
 
+    "must bounce the MGD due change page back to CYA when net takings has not been entered" in {
+      val ua = allNo.set(NetTakingsLowerRatePage, true).success.value
+      val application = applicationBuilder(userAnswers = Some(ua)).build()
+      running(application) {
+        val result = route(application, FakeRequest(GET, routes.MgdLowerRateController.onPageLoad(CheckMode).url)).value
+        status(result) mustEqual SEE_OTHER
+        redirectLocation(result).value mustEqual routes.CheckYourAnswersController.onPageLoad().url
+      }
+    }
+
     "must not guard NormalMode pages" in {
       val application = applicationBuilder(userAnswers = Some(allNo)).build()
       running(application) {
