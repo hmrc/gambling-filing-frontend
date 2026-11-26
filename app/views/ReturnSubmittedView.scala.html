@@ -17,9 +17,11 @@
 @import views.html.components._
 @import utils.DateTimeFormats
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import config.FrontendAppConfig
 
 @this(
     layout: templates.Layout,
+    appConfig: FrontendAppConfig,
     paragraph: Paragraph,
     heading: H1,
     govukPanel: GovukPanel
@@ -59,10 +61,11 @@ showBackLink = false
 
     @paragraph(messages("confirmation.whatHappensNext.contact"))
 
-    <p class="govuk-body">
-        <a class="govuk-link"
-           href="/manage-gambling-tax/returns/">
-            @messages("confirmation.returnToAccount")
-        </a>
-    </p>
+    @defining(s"${appConfig.managementFrontendUrl}/manage-your-machine-games-duty") { returnUrl =>
+        <p class="govuk-body">
+            <a class="govuk-link" href="@returnUrl">
+                @messages("confirmation.returnToAccount")
+            </a>
+        </p>
+    }
 }
