@@ -57,7 +57,7 @@ class ReturnSubmittedSpec extends SpecBase {
 
       val accountLink =
         doc
-          .select("""a[href="/manage-gambling-tax/returns/"]""")
+          .select("""a[href$="/manage-your-machine-games-duty"]""")
           .last()
 
       accountLink.text mustBe
